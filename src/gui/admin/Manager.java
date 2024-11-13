@@ -1,0 +1,233 @@
+package gui.admin;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+
+public class Manager extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JLabel lblNewLabel_1;
+	
+
+    private JLabel tourManagement;
+    private JLabel customerManagement;
+    private JLabel accountManagement;
+    private JLabel statistic;
+    private JLabel customerService;
+    private JLabel logOut;
+
+	
+	public JLabel getLblNewLabel_1() {
+		return lblNewLabel_1;
+	}
+	
+	public JPanel getContentPane() {
+		return contentPane;
+	}
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Manager frame = new Manager();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Manager() {
+		ManagerControl mouselistener = new ManagerControl();
+
+		// Initialize the content pane before adding components
+		setSize(1100,700);
+		setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        contentPane = new JPanel();
+        contentPane.setLayout(new BorderLayout()); // Use layout manager for content pane
+        setContentPane(contentPane);
+        
+        // Title panel
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(33, 150, 243));
+        titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 15));
+
+        
+        JLabel lblHeaderTitle = new JLabel("Quản Lí Tour Du Lịch");
+        lblHeaderTitle.setFont(new Font("Tahoma", Font.BOLD, 24));
+        
+        titlePanel.add(lblHeaderTitle);
+        
+        JPanel functionPanel = new JPanel();
+        functionPanel.setBackground(new Color(66, 165, 243));
+        functionPanel.setLayout(new GridLayout(6,1));
+        
+        
+        tourManagement = new JLabel("Tour Managemet");
+        tourManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        tourManagement.setBackground(new Color(66, 165, 243));
+        tourManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        tourManagement.setOpaque(true); 
+        tourManagement.addMouseListener(mouselistener);
+                
+        
+         customerManagement = new JLabel("Customer Management");
+        customerManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        customerManagement.setOpaque(true); 
+        customerManagement.setBackground(new Color(66, 165, 243));
+        customerManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        customerManagement.addMouseListener(mouselistener);
+
+        
+
+         accountManagement = new JLabel("Account Management");
+        accountManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        accountManagement.setBackground(new Color(66, 165, 243));
+        accountManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        accountManagement.setOpaque(true); 
+        accountManagement.addMouseListener(mouselistener);
+
+
+        
+         statistic = new JLabel("Statistic");
+        statistic.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        statistic.setBackground(new Color(66, 165, 243));
+        statistic.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        statistic.setOpaque(true); 
+        statistic.addMouseListener(mouselistener);
+
+
+        
+         customerService = new JLabel("Customer Service");
+        customerService.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        customerService.setBackground(new Color(66, 165, 243));
+        customerService.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        customerService.setOpaque(true); 
+        customerService.addMouseListener(mouselistener);
+
+        
+         logOut = new JLabel("Log Out");
+        logOut.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        logOut.setBackground(new Color(66, 165, 243));
+        logOut.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        logOut.setOpaque(true); 
+        logOut.addMouseListener(mouselistener);
+
+
+        
+        
+        functionPanel.add(tourManagement);
+        functionPanel.add(customerManagement);
+        functionPanel.add(accountManagement);
+        functionPanel.add(statistic);
+        functionPanel.add(customerService);
+        functionPanel.add(logOut);
+
+        
+        JPanel functionDetailPanel = new JPanel();
+        functionDetailPanel.setBackground(Color.WHITE);
+        
+        // Add the title panel to the content pane
+        contentPane.add(titlePanel, BorderLayout.NORTH);
+        contentPane.add(functionPanel, BorderLayout.WEST);
+        contentPane.add(functionDetailPanel, BorderLayout.CENTER);
+
+        
+        // Set the size of the frame
+	}
+	
+	private class ManagerControl implements MouseListener
+	{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			if (e.getSource() == tourManagement) {
+				tourManagement.setBackground(new Color(77, 182, 245)); // Lighter color on hover
+                // Add action for Tour Management
+            } else if (e.getSource() == customerManagement) {
+            	customerManagement.setBackground(new Color(77, 182, 245));
+                // Add action for Customer Management
+            } else if (e.getSource() == accountManagement) {
+            	accountManagement.setBackground(new Color(77, 182, 245));
+                // Add action for Account Management
+            } else if (e.getSource() == statistic) {
+            	statistic.setBackground(new Color(77, 182, 245));
+                // Add action for Statistic
+            } else if (e.getSource() == customerService) {
+            	customerService.setBackground(new Color(77, 182, 245));
+                // Add action for Customer Service
+            } else if (e.getSource() == logOut) {
+            	logOut.setBackground(new Color(77, 182, 245));
+                // Add action for Log Out
+            }
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			if (e.getSource() == tourManagement) {
+				tourManagement.setBackground(new Color(66, 165, 243)); // Lighter color on hover
+                // Add action for Tour Management
+            } else if (e.getSource() == customerManagement) {
+            	customerManagement.setBackground(new Color(66, 165, 243));
+                // Add action for Customer Management
+            } else if (e.getSource() == accountManagement) {
+            	accountManagement.setBackground(new Color(66, 165, 243));
+                // Add action for Account Management
+            } else if (e.getSource() == statistic) {
+            	statistic.setBackground(new Color(66, 165, 243));
+                // Add action for Statistic
+            } else if (e.getSource() == customerService) {
+            	customerService.setBackground(new Color(66, 165, 243));
+                // Add action for Customer Service
+            } else if (e.getSource() == logOut) {
+            	logOut.setBackground(new Color(66, 165, 243));
+                // Add action for Log Out
+            }
+			
+		}
+		
+	}
+
+}
