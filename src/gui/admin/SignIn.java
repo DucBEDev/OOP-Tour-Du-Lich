@@ -152,7 +152,7 @@ public class SignIn extends JFrame {
 		else if (username.equals("2") && password.equals("2")) {
 			System.out.println("Employee");
 			mag = new Manager();
-			mag.getContentPane().remove(mag.getLblNewLabel_1());
+			//mag.getContentPane().remove(mag.getLblNewLabel_1());
 			mag.setVisible(true);
 		}
 		else {

@@ -19,25 +19,17 @@ import javax.swing.JLabel;
 public class Manager extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JLabel lblNewLabel_1;
 	
 
     private JLabel tourManagement;
     private JLabel customerManagement;
-    private JLabel accountManagement;
+    private JLabel employeeManagement;
     private JLabel statistic;
     private JLabel customerService;
     private JLabel logOut;
 
 	
-	public JLabel getLblNewLabel_1() {
-		return lblNewLabel_1;
-	}
 	
-	public JPanel getContentPane() {
-		return contentPane;
-	}
 
 	/**
 	 * Launch the application.
@@ -64,11 +56,7 @@ public class Manager extends JFrame {
 		// Initialize the content pane before adding components
 		setSize(1100,700);
 		setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout()); // Use layout manager for content pane
-        setContentPane(contentPane);
-        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
         // Title panel
         
         JPanel titlePanel = new JPanel();
@@ -94,7 +82,7 @@ public class Manager extends JFrame {
         tourManagement.addMouseListener(mouselistener);
                 
         
-         customerManagement = new JLabel("Customer Management");
+        customerManagement = new JLabel("Customer Management");
         customerManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         customerManagement.setOpaque(true); 
         customerManagement.setBackground(new Color(66, 165, 243));
@@ -103,16 +91,16 @@ public class Manager extends JFrame {
 
         
 
-         accountManagement = new JLabel("Account Management");
-        accountManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        accountManagement.setBackground(new Color(66, 165, 243));
-        accountManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        accountManagement.setOpaque(true); 
-        accountManagement.addMouseListener(mouselistener);
+        employeeManagement = new JLabel("Employee Management");
+        employeeManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        employeeManagement.setBackground(new Color(66, 165, 243));
+        employeeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        employeeManagement.setOpaque(true); 
+        employeeManagement.addMouseListener(mouselistener);
 
 
         
-         statistic = new JLabel("Statistic");
+        statistic = new JLabel("Statistic");
         statistic.setFont(new Font("Tahoma", Font.PLAIN, 14));
         statistic.setBackground(new Color(66, 165, 243));
         statistic.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -121,7 +109,7 @@ public class Manager extends JFrame {
 
 
         
-         customerService = new JLabel("Customer Service");
+        customerService = new JLabel("Customer Service");
         customerService.setFont(new Font("Tahoma", Font.PLAIN, 14));
         customerService.setBackground(new Color(66, 165, 243));
         customerService.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -129,7 +117,7 @@ public class Manager extends JFrame {
         customerService.addMouseListener(mouselistener);
 
         
-         logOut = new JLabel("Log Out");
+        logOut = new JLabel("Log Out");
         logOut.setFont(new Font("Tahoma", Font.PLAIN, 14));
         logOut.setBackground(new Color(66, 165, 243));
         logOut.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -141,7 +129,7 @@ public class Manager extends JFrame {
         
         functionPanel.add(tourManagement);
         functionPanel.add(customerManagement);
-        functionPanel.add(accountManagement);
+        functionPanel.add(employeeManagement);
         functionPanel.add(statistic);
         functionPanel.add(customerService);
         functionPanel.add(logOut);
@@ -151,9 +139,9 @@ public class Manager extends JFrame {
         functionDetailPanel.setBackground(Color.WHITE);
         
         // Add the title panel to the content pane
-        contentPane.add(titlePanel, BorderLayout.NORTH);
-        contentPane.add(functionPanel, BorderLayout.WEST);
-        contentPane.add(functionDetailPanel, BorderLayout.CENTER);
+        add(titlePanel, BorderLayout.NORTH);
+        add(functionPanel, BorderLayout.WEST);
+        //contentPane.add(functionDetailPanel, BorderLayout.CENTER);
 
         
         // Set the size of the frame
@@ -161,10 +149,25 @@ public class Manager extends JFrame {
 	
 	private class ManagerControl implements MouseListener
 	{
-
+		
 		@Override
-		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
+		public void mouseClicked(MouseEvent e) 
+		{
+//			if(e.getSource() == tourManagement)
+//			{
+//				TourManagement tourManagementPanel = new TourManagement();
+//				add(tourManagementPanel, BorderLayout.CENTER);
+//			}
+			
+			if(e.getSource() == employeeManagement)
+			{
+				EmployeeManagement employeeManagementPanel = new EmployeeManagement();
+				add(employeeManagementPanel, BorderLayout.CENTER);
+			}
+
+		  
+		    revalidate();
+		    repaint();
 			
 		}
 
@@ -188,8 +191,8 @@ public class Manager extends JFrame {
             } else if (e.getSource() == customerManagement) {
             	customerManagement.setBackground(new Color(77, 182, 245));
                 // Add action for Customer Management
-            } else if (e.getSource() == accountManagement) {
-            	accountManagement.setBackground(new Color(77, 182, 245));
+            } else if (e.getSource() == employeeManagement) {
+            	employeeManagement.setBackground(new Color(77, 182, 245));
                 // Add action for Account Management
             } else if (e.getSource() == statistic) {
             	statistic.setBackground(new Color(77, 182, 245));
@@ -212,8 +215,8 @@ public class Manager extends JFrame {
             } else if (e.getSource() == customerManagement) {
             	customerManagement.setBackground(new Color(66, 165, 243));
                 // Add action for Customer Management
-            } else if (e.getSource() == accountManagement) {
-            	accountManagement.setBackground(new Color(66, 165, 243));
+            } else if (e.getSource() == employeeManagement) {
+            	employeeManagement.setBackground(new Color(66, 165, 243));
                 // Add action for Account Management
             } else if (e.getSource() == statistic) {
             	statistic.setBackground(new Color(66, 165, 243));

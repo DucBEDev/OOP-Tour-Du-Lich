@@ -3,8 +3,8 @@ package entity;
 import java.time.LocalDate;
 
 public final class Employee {
-    public static final String PERMISSION_STAFF = "STAFF";
-    public static final String PERMISSION_ADMIN = "ADMIN";
+    public static final String PERMISSION_STAFF = "staff";
+    public static final String PERMISSION_ADMIN = "admin";
     
     public static final String STATUS_WORKING = "Đang làm việc";
     public static final String STATUS_RESIGN = "Đã nghỉ";
@@ -28,9 +28,10 @@ public final class Employee {
 
     }
 
-    public Employee(String employeeId, String fullName, String phone, String email, String address, 
-                    String userName, String password, String permissions) {
-    	if(employeeId==null) setEmployeeId(); else this.employeeId=employeeId;
+    public Employee(String employeeId, String fullName, String phone, String email, String address, String userName, String password, String permissions) 
+    {
+    	this.employeeId=employeeId;
+    	System.out.println(employeeId);
         this.fullName = fullName;
         setPhone(phone);
         setEmail(email);
@@ -42,6 +43,24 @@ public final class Employee {
         this.setHireDate(hireDate);
         this.status = "Đang làm việc";
     }
+    
+    
+    public Employee( String fullName, String phone, String email, String address, String userName, String password, String permissions) 
+    {
+    	setEmployeeId();  
+    	System.out.println(employeeId);
+        this.fullName = fullName;
+        setPhone(phone);
+        setEmail(email);
+        this.address = address;
+        this.userName = userName;
+        setPassword(password);
+        this.permissions = permissions;
+        this.setHireDate(hireDate);
+        this.status = "Đang làm việc";
+    }
+    
+    
 
         //Generate Getter & Setter for fullName
     public String getFullName() {
@@ -170,9 +189,15 @@ public final class Employee {
                ", Phone: " + phone + 
                ", Email: " + email + 
                ", Address: " + address + 
-               ", Date Hired: " + hireDate + 
+              // ", Date Hired: " + hireDate + 
                ", Permissions: " + permissions + 
                ", Username: " + userName + 
                ", Password: " + password;
+    }
+    
+    public static void main(String[] args)
+    {
+    	Employee employee = new Employee( "nigga", "0366189422", "nigga123@gmail.com", "Summoner Rift", "nigga123" , "nigga1234556788", Employee.PERMISSION_STAFF );
+    	System.out.println(employee);
     }
 }
