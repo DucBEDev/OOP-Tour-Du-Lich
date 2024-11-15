@@ -22,7 +22,11 @@ import entity.Tour;
 public class Tour_DAO {
     private final ConnectDB db = ConnectDB.getInstance();
     private final Connection con;
-
+  
+    public static final String STATUS_AVAILABLE = "Còn vé";
+    public static final String STATUS_SOLD_OUT = "Hết vé";
+    public static final String STATUS_CANCELLED = "Đã hủy";
+    
     // Constructor to initialize the connection
     public Tour_DAO() {
         db.connect();  // Initialize the database connection
@@ -57,6 +61,42 @@ public class Tour_DAO {
             e.printStackTrace();
         }
 
+        return list;
+    }
+    
+    public ArrayList<Tour> getLimitedTours(int limit) {
+        String query = "SELECT TOP (?) * FROM Tour WHERE Status = ? ORDER BY DepartureDate";
+        ArrayList<Tour> list = new ArrayList<>();
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setInt(1, limit);
+            stmt.setNString(2, STATUS_AVAILABLE);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                String tourId = rs.getString(1);
+                String tourName = rs.getNString(3);
+                String description = rs.getNString(4);
+                LocalDate departureDate = rs.getDate(5).toLocalDate();
+                int duration = rs.getInt(6);
+                String departureLocation = rs.getNString(7);
+                LocalTime departureTime = rs.getTime(8).toLocalTime();
+                String destination = rs.getNString(9);
+                String transportInfo = rs.getNString(10);
+                BigDecimal adultPrice = rs.getBigDecimal(11);
+                BigDecimal childPrice = rs.getBigDecimal(12);
+                int maxParticipants = rs.getInt(13);
+                int currentParticipants = rs.getInt(14);
+                String status = rs.getNString(15);
+
+                Tour temp = new Tour(tourId, tourName, description, departureDate, duration,
+                    departureLocation, departureTime, destination, transportInfo,
+                    adultPrice, childPrice, maxParticipants, currentParticipants, status);
+                list.add(temp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 

@@ -16,7 +16,9 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -34,12 +36,18 @@ import javax.swing.border.EmptyBorder;
 
 import com.toedter.calendar.JDateChooser;
 
+import connectDB.ConnectDB;
+import dao.Tour_DAO;
+import entity.Tour;
+
 public class Dashboard extends JFrame {
 	private JPanel topNav;
 	private JPanel content;
 	private JPanel content_header;
 	private JPanel tourList;
-	private JScrollPane scroll;
+	private JScrollPane scrollPane;
+	
+	private Tour_DAO tour_dao;
 	
     public Dashboard() {
     	Toolkit kit = Toolkit.getDefaultToolkit();
@@ -63,7 +71,7 @@ public class Dashboard extends JFrame {
     	
     	// List of tour
     	tourList = createResultsPanel();
-    	JScrollPane scrollPane = new JScrollPane(tourList);
+    	scrollPane = new JScrollPane(tourList);
     	scrollPane.setPreferredSize(new Dimension(scrWidth, scrHeight * 4 / 7));
     	scrollPane.getVerticalScrollBar().setUnitIncrement(50); // Tăng tốc độ lướt theo từng đơn vị
     	scrollPane.getVerticalScrollBar().setBlockIncrement(50);
@@ -275,6 +283,13 @@ public class Dashboard extends JFrame {
         JPanel cardsPanel = new JPanel(new GridLayout(5, 3, 20, 20));
         cardsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
+        // Get data form the database
+        tour_dao = new Tour_DAO();
+        ArrayList<Tour> tourList = tour_dao.getAll();
+        for (Tour tour : tourList) {
+            System.out.println(tour.getTourId());
+        }
+        
         for (int i = 0; i < 15; i++) {
             cardsPanel.add(createResultCard("€ " + (80 - i*5)));
         }
