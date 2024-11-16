@@ -26,6 +26,7 @@ public final class Tour {
     private int maxParticipants;
     private int currentParticipants;
     private String status;
+    private static int nextTourId =1;
 
     public Tour() {
 
@@ -34,7 +35,7 @@ public final class Tour {
     public Tour(String tourId, String tourName, String description, LocalDate departureDate, int duration, String departureLocation, 
             LocalTime departureTime, String destination, String transportInfo, BigDecimal adultPrice, BigDecimal childPrice, 
             int maxParticipants, int currentParticipants, String status) {
-    	this.tourId = tourId;
+    	if(tourId==null) setTourId(); else this.tourId = tourId;
         this.tourName = tourName;
         this.description = description;
         this.departureDate = departureDate;
@@ -54,13 +55,8 @@ public final class Tour {
     public String getTourId() {
         return tourId;
     }
-    public void setTourId(String tourId) {
-        if (tourId.length() <= 10) {
-            this.tourId = tourId;
-        }
-        else {
-            throw new IllegalArgumentException("ID tour không hợp lệ");
-        }
+    public void setTourId() {
+    	this.tourId = String.format("TOUR%03d", nextTourId++);
     }
 
         //Generate Getter & Setter for image
