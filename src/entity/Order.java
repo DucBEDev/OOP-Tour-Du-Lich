@@ -21,12 +21,14 @@ public final class Order {
     //private String paymentMethod;
     private String status;
     private String confirmedBy;         //Nhân viên phụ trách đơn hàng
+    
+    private static int nextOrderId = 1;
 
     public Order() {}
 
     public Order(String orderId, String customerId, String tourId, int adultTickets, int childTickets, 
                  LocalDateTime orderTime, BigDecimal totalAmount, String status, String confirmedBy) {
-        this.orderId = orderId;
+        if (orderId == null) setOrderId(); else this.orderId = orderId;
         this.customerId = customerId;
         this.tourId = tourId;
         //setPhone(phone);
@@ -45,8 +47,8 @@ public final class Order {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrderId() {
+    	this.tourId = String.format("ORD%03d", nextOrderId++);
     }
 
     // Generate Getter & Setter for tourId
