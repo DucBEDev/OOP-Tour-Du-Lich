@@ -7,7 +7,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -16,9 +15,12 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,6 +31,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -39,12 +42,13 @@ import com.toedter.calendar.JDateChooser;
 import connectDB.ConnectDB;
 import dao.Tour_DAO;
 import entity.Tour;
+import utils.VNComboBox;
 
 public class Dashboard extends JFrame {
 	private JPanel topNav;
 	private JPanel content;
 	private JPanel content_header;
-	private JPanel tourList;
+	private JPanel pnlTourList;
 	private JScrollPane scrollPane;
 	
 	private Tour_DAO tour_dao;
@@ -70,8 +74,10 @@ public class Dashboard extends JFrame {
     	add(content, BorderLayout.CENTER);
     	
     	// List of tour
-    	tourList = createResultsPanel();
-    	scrollPane = new JScrollPane(tourList);
+    	tour_dao = new Tour_DAO();
+    	ArrayList<Tour> tourList = new ArrayList<Tour>();
+    	pnlTourList = createResultsPanel(tourList);
+    	scrollPane = new JScrollPane(pnlTourList);
     	scrollPane.setPreferredSize(new Dimension(scrWidth, scrHeight * 4 / 7));
     	scrollPane.getVerticalScrollBar().setUnitIncrement(50); // Tăng tốc độ lướt theo từng đơn vị
     	scrollPane.getVerticalScrollBar().setBlockIncrement(50);
@@ -199,14 +205,14 @@ public class Dashboard extends JFrame {
         fieldsPanel.add(lblTransportInfo, gbc);
         
         // DepartureLocation field
-        JTextField txtDepartureLocation = createSearchField(fieldWidth);
+        JComboBox<String> txtDepartureLocation = VNComboBox.createProvincesComboBox();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weightx = 1.0;
         fieldsPanel.add(txtDepartureLocation, gbc);
 
         // Destination field
-        JTextField txtDestination = createSearchField(fieldWidth);
+        JComboBox<String> txtDestination = VNComboBox.createProvincesComboBox();
         gbc.gridx = 1;
         fieldsPanel.add(txtDestination, gbc);
 
@@ -237,10 +243,47 @@ public class Dashboard extends JFrame {
         searchButton.setFocusPainted(false);
         searchButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         searchButton.addActionListener(e -> {
-        	System.out.println(txtDepartureLocation.getText());
-        	System.out.println(txtDestination.getText());
-        	System.out.println(new SimpleDateFormat("dd/MM/yyyy").format(departDate.getDate()));
-        	System.out.println(transportInfo.getSelectedItem());
+        	String departureLocation = (String)txtDepartureLocation.getSelectedItem();
+        	String destinationLocation = (String)txtDestination.getSelectedItem();
+        	Date departureDate = departDate.getDate();
+        	String transport = (String)transportInfo.getSelectedItem();
+        	
+        	// Validate input
+        	boolean isValid = true;
+            if (departureLocation == null || departureLocation.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn địa điểm khởi hành.");
+                isValid = false;
+                return;
+            }
+
+            if (destinationLocation == null || destinationLocation.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn địa điểm đến.");
+                isValid = false;
+                return;
+            }
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, 1);
+            Date tomorrow = calendar.getTime();
+
+            if (departureDate == null || departureDate.before(tomorrow)) {
+                JOptionPane.showMessageDialog(null, "Ngày khởi hành phải lớn hơn ngày hôm nay.");
+                isValid = false;
+                return;
+            }
+
+            if (transport == null || transport.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn phương tiện di chuyển.");
+                isValid = false;
+                return;
+            }
+
+            if (isValid) {
+                ArrayList<Tour> tourList = tour_dao.searchTours(departureLocation, destinationLocation, new SimpleDateFormat("dd/MM/yyyy").format(departureDate), transport);
+                Order order = new Order(tourList);
+                order.setVisible(true);
+    			this.dispose();
+            }
         });
         gbc.gridx = 5;
         gbc.weightx = 0.0;
@@ -260,19 +303,7 @@ public class Dashboard extends JFrame {
         return centeringPanel;
     }
 
-    private JTextField createSearchField(int width) {
-        JTextField field = new JTextField();
-        field.setPreferredSize(new Dimension(width, 35));
-        field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
-        field.setForeground(Color.GRAY);
-        field.setBackground(new Color(255, 255, 255, 200));
-        return field;
-    }
-
-    private JPanel createResultsPanel() {
+    private JPanel createResultsPanel(ArrayList<Tour> tourList) {
     	JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
 
@@ -280,25 +311,21 @@ public class Dashboard extends JFrame {
         tourListLabel.setFont(new Font("Arial", Font.BOLD, 24));
         mainPanel.add(tourListLabel, BorderLayout.NORTH);
 
-        JPanel cardsPanel = new JPanel(new GridLayout(5, 3, 20, 20));
+        // Get data form the database
+        tourList = tour_dao.getLimitedTours(15);
+
+        JPanel cardsPanel = new JPanel(new GridLayout(tourList.size() / 3, 3, 20, 20));
         cardsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        // Get data form the database
-        tour_dao = new Tour_DAO();
-        ArrayList<Tour> tourList = tour_dao.getAll();
         for (Tour tour : tourList) {
-            System.out.println(tour.getTourId());
-        }
-        
-        for (int i = 0; i < 15; i++) {
-            cardsPanel.add(createResultCard("€ " + (80 - i*5)));
+            cardsPanel.add(createResultCard(tour));
         }
 
         mainPanel.add(cardsPanel, BorderLayout.CENTER);
         return mainPanel;
     }
     
-    private JPanel createResultCard(String price) {
+    private JPanel createResultCard(Tour tour) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -321,42 +348,57 @@ public class Dashboard extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        gbc.insets = new Insets(5, 10, 0, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 10, 5, 10);
 
         // Thêm các thành phần vào InfoPanel
-        JLabel label = new JLabel("Tour Miền Bắc 5N4Đ: HCM - Hà Nội ");
+        JLabel lblTourName = new JLabel(tour.getTourName());
         gbc.gridy = 1;
-        label.setFont(new Font("Arial", Font.BOLD, 16));
-        label.setOpaque(true);
-        label.setBackground(Color.WHITE);
-        infoPanel.add(label, gbc);
+        lblTourName.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTourName.setOpaque(true);
+        lblTourName.setBackground(Color.WHITE);
+        infoPanel.add(lblTourName, gbc);
         
-        JLabel label1 = new JLabel("Tour Miền Bắc 5N4Đ: HCM - Hà Nội ");
+        JLabel lblDuration = new JLabel(String.valueOf(String.format("- Thời gian: %d ngày %d đêm", tour.getDuration(), tour.getDuration() - 1)));
         gbc.gridy = 2;
-        label1.setFont(new Font("Arial", Font.BOLD, 16));
-        label1.setOpaque(true);
-        label1.setBackground(Color.WHITE);
-        infoPanel.add(label1, gbc);
+        lblDuration.setFont(new Font("Arial", Font.BOLD, 16));
+        lblDuration.setOpaque(true);
+        lblDuration.setBackground(Color.WHITE);
+        infoPanel.add(lblDuration, gbc);
         
-        JLabel label2 = new JLabel("Tour Miền Bắc 5N4Đ: HCM - Hà Nội ");
+        JLabel lblTransportInfo = new JLabel("- Phương tiện di chuyển: " + tour.getTransportInfo());
         gbc.gridy = 3;
-        label2.setFont(new Font("Arial", Font.BOLD, 16));
-        label2.setOpaque(true);
-        label2.setBackground(Color.WHITE);
-        infoPanel.add(label2, gbc);
+        lblTransportInfo.setFont(new Font("Arial", Font.BOLD, 16));
+        lblTransportInfo.setOpaque(true);
+        lblTransportInfo.setBackground(Color.WHITE);
+        infoPanel.add(lblTransportInfo, gbc);
         
-        JLabel label3 = new JLabel("Tour Miền Bắc 5N4Đ: HCM - Hà Nội ");
+        JLabel lblMaxParticipants = new JLabel(String.valueOf("- Số vé: " + tour.getMaxParticipants() + " vé"));
         gbc.gridy = 4;
-        label3.setFont(new Font("Arial", Font.BOLD, 16));
-        label3.setOpaque(true);
-        label3.setBackground(Color.WHITE);
-        infoPanel.add(label3, gbc);
+        lblMaxParticipants.setFont(new Font("Arial", Font.BOLD, 16));
+        lblMaxParticipants.setOpaque(true);
+        lblMaxParticipants.setBackground(Color.WHITE);
+        infoPanel.add(lblMaxParticipants, gbc);
 
-        JLabel priceLabel = new JLabel("8.590.000 VND");
+        JPanel pnlPrice = new JPanel(new GridLayout(2, 1, 0, 5)); 
+        pnlPrice.setOpaque(false);
+		NumberFormat formatVN = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
+		
+        JLabel lblAdultPrice = new JLabel("Người lớn: " + String.valueOf(formatVN.format(tour.getAdultPrice().intValue())) + "/ Vé");
+        lblAdultPrice.setFont(new Font("Arial", Font.BOLD, 16));
+        lblAdultPrice.setForeground(new Color(255, 153, 0)); 
+        lblAdultPrice.setHorizontalAlignment(JLabel.RIGHT);
+        pnlPrice.add(lblAdultPrice);
+        
+        JLabel lblChildPrice = new JLabel("Trẻ em: " + String.valueOf(formatVN.format(tour.getChildPrice().intValue())) + "/ Vé");
+        lblChildPrice.setFont(new Font("Arial", Font.BOLD, 16));
+        lblChildPrice.setForeground(new Color(255, 153, 0)); 
+        lblChildPrice.setHorizontalAlignment(JLabel.RIGHT);
+        pnlPrice.add(lblChildPrice);
+        
         gbc.gridy = 5;
-        priceLabel.setForeground(new Color(255, 153, 0));
-        infoPanel.add(priceLabel, gbc);
+        gbc.anchor = GridBagConstraints.EAST; 
+        infoPanel.add(pnlPrice, gbc);
         
         card.add(infoPanel, BorderLayout.SOUTH);
         

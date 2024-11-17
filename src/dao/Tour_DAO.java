@@ -99,6 +99,68 @@ public class Tour_DAO {
         }
         return list;
     }
+    
+    public ArrayList<Tour> searchTours(String departureLocation, String destination, String departureDate, String transport) {
+		ArrayList<Tour> results = new ArrayList<>();
+		StringBuilder queryBuilder = new StringBuilder("SELECT * FROM Tour WHERE Status = ?");
+		ArrayList<Object> params = new ArrayList<>();
+		params.add(STATUS_AVAILABLE);
+		
+		// Add search conditions if parameters are provided
+		if (departureLocation != null && !departureLocation.trim().isEmpty()) {
+			queryBuilder.append(" AND DepartureLocation LIKE ?");
+			params.add("%" + departureLocation + "%");
+		}
+		
+		if (destination != null && !destination.trim().isEmpty()) {
+			queryBuilder.append(" AND Destination LIKE ?");
+			params.add("%" + destination + "%");
+		}
+		
+		if (departureDate != null && !departureDate.trim().isEmpty()) {
+			queryBuilder.append(" AND CONVERT(varchar, DepartureDate, 103) = ?");
+			params.add(departureDate);
+		}
+		
+		if (transport != null && !transport.trim().isEmpty()) {
+			queryBuilder.append(" AND TransportInfo LIKE ?");
+			params.add("%" + transport + "%");
+		}
+		
+		queryBuilder.append(" ORDER BY DepartureDate");
+		
+		try (PreparedStatement stmt = con.prepareStatement(queryBuilder.toString())) {
+			// Set parameters
+			for (int i = 0; i < params.size(); i++) {
+				stmt.setObject(i + 1, params.get(i));
+			}
+			
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				String tourId = rs.getString("TourID");
+				String tourName = rs.getNString("TourName");
+				String description = rs.getNString("Description");
+				LocalDate depDate = rs.getDate("DepartureDate").toLocalDate();
+				int duration = rs.getInt("Duration");
+				String depLocation = rs.getNString("DepartureLocation");
+				LocalTime departureTime = rs.getTime("DepartureTime").toLocalTime();
+				String dest = rs.getNString("Destination");
+				String transportInfo = rs.getNString("TransportInfo");
+				BigDecimal adultPrice = rs.getBigDecimal("AdultPrice");
+				BigDecimal childPrice = rs.getBigDecimal("ChildPrice");
+				int maxParticipants = rs.getInt("MaxParticipants");
+				int currentParticipants = rs.getInt("CurrentParticipants");
+				String status = rs.getNString("Status");
+				
+				Tour tour = new Tour(tourId, tourName, description, depDate, duration, depLocation, departureTime, dest, transportInfo, adultPrice, childPrice, maxParticipants, currentParticipants, status);
+				results.add(tour);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return results;
+	}
 
     public Tour getByTourId(String tourId) {
         String query = "SELECT * FROM Tour WHERE TourID = ?";

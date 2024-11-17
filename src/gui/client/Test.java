@@ -1,317 +1,423 @@
 package gui.client;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.text.*;
+import java.util.*;
+import com.toedter.calendar.JDateChooser;
+
+import dao.Tour_DAO;
+import entity.Tour;
 
 public class Test extends JFrame {
-	private JPanel contentPane;
-	
+    private JPanel mainPanel;
+    private JPanel tourListPanel;
+    private JPanel bookingFormPanel;
+    private Tour_DAO tour_dao;
+    private Tour selectedTour;
+    
+    // Form components
+    private JTextField txtFullName;
+    private JTextField txtEmail;
+    private JTextField txtPhone;
+    private JTextField txtAddress;
+    private JSpinner adultSpinner;
+    private JSpinner childSpinner;
+    private JLabel lblTotalPrice;
+    private ArrayList<Tour> tourList;
+    
     public Test() {
-    	setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLayout(new BorderLayout());
-        
-        // Top navigation bar
-        JPanel topNav = createTopNav();
-        add(topNav, BorderLayout.NORTH);
-        
-        // Main content panel
-        JPanel mainContent = new JPanel(new BorderLayout());
-        
-        // Header panel với hình nền
-        JPanel headerPanel = createHeaderPanel();
-        mainContent.add(headerPanel, BorderLayout.NORTH);
-        
-        // Search form panel
-        JPanel searchPanel = createSearchFormPanel();
-        mainContent.add(searchPanel, BorderLayout.CENTER);
-        
-        // Results panel
-        JPanel resultsPanel = createResultsPanel();
-        mainContent.add(resultsPanel, BorderLayout.SOUTH);
-        
-        add(mainContent, BorderLayout.CENTER);
-        
-        setSize(1000, 800);
+        setTitle("Đặt Tour Du Lịch");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    private JPanel createTopNav() {
-        JPanel navPanel = new JPanel(new BorderLayout());
-        navPanel.setBackground(Color.WHITE);
-        navPanel.setPreferredSize(new Dimension(getWidth(), 50));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         
-        // Left side - Logo
-        JPanel leftNav = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
-        leftNav.setBackground(Color.WHITE);
-        JLabel logoLabel = new JLabel("Booking");
-        logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        leftNav.add(logoLabel);
+        // Initialize components
+        tour_dao = new Tour_DAO();
+        tourList = tour_dao.getLimitedTours(15);
+        initializeUI();
         
-        // Center - Navigation items
-        JPanel centerNav = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        centerNav.setBackground(Color.WHITE);
-        String[] navItems = {"Accommodation", "Flights", "Car rentals", "Compilation"};
-        
-        for (String item : navItems) {
-            JLabel navItem = new JLabel(item);
-            navItem.setFont(new Font("Arial", Font.PLAIN, 14));
-            if (item.equals("Flights")) {
-                navItem.setForeground(new Color(0, 102, 204));
-                navItem.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(0, 102, 204)));
-            }
-            centerNav.add(navItem);
-        }
-        
-        // Right side - User menu
-        JPanel rightNav = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-        rightNav.setBackground(Color.WHITE);
-        JLabel searchIcon = new JLabel("🔍");
-        JLabel notifIcon = new JLabel("🔔");
-        JLabel userIcon = new JLabel("👤");
-        rightNav.add(searchIcon);
-        rightNav.add(notifIcon);
-        rightNav.add(userIcon);
-        
-        navPanel.add(leftNav, BorderLayout.WEST);
-        navPanel.add(centerNav, BorderLayout.CENTER);
-        navPanel.add(rightNav, BorderLayout.EAST);
-        
-        return navPanel;
+        setVisible(true);
     }
     
-    private JPanel createHeaderPanel() {
-        // Main panel using BorderLayout
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setPreferredSize(new Dimension(getWidth(), 400));
-
-        // Background panel with gradient
-        JPanel bgPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-
-                // Create gradient overlay
-                GradientPaint gradient = new GradientPaint(
-                    0, getHeight(), new Color(0, 0, 0, 180),
-                    0, getHeight() - 100, new Color(0, 0, 0, 0)
-                );
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
+    private void initializeUI() {
+        mainPanel = new JPanel(new BorderLayout());
+        
+        // Create split pane with proper ratio
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setResizeWeight(0.9); // Set the divider to maintain 2/3 ratio
+        
+        // Left panel - Tour List (2/3 width)
+        tourListPanel = createTourListPanel();
+//        JScrollPane tourScrollPane = new JScrollPane(tourListPanel);
+        splitPane.setLeftComponent(tourListPanel);
+        
+        // Right panel - Booking Form (1/3 width)
+        bookingFormPanel = createBookingFormPanel();
+//        JScrollPane formScrollPane = new JScrollPane(bookingFormPanel);
+        splitPane.setRightComponent(bookingFormPanel);
+        
+        mainPanel.add(splitPane, BorderLayout.CENTER);
+        add(mainPanel);
+    }
+    
+    private JPanel createTourListPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        
+        // Header
+        JLabel headerLabel = new JLabel("Danh sách Tour Du lịch");
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(headerLabel);
+        panel.add(Box.createVerticalStrut(20));
+        
+        // Container for tour cards with GridBagLayout
+        JPanel cardsContainer = new JPanel(new GridBagLayout());
+        cardsContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Configure constraints for the cards
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        // Get screen dimensions
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Dimension scrSize = kit.getScreenSize();
+        int scrWidth = scrSize.width;
+        int scrHeight = scrSize.height;
+        // Calculate card width based on screen size
+        int cardWidth = (scrWidth * 69 / 100) / 2;
+        
+        // Add cards to container
+        int column = 0;
+        for (Tour tour : tourList) {
+            // Create card wrapper
+        	JPanel cardWrapper = new JPanel();
+            cardWrapper.setPreferredSize(new Dimension(cardWidth - 20, 300));
+            cardWrapper.setMaximumSize(new Dimension(cardWidth - 20, 300));
+            cardWrapper.setLayout(new BorderLayout());
+            cardWrapper.add(createTourCard(tour), BorderLayout.CENTER);
+            
+            // Set grid position
+            gbc.gridx = column;
+            cardsContainer.add(cardWrapper, gbc);
+            
+            // Move to next position
+            column++;
+            if (column > 1) {  // After 2 columns
+                column = 0;    // Reset to first column
+                gbc.gridy++;   // Move to next row
             }
-        };
-        bgPanel.setBackground(new Color(0, 0, 0, 50));
-
-        // Content panel for text and button using BoxLayout
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setOpaque(false);
+        }
         
-        // Add left padding to content
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(150, 50, 0, 50));
-
-        // Title text
-        JLabel titleLabel = new JLabel("Laghi di Fusine");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
-        titleLabel.setForeground(Color.BLACK);
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Subtitle text
-        JLabel subtitleLabel = new JLabel("Italy");
-        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-        subtitleLabel.setForeground(Color.BLACK);
-        subtitleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Add vertical spacing between components
-        contentPanel.add(titleLabel);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(subtitleLabel);
-        contentPanel.add(Box.createVerticalStrut(20));
-
-        // Button panel for proper alignment
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        buttonPanel.setOpaque(false);
-
-        JButton moreInfoBtn = new JButton("More information →");
-        moreInfoBtn.setBackground(new Color(255, 255, 255, 80));
-        moreInfoBtn.setForeground(Color.BLACK);
-        moreInfoBtn.setBorderPainted(false);
-        moreInfoBtn.setFocusPainted(false);
-        buttonPanel.add(moreInfoBtn);
+        // Add filler to maintain alignment
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        cardsContainer.add(Box.createGlue(), gbc);
         
-        // Set button panel alignment
-        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        contentPanel.add(buttonPanel);
-
-        // Add panels to main panel
-        panel.add(bgPanel, BorderLayout.CENTER);
-        panel.add(contentPanel, BorderLayout.CENTER);
-
+        // Scroll pane for cards container
+        JScrollPane scrollPane = new JScrollPane(cardsContainer);
+        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        scrollPane.setBorder(null);
+        scrollPane.setPreferredSize(new Dimension(scrWidth * 80 / 100, scrHeight));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(26);
+        
+        // Add scroll pane and vertical glue
+        panel.add(scrollPane);
+        panel.add(Box.createVerticalGlue());
+        
         return panel;
     }
-
-    private JPanel createSearchFormPanel() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
-        
-        // Trip type options
-        JPanel tripTypePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
-        String[] tripTypes = {"Return", "One-Way", "Multi-city"};
-        ButtonGroup tripTypeGroup = new ButtonGroup();
-        
-        for (String type : tripTypes) {
-            JRadioButton radioBtn = new JRadioButton(type);
-            radioBtn.setFont(new Font("Arial", Font.PLAIN, 14));
-            if (type.equals("Return")) {
-                radioBtn.setSelected(true);
-            }
-            tripTypeGroup.add(radioBtn);
-            tripTypePanel.add(radioBtn);
-        }
-        
-        // Search form
-        JPanel searchForm = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
-        // Custom text fields
-        JTextField fromField = createCustomTextField("Moscow, Russia", "🔍");
-        JTextField toField = createCustomTextField("Norway", "🔍");
-        JTextField departField = createCustomTextField("Depart", "📅");
-        JTextField returnField = createCustomTextField("Return", "📅");
-        JTextField passengersField = createCustomTextField("1 adult, Economy", "👤");
-        
-        // Add components to search form
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 1.0;
-        searchForm.add(fromField, gbc);
-        
-        gbc.gridx = 1;
-        searchForm.add(toField, gbc);
-        
-        gbc.gridx = 2;
-        searchForm.add(departField, gbc);
-        
-        gbc.gridx = 3;
-        searchForm.add(returnField, gbc);
-        
-        gbc.gridx = 4;
-        searchForm.add(passengersField, gbc);
-        
-        JButton searchButton = new JButton("✈");
-        searchButton.setBackground(new Color(0, 102, 204));
-        searchButton.setForeground(Color.WHITE);
-        searchButton.setPreferredSize(new Dimension(50, 35));
-        gbc.gridx = 5;
-        gbc.weightx = 0.0;
-        searchForm.add(searchButton, gbc);
-        
-        mainPanel.add(tripTypePanel, BorderLayout.NORTH);
-        mainPanel.add(searchForm, BorderLayout.CENTER);
-        
-        return mainPanel;
-    }
     
-    private JTextField createCustomTextField(String placeholder, String icon) {
-        JTextField field = new JTextField(placeholder) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (getText().isEmpty()) {
-                    Graphics2D g2 = (Graphics2D) g.create();
-                    g2.setColor(Color.GRAY);
-                    g2.setFont(getFont().deriveFont(Font.PLAIN));
-                    g2.drawString(placeholder, 35, 23);
-                    g2.dispose();
-                }
-            }
-        };
-        
-        field.setPreferredSize(new Dimension(200, 35));
-        field.setBorder(BorderFactory.createCompoundBorder(
+    private JPanel createTourCard(Tour tour) {
+        JPanel card = new JPanel(new BorderLayout(10, 0));
+        card.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-            BorderFactory.createEmptyBorder(5, 30, 5, 5)
+            new EmptyBorder(10, 10, 10, 10)
         ));
-        
-        JLabel iconLabel = new JLabel(icon);
-        iconLabel.setBounds(8, 7, 20, 20);
-        field.setLayout(null);
-        field.add(iconLabel);
-        
-        return field;
-    }
-    
-    private JPanel createResultsPanel() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
-        
-        JLabel compilationLabel = new JLabel("Compilation");
-        compilationLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        mainPanel.add(compilationLabel, BorderLayout.NORTH);
-        
-        JPanel cardsPanel = new JPanel(new GridLayout(1, 3, 20, 0));
-        cardsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
-        
-        for (int i = 0; i < 3; i++) {
-            cardsPanel.add(createResultCard("€ " + (80 - i*15)));
-        }
-        
-        mainPanel.add(cardsPanel, BorderLayout.CENTER);
-        return mainPanel;
-    }
-    
-    private JPanel createResultCard(String price) {
-        JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         
-        // Placeholder image panel
-        JPanel imagePanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.setColor(new Color(200, 200, 200));
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        imagePanel.setPreferredSize(new Dimension(0, 150));
+        // Left panel
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setBackground(Color.WHITE);
         
-        // Price label
-        JLabel priceLabel = new JLabel(price + " Flight per person");
-        priceLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        priceLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        // Tour image
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/images/background.jpg"));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+        imageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        leftPanel.add(imageLabel);
         
-        card.add(imagePanel, BorderLayout.CENTER);
-        card.add(priceLabel, BorderLayout.SOUTH);
+        // Basic tour info
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setBackground(Color.WHITE);
+        
+        JLabel durationLabel = new JLabel(String.format("Thời gian: %d ngày %d đêm", 
+            tour.getDuration(), tour.getDuration() - 1));
+        durationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JLabel transportLabel = new JLabel("Phương tiện: " + tour.getTransportInfo());
+        transportLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Price panel
+        JPanel pricePanel = new JPanel(new GridLayout(2, 1));
+        pricePanel.setBackground(Color.WHITE);
+        
+        NumberFormat formatVN = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        JLabel adultPriceLabel = new JLabel("Người lớn: " + formatVN.format(tour.getAdultPrice()));
+        JLabel childPriceLabel = new JLabel("Trẻ em: " + formatVN.format(tour.getChildPrice()));
+        
+        pricePanel.add(adultPriceLabel);
+        pricePanel.add(childPriceLabel);
+        pricePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        infoPanel.add(Box.createVerticalStrut(10));
+        infoPanel.add(durationLabel);
+        infoPanel.add(transportLabel);
+        infoPanel.add(Box.createVerticalStrut(10));
+        infoPanel.add(pricePanel);
+        leftPanel.add(infoPanel);
+        
+        // Right panel
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBackground(Color.WHITE);
+        rightPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
+        
+        // Tour name as header
+        JLabel nameLabel = new JLabel(tour.getTourName());
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Tour description in a scrollable text area
+        JTextArea descriptionArea = new JTextArea(tour.getDescription());
+        descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setEditable(false);
+        descriptionArea.setBackground(Color.WHITE);
+        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        scrollPane.setPreferredSize(new Dimension(300, 150));
+        scrollPane.setBorder(null);
+        
+        rightPanel.add(nameLabel);
+        rightPanel.add(Box.createVerticalStrut(10));
+        rightPanel.add(scrollPane);
+        
+        // Book button at bottom of right panel
+        JButton bookButton = new JButton("Đặt Tour");
+        bookButton.setBackground(new Color(0, 102, 204));
+        bookButton.setForeground(Color.WHITE);
+        bookButton.setFocusPainted(false);
+        bookButton.addActionListener(e -> {
+            selectedTour = tour;
+            updateBookingForm();
+        });
+        bookButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        rightPanel.add(Box.createVerticalStrut(10));
+        rightPanel.add(bookButton);
+        
+        // Add panels to card
+        card.add(leftPanel, BorderLayout.WEST);
+        card.add(rightPanel, BorderLayout.CENTER);
         
         // Add hover effect
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                card.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 2));
+                card.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0, 102, 204), 2),
+                    new EmptyBorder(10, 10, 10, 10)
+                ));
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
-                card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                if (selectedTour != tour) {
+                    card.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                        new EmptyBorder(10, 10, 10, 10)
+                    ));
+                }
             }
         });
         
         return card;
     }
     
+    private JPanel createBookingFormPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        
+        // Header
+        JLabel headerLabel = new JLabel("Thông tin đặt Tour");
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(headerLabel);
+        panel.add(Box.createVerticalStrut(20));
+        
+        // Form fields
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        
+        // Full name
+        gbc.gridx = 0; gbc.gridy = 0;
+        formPanel.add(new JLabel("Họ tên:"), gbc);
+        
+        gbc.gridx = 1;
+        txtFullName = new JTextField(20);
+        formPanel.add(txtFullName, gbc);
+        
+        // Email
+        gbc.gridx = 0; gbc.gridy = 1;
+        formPanel.add(new JLabel("Email:"), gbc);
+        
+        gbc.gridx = 1;
+        txtEmail = new JTextField(20);
+        formPanel.add(txtEmail, gbc);
+        
+        // Phone
+        gbc.gridx = 0; gbc.gridy = 2;
+        formPanel.add(new JLabel("Số điện thoại:"), gbc);
+        
+        gbc.gridx = 1;
+        txtPhone = new JTextField(20);
+        formPanel.add(txtPhone, gbc);
+        
+        // Address
+        gbc.gridx = 0; gbc.gridy = 3;
+        formPanel.add(new JLabel("Địa chỉ:"), gbc);
+        
+        gbc.gridx = 1;
+        txtAddress = new JTextField(20);
+        formPanel.add(txtAddress, gbc);
+        
+        // Number of adults
+        gbc.gridx = 0; gbc.gridy = 4;
+        formPanel.add(new JLabel("Số người lớn:"), gbc);
+        
+        gbc.gridx = 1;
+        SpinnerNumberModel adultModel = new SpinnerNumberModel(1, 1, 10, 1);
+        adultSpinner = new JSpinner(adultModel);
+        adultSpinner.addChangeListener(e -> updateTotalPrice());
+        formPanel.add(adultSpinner, gbc);
+        
+        // Number of children
+        gbc.gridx = 0; gbc.gridy = 5;
+        formPanel.add(new JLabel("Số trẻ em:"), gbc);
+        
+        gbc.gridx = 1;
+        SpinnerNumberModel childModel = new SpinnerNumberModel(0, 0, 10, 1);
+        childSpinner = new JSpinner(childModel);
+        childSpinner.addChangeListener(e -> updateTotalPrice());
+        formPanel.add(childSpinner, gbc);
+        
+        // Total price
+        gbc.gridx = 0; gbc.gridy = 6;
+        formPanel.add(new JLabel("Tổng tiền:"), gbc);
+        
+        gbc.gridx = 1;
+        lblTotalPrice = new JLabel("0 VND");
+        lblTotalPrice.setFont(new Font("Arial", Font.BOLD, 16));
+        lblTotalPrice.setForeground(new Color(255, 153, 0));
+        formPanel.add(lblTotalPrice, gbc);
+        
+        // Submit button
+        gbc.gridx = 0; gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        JButton submitButton = new JButton("Xác nhận đặt Tour");
+        submitButton.setBackground(new Color(0, 102, 204));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.setFocusPainted(false);
+        submitButton.addActionListener(e -> handleBooking());
+        formPanel.add(submitButton, gbc);
+        
+        panel.add(formPanel);
+        
+        return panel;
+    }
+    
+    private void updateBookingForm() {
+        if (selectedTour != null) {
+            updateTotalPrice();
+            // Reset form fields
+            txtFullName.setText("");
+            txtEmail.setText("");
+            txtPhone.setText("");
+            txtAddress.setText("");
+            adultSpinner.setValue(1);
+            childSpinner.setValue(0);
+        }
+    }
+    
+    private void updateTotalPrice() {
+        if (selectedTour != null) {
+            int numAdults = (Integer) adultSpinner.getValue();
+            int numChildren = (Integer) childSpinner.getValue();
+            
+            double totalPrice = (numAdults * selectedTour.getAdultPrice().intValue()) + 
+                              (numChildren * selectedTour.getChildPrice().intValue());
+            
+            NumberFormat formatVN = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            lblTotalPrice.setText(formatVN.format(totalPrice));
+        }
+    }
+    
+    private void handleBooking() {
+        if (selectedTour == null) {
+            JOptionPane.showMessageDialog(this, 
+                "Vui lòng chọn tour trước khi đặt",
+                "Thông báo", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Validate form
+        if (txtFullName.getText().trim().isEmpty() ||
+            txtEmail.getText().trim().isEmpty() ||
+            txtPhone.getText().trim().isEmpty() ||
+            txtAddress.getText().trim().isEmpty()) {
+            
+            JOptionPane.showMessageDialog(this,
+                "Vui lòng điền đầy đủ thông tin",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Here you would typically save the booking to database
+        JOptionPane.showMessageDialog(this,
+            "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.",
+            "Thông báo",
+            JOptionPane.INFORMATION_MESSAGE);
+            
+        // Reset form
+        selectedTour = null;
+        updateBookingForm();
+    }
+    
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         SwingUtilities.invokeLater(() -> {
-            try {
-                // Set system look and feel
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            new Test().setVisible(true);
+            new Test();
         });
     }
 }
