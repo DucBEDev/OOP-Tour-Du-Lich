@@ -17,7 +17,7 @@ public final class Order {
     private int adultTickets;
     private int childTickets;
     private LocalDateTime orderTime;
-    private BigDecimal totalAmount;
+    private double totalAmount;
     //private String paymentMethod;
     private String status;
     private String confirmedBy;         //Nhân viên phụ trách đơn hàng
@@ -25,7 +25,7 @@ public final class Order {
     public Order() {}
 
     public Order(String orderId, String customerId, String tourId, int adultTickets, int childTickets, 
-                 LocalDateTime orderTime, BigDecimal totalAmount, String status, String confirmedBy) {
+                 LocalDateTime orderTime, double totalAmount, String status, String confirmedBy) {
         this.orderId = orderId;
         this.customerId = customerId;
         this.tourId = tourId;
@@ -39,6 +39,19 @@ public final class Order {
         setStatus(status);
         this.confirmedBy = confirmedBy;
     }
+    
+    public Order(String orderId, String customerId, String tourId, int adultTickets, int childTickets, 
+             double totalAmount, String status, String confirmedBy) 
+    {
+    	this.orderId = orderId;
+    	this.customerId = customerId;
+    	this.tourId = tourId;    	
+    	setAdultTickets(adultTickets);
+    	setChildTickets(childTickets);
+    	setTotalAmount(totalAmount);   
+    	setStatus(status);
+    	this.confirmedBy = confirmedBy;
+}
 
     // Generate Getter & Setter for orderId
     public String getOrderId() {
@@ -116,12 +129,12 @@ public final class Order {
     }
 
     // Generate Getter & Setter for totalAmount
-    public BigDecimal getTotalAmount() {
+    public double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        if (totalAmount.compareTo(BigDecimal.ZERO) > 0) {
+    public void setTotalAmount(double totalAmount) {
+        if (totalAmount> 0) {
             this.totalAmount = totalAmount;
         } else {
             throw new IllegalArgumentException("Tổng giá trị đơn hàng phải là số không âm");

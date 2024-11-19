@@ -39,11 +39,11 @@ public class Order_DAO {
                 int adultTickets = rs.getInt(4);
                 int childTickets = rs.getInt(5);
                 LocalDateTime orderTime = rs.getTimestamp(6).toLocalDateTime();
-                BigDecimal totalAmount = rs.getBigDecimal(7);
+                double totalAmount = rs.getDouble(7);
                 String status = rs.getNString(9);
                 String confirmedBy = rs.getString(10);
 
-                Order temp = new Order(orderId, customerId, tourId, 0, 0, orderTime, totalAmount, status, confirmedBy);
+                Order temp = new Order(orderId, customerId, tourId, adultTickets, childTickets, orderTime, totalAmount, status, confirmedBy);
                 list.add(temp);
             }
         } catch (SQLException e) {
@@ -68,11 +68,11 @@ public class Order_DAO {
                 int adultTickets = rs.getInt(4);
                 int childTickets = rs.getInt(5);
                 LocalDateTime orderTime = rs.getTimestamp(6).toLocalDateTime();
-                BigDecimal totalAmount = rs.getBigDecimal(7);
+                double totalAmount = rs.getDouble(7);
                 String status = rs.getNString(8);
                 String confirmedBy = rs.getString(9);
 
-                temp = new Order(id, customerId, tourId, 0, 0, orderTime, totalAmount, status, confirmedBy);
+                temp = new Order(id, customerId, tourId, adultTickets, childTickets, orderTime, totalAmount, status, confirmedBy);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class Order_DAO {
             stmt.setInt(4, order.getAdultTickets());
             stmt.setInt(5, order.getChildTickets());
             stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
-            stmt.setBigDecimal(7, order.getTotalAmount());
+            stmt.setDouble(7, order.getTotalAmount());
             stmt.setString(8, order.getStatus());
             stmt.setString(9, order.getConfirmedBy());
             
@@ -118,7 +118,7 @@ public class Order_DAO {
             stmt.setInt(4, order.getAdultTickets());
             stmt.setInt(5, order.getChildTickets());
             stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
-            stmt.setBigDecimal(7, order.getTotalAmount());
+            stmt.setDouble(7, order.getTotalAmount());
             stmt.setString(8, order.getStatus());
             stmt.setString(9, order.getConfirmedBy());
             stmt.setString(10, order.getOrderId());

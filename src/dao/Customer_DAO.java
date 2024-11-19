@@ -87,6 +87,37 @@ public class Customer_DAO {
         return temp;
     }
     
+    public Customer getByPhone(String customerPhone)
+    {
+    	String query = "SELECT * FROM Customer where Phone=?";
+    	Customer temp = null;
+    	
+        try {
+        	PreparedStatement stmt = con.prepareStatement(query); 
+        	stmt.setString(1,customerPhone); 
+        	ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+            	String customerIdTemp = rs.getString(1);
+                String fullName = rs.getNString(2);
+                String phone = rs.getString(3);
+                String email = rs.getString(4);
+                String address = rs.getNString(5);
+                String status = rs.getNString(6);
+                String userName = rs.getString(7);
+                String password = rs.getString(8);
+                LocalDate createdAt = rs.getDate(9).toLocalDate();
+                
+                temp  = new Customer(customerIdTemp, fullName, phone, email, address, status, userName, password);
+                temp.setCreatedAt(createdAt);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        
+        return temp;
+    }
+    
     public boolean add(Customer customer)
     {
     	boolean result = false;
@@ -187,7 +218,24 @@ public class Customer_DAO {
         return result;
     }
     
-    
+    public boolean checkExistByPhone(String customerPhone)
+    {
+    	String query = "SELECT * FROM Customer where Phone=?";
+    	boolean result=false;
+    	
+        try {
+        	PreparedStatement stmt = con.prepareStatement(query); 
+        	stmt.setString(1,customerPhone); 
+        	ResultSet rs = stmt.executeQuery();
+            result = rs.next();            
+        }
+         catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        
+        return result;
+    }
 
 }
 

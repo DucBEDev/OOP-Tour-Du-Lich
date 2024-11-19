@@ -474,25 +474,11 @@ public class EmployeeDetail extends JPanel
             	
             	if(employeeDAO.update(employee))
             	{
-            		System.out.println("Update Completed");
-            		JDialog updateCompleteDialog = new JDialog();
-            		JPanel updateCompletePanel = new JPanel();
-            		JPanel okButtonPanel = new JPanel();
-            		JLabel updateCompleteLabel = new JLabel("Cập nhật thành công");
-            		JButton okButton = new JButton("OK");
-            		okButton.addActionListener(evt->updateCompleteDialog.dispose());
-            		updateCompletePanel.add(updateCompleteLabel);
-            		okButtonPanel.add(okButton);
-            		updateCompleteDialog.add(updateCompletePanel, BorderLayout.CENTER);
-            		updateCompleteDialog.add(okButtonPanel, BorderLayout.SOUTH);
-            		updateCompleteDialog.setLocationRelativeTo(null);
-            		updateCompleteDialog.pack();
-            		updateCompleteDialog.setVisible(true);
-            	}
-            	else System.out.println("Update Failed");
+                    JOptionPane.showMessageDialog(null, "Cập nhật nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
-            		                
-            	
+            	}
+            	else JOptionPane.showMessageDialog(null, "Cập nhật nhân viên không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+         	
             	
             	employeeIdContent.setEnabled(false);
          		fullNameContent.setEnabled(false);
