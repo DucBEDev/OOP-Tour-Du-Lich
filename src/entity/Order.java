@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 public final class Order {
     public static final String STATUS_PENDING = "Chờ thanh toán";
     public static final String STATUS_PAID = "Đã thanh toán";
-    //public static final String STATUS_CANCELLED = "HỦY";
-    //public static final String STATUS_COMPLETED = "HOÀN THÀNH";
+    public static final String STATUS_CANCELLED = "Hủy";
+    public static final String STATUS_COMPLETED = "Hoàn thành";
 
     private String orderId;
     private String customerId;
@@ -147,7 +147,7 @@ public final class Order {
     }
 
     public void setStatus(String status) {
-        if (status.equals(STATUS_PENDING) || status.equals(STATUS_PAID)) {
+        if (status.equals(STATUS_PENDING) || status.equals(STATUS_PAID) || status.equals(STATUS_CANCELLED)|| status.equals(STATUS_COMPLETED) ) {
             this.status = status;
         } else {
             throw new IllegalArgumentException("Trạng thái không hợp lệ");

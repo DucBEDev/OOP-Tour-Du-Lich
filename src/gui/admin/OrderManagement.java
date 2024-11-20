@@ -192,17 +192,17 @@ public class OrderManagement extends JPanel {
             this.orderManagement = orderManagement;
         }
 
-//        @Override
-//        public void mouseClicked(MouseEvent e) {
-//            JPanel sourcePanel = (JPanel) e.getSource();
-//            Order order = (Order) sourcePanel.getClientProperty("order");
-//
-//            orderManagement.removeAll();
-//            OrderDetail orderDetail = new OrderDetail(order);
-//            orderManagement.add(orderDetail);
-//            orderManagement.revalidate();
-//            orderManagement.repaint();
-//        }
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            JPanel sourcePanel = (JPanel) e.getSource();
+            Order order = (Order) sourcePanel.getClientProperty("order");
+
+            orderManagement.removeAll();
+            OrderDetail orderDetail = new OrderDetail(order);
+            orderManagement.add(orderDetail);
+            orderManagement.revalidate();
+            orderManagement.repaint();
+        }
 
         @Override
         public void mouseEntered(MouseEvent e) 
@@ -417,7 +417,6 @@ public class OrderManagement extends JPanel {
                 }
             });
 
-           
 
             // Total Amount
             totalAmountLabel = new JLabel("Tổng tiền:");
@@ -452,12 +451,12 @@ public class OrderManagement extends JPanel {
                 System.out.println("Confirmed By: " + confirmedBy);
             });
 
-            // Add components to dialog         
-            addDialog.add(fullNameLabel);
-			addDialog.add(fullNameContent);
-
-			addDialog.add(phoneLabel);
+            // Add components to dialog  
+            addDialog.add(phoneLabel);
 			addDialog.add(phoneContent);
+			
+            addDialog.add(fullNameLabel);
+			addDialog.add(fullNameContent);			
 
 			addDialog.add(emailLabel);
 			addDialog.add(emailContent);

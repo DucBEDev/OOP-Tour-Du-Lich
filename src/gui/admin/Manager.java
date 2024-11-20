@@ -217,7 +217,10 @@ public class Manager extends JFrame {
             } else if (e.getSource() == employeeManagement) {
             	employeeManagement.setBackground(new Color(77, 182, 245));
                 // Add action for Account Management
-            } else if (e.getSource() == statistic) {
+            } 
+            else if (e.getSource() == orderManagement) {
+            	orderManagement.setBackground(new Color(77, 182, 245));
+            }else if (e.getSource() == statistic) {
             	statistic.setBackground(new Color(77, 182, 245));
                 // Add action for Statistic
             } else if (e.getSource() == customerService) {
@@ -241,7 +244,10 @@ public class Manager extends JFrame {
             } else if (e.getSource() == employeeManagement) {
             	employeeManagement.setBackground(new Color(66, 165, 243));
                 // Add action for Account Management
-            } else if (e.getSource() == statistic) {
+            } 
+            else if (e.getSource() == orderManagement) {
+            	orderManagement.setBackground(new Color(66, 165, 243));
+            }else if (e.getSource() == statistic) {
             	statistic.setBackground(new Color(66, 165, 243));
                 // Add action for Statistic
             } else if (e.getSource() == customerService) {

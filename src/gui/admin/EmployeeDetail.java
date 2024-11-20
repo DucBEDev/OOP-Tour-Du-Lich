@@ -142,7 +142,7 @@ public class EmployeeDetail extends JPanel
                 else
                 	{
                 		System.out.println("Employee Not Found");
-                		fullNameContent.setText("");
+                		employeeIdContent.setText("");
                 	}
             }
         });
@@ -171,14 +171,8 @@ public class EmployeeDetail extends JPanel
 
 
 		phoneLabel = new JLabel("Số điện thoại:");
-		if(employee != null)
-		{
-			phoneContent = new JTextField(employee.getPhone());
-		}
-		else
-		{
-			phoneContent = new JTextField();
-		}
+		phoneContent = new JTextField();
+		
 		phoneContent.addActionListener(new ActionListener() 
 		{
             @Override
@@ -199,14 +193,8 @@ public class EmployeeDetail extends JPanel
         });
 
 		emailLabel = new JLabel("Email:");
-		if(employee != null)
-		{
-			emailContent = new JTextField(employee.getEmail());
-		}
-		else
-		{
-			emailContent = new JTextField();
-		}
+		emailContent = new JTextField();
+		
 		emailContent.addActionListener(new ActionListener() 
 		{
             @Override
@@ -228,14 +216,8 @@ public class EmployeeDetail extends JPanel
 
 
 		addressLabel = new JLabel("Địa chỉ:");
-		if(employee != null)
-		{
-			addressContent = new JTextField(employee.getAddress());
-		}
-		else
-		{
-			addressContent = new JTextField();
-		}
+		addressContent = new JTextField();
+		
 		addressContent.addActionListener(new ActionListener() 
 		{
             @Override
@@ -257,14 +239,8 @@ public class EmployeeDetail extends JPanel
 
 		
 		userNameLabel = new JLabel("Tên tài khoản:");
-		if(employee != null)
-		{
-			userNameContent = new JTextField(employee.getUserName());
-		}
-		else
-		{
-			userNameContent = new JTextField();
-		}
+		userNameContent = new JTextField();
+		
 		userNameContent.addActionListener(new ActionListener() 
 		{
             @Override
@@ -285,14 +261,8 @@ public class EmployeeDetail extends JPanel
         });
 
 		passwordLabel = new JLabel("Mật khẩu:");
-		if(employee != null)
-		{
-			passwordContent = new JTextField(employee.getPassWord());
-		}
-		else
-		{
-			passwordContent = new JTextField();
-		}
+		passwordContent = new JTextField();
+		
 		passwordContent.addActionListener(new ActionListener() 
 		{
             @Override
@@ -335,14 +305,8 @@ public class EmployeeDetail extends JPanel
 		});
 		
 		hireDateLabel = new JLabel("Ngày bắt đầu làm việc:");
-		if(employee != null)
-		{
-			hireDateContent = new JTextField(employee.getDateHired().toString());
-		}
-		else
-		{
-			hireDateContent = new JTextField();
-		}
+		hireDateContent = new JTextField();
+		
 		
 		hireDateContent.addActionListener(new ActionListener() 
 		{
@@ -503,15 +467,16 @@ public class EmployeeDetail extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-            	fullName= null;
-        		phone =null;
-        		email= null;
-        		address=null;
-        		userName=null;
-        		password=null;
-        		permissions=null;
-        		hireDate = null;
-        		status=null;
+            	employeeId = employee.getEmployeeId();
+		        fullName = employee.getFullName();
+		        phone = employee.getPhone();
+		        email = employee.getEmail();
+		        address = employee.getAddress();
+		        userName = employee.getUserName();
+		        password = employee.getPassWord();
+		        permissions = employee.getPermissions();
+		        hireDate = employee.getDateHired();
+		        status = employee.getStatus();
         		
         		employeeIdContent.setText(employee.getEmployeeId());
 		        fullNameContent.setText(employee.getFullName());
