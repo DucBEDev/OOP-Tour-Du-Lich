@@ -2,10 +2,17 @@ package gui.admin;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Base64;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import entity.Tour;
@@ -203,6 +210,8 @@ public class TourManagement extends JPanel {
         private double childPrice;
         private int maxParticipants;
         private String transportInfo;
+        
+        private String base64Image;
         
         public void actionPerformed(ActionEvent e) 
         {
@@ -485,16 +494,33 @@ public class TourManagement extends JPanel {
          
             JButton saveButton = new JButton("Lưu");
             JButton cancelButton = new JButton("Hủy");
+            JButton addImageButton = new JButton("Thêm hình");
 
             // Action for the Save button
-            saveButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    // Create the tour object
-//                    Tour tour = new Tour(tourName, description, duration, departureLocation, destination, adultPrice, 
-//                                         childPrice, maxParticipants, transportInfo);
-//                    // Save or process the tour object here
-//                    System.out.println("Tour saved: " + tour);
-                    addDialog.dispose();  // Close the dialog after saving
+            saveButton.addActionListener(new ActionListener() 
+            {
+                public void actionPerformed(ActionEvent e) 
+                {
+                   if(base64Image!=null)
+                   {
+                	   // Create the tour object
+                	   Tour tour = new Tour(null,  image,  tourName,  description,  departureDate,  duration,  departureLocation, 
+                               departureTime,  destination,  transportInfo,  adultPrice,  childPrice, 
+                               maxParticipants,  0,  Tour.STATUS_AVAILABLE);
+                      
+                      
+                      // Save or process the tour object here
+                      tourDAO.add(tour, base64Image);
+                      System.out.println("Tour saved: " + tour);
+                      
+                      addDialog.dispose();  // Close the dialog after saving
+
+                   }
+                   else
+                   {
+                       JOptionPane.showMessageDialog(addDialog, "Chưa thêm hình!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                   }
+                    
                 }
             });
 
@@ -503,13 +529,74 @@ public class TourManagement extends JPanel {
             {
                 public void actionPerformed(ActionEvent e) 
                 {
-                    addDialog.dispose();  // Close the dialog without saving
+                	image=null;
+                    tourName=null;
+                    description=null;
+                    duration=0;
+                    departureDate=null;
+                    departureTime=null;
+                    departureLocation=null;
+                    destination=null;
+                    adultPrice=0;
+                    childPrice=0;
+                    maxParticipants=0;
+                    transportInfo=null;
+                    
+                    base64Image=null;
+                    
+                    addDialog.dispose();  
                 }
             });
+            
+            addImageButton.addActionListener(new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e) 
+                {
+                    JFileChooser filechooser = new JFileChooser();
+                    filechooser.setDialogTitle("Choose an Image");
+                    filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                    int result = filechooser.showOpenDialog(addDialog);
+                    if (result == JFileChooser.APPROVE_OPTION) 
+                    {
+                        File selectedFile = filechooser.getSelectedFile();
+                        ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
+                        Image imageTemp = imageIcon.getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH);
+
+                        // Display the selected image in the GUI
+                        imageContent.setIcon(new ImageIcon(imageTemp));
+                        imageContent.setText(""); 
+                        
+                        image = imageIcon.getImage();
+                        
+                        File file = new File(selectedFile.getAbsolutePath());
+                        
+                        try 
+                        {
+							Image imageIo = ImageIO.read(file);
+							
+							 ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						     ImageIO.write((BufferedImage) imageIo, "jpg", baos); // Assuming JPG format
+						     byte[] imageBytes = baos.toByteArray();
+						     
+						     base64Image = Base64.getEncoder().encodeToString(imageBytes);
+						} 
+                        catch (IOException e1) 
+                        {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                        
+                    }
+                }
+            });
+
 
             functionButtonPanel = new JPanel();           
             functionButtonPanel.add(saveButton);
             functionButtonPanel.add(cancelButton);
+            functionButtonPanel.add(addImageButton);
             
             addDialog.add(new JScrollPane(formPanel), BorderLayout.NORTH);
             addDialog.add(new JScrollPane(descriptionContent), BorderLayout.CENTER);

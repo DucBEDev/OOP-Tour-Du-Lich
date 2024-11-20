@@ -21,8 +21,8 @@ public final class Tour {
     private LocalTime departureTime;
     private String destination;
     private String transportInfo;
-    private BigDecimal adultPrice;
-    private BigDecimal childPrice;
+    private double adultPrice;
+    private double childPrice;
     private int maxParticipants;
     private int currentParticipants;
     private String status;
@@ -31,8 +31,8 @@ public final class Tour {
 
     }
 
-    public Tour(String tourId, String tourName, String description, LocalDate departureDate, int duration, String departureLocation, 
-            LocalTime departureTime, String destination, String transportInfo, BigDecimal adultPrice, BigDecimal childPrice, 
+    public Tour(String tourId, Image image, String tourName, String description, LocalDate departureDate, int duration, String departureLocation, 
+            LocalTime departureTime, String destination, String transportInfo, double adultPrice, double childPrice, 
             int maxParticipants, int currentParticipants, String status) {
     	this.tourId = tourId;
         this.tourName = tourName;
@@ -162,13 +162,13 @@ public final class Tour {
     }
 
         //Generate Getter for adultPrice
-    public BigDecimal getAdultPrice() {
+    public double getAdultPrice() {
         return adultPrice;
     }
 
         //adultPrice must be greater than 0
-    public void setAdultPrice(BigDecimal adultPrice) {
-        if (adultPrice.compareTo(BigDecimal.ZERO) > 0) {
+    public void setAdultPrice(double adultPrice) {
+        if (adultPrice > 0) {
             this.adultPrice = adultPrice;
         }
         else {
@@ -177,13 +177,13 @@ public final class Tour {
     }
 
     //Generate Getter for childPrice
-    public BigDecimal getChildPrice() {
+    public double getChildPrice() {
         return childPrice;
     }
 
     //childPrice must be greater than 0
-    public void setChildPrice(BigDecimal childPrice) {
-        if (childPrice.compareTo(BigDecimal.ZERO) > 0) {
+    public void setChildPrice(double childPrice) {
+        if (childPrice> 0) {
             this.childPrice = childPrice;
         }
         else {
