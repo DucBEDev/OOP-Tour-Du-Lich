@@ -27,7 +27,8 @@ public class Manager extends JFrame {
     private JLabel statistic;
     private JLabel customerService;
     private JLabel logOut;
-
+    
+    private JPanel tempPanel;
 	
 	
 
@@ -74,7 +75,7 @@ public class Manager extends JFrame {
         functionPanel.setLayout(new GridLayout(6,1));
         
         
-        tourManagement = new JLabel("Tour Managemet");
+        tourManagement = new JLabel("Tour Management");
         tourManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         tourManagement.setBackground(new Color(66, 165, 243));
         tourManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -158,11 +159,20 @@ public class Manager extends JFrame {
 //				TourManagement tourManagementPanel = new TourManagement();
 //				add(tourManagementPanel, BorderLayout.CENTER);
 //			}
+			if(tempPanel != null) {
+				remove(tempPanel);
+			}
 			
 			if(e.getSource() == employeeManagement)
 			{
-				EmployeeManagement employeeManagementPanel = new EmployeeManagement();
-				add(employeeManagementPanel, BorderLayout.CENTER);
+				tempPanel = new EmployeeManagement();
+				add(tempPanel, BorderLayout.CENTER);
+			}
+			
+			if(e.getSource() == customerManagement)
+			{
+				tempPanel = new CustomerManagement();
+				add(tempPanel, BorderLayout.CENTER);
 			}
 
 		  
