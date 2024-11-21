@@ -20,10 +20,12 @@ public class Manager extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
+	private JPanel currentPanel;
 
     private JLabel tourManagement;
     private JLabel customerManagement;
     private JLabel employeeManagement;
+    private JLabel orderManagement;
     private JLabel statistic;
     private JLabel customerService;
     private JLabel logOut;
@@ -72,7 +74,7 @@ public class Manager extends JFrame {
         
         JPanel functionPanel = new JPanel();
         functionPanel.setBackground(new Color(66, 165, 243));
-        functionPanel.setLayout(new GridLayout(6,1));
+        functionPanel.setLayout(new GridLayout(7,1));
         
         
         tourManagement = new JLabel("Tour Management");
@@ -98,8 +100,17 @@ public class Manager extends JFrame {
         employeeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
         employeeManagement.setOpaque(true); 
         employeeManagement.addMouseListener(mouselistener);
+        
+        
 
-
+        orderManagement = new JLabel("Order Management");
+        orderManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        orderManagement.setBackground(new Color(66, 165, 243));
+        orderManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        orderManagement.setOpaque(true); 
+        orderManagement.addMouseListener(mouselistener);
+        
+        
         
         statistic = new JLabel("Statistic");
         statistic.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -131,6 +142,7 @@ public class Manager extends JFrame {
         functionPanel.add(tourManagement);
         functionPanel.add(customerManagement);
         functionPanel.add(employeeManagement);
+        functionPanel.add(orderManagement);
         functionPanel.add(statistic);
         functionPanel.add(customerService);
         functionPanel.add(logOut);
@@ -154,25 +166,33 @@ public class Manager extends JFrame {
 		@Override
 		public void mouseClicked(MouseEvent e) 
 		{
-//			if(e.getSource() == tourManagement)
-//			{
-//				TourManagement tourManagementPanel = new TourManagement();
-//				add(tourManagementPanel, BorderLayout.CENTER);
-//			}
-			if(tempPanel != null) {
-				remove(tempPanel);
+			if(currentPanel!=null)
+			{
+				remove(currentPanel);
 			}
 			
-			if(e.getSource() == employeeManagement)
+			if(e.getSource() == tourManagement)
 			{
-				tempPanel = new EmployeeManagement();
-				add(tempPanel, BorderLayout.CENTER);
+				currentPanel = new TourManagement();
+				add(currentPanel, BorderLayout.CENTER);
 			}
 			
-			if(e.getSource() == customerManagement)
+			else if(e.getSource() == employeeManagement)
 			{
-				tempPanel = new CustomerManagement();
-				add(tempPanel, BorderLayout.CENTER);
+				currentPanel = new EmployeeManagement();
+				add(currentPanel, BorderLayout.CENTER);
+			}
+			
+			else if(e.getSource()==orderManagement)
+			{
+				currentPanel = new OrderManagement();
+				add(currentPanel, BorderLayout.CENTER);
+			}
+			
+			else if(e.getSource() == customerManagement) 
+			{
+				currentPanel = new CustomerManagement();
+				add(currentPanel, BorderLayout.CENTER);
 			}
 
 		  
@@ -204,7 +224,10 @@ public class Manager extends JFrame {
             } else if (e.getSource() == employeeManagement) {
             	employeeManagement.setBackground(new Color(77, 182, 245));
                 // Add action for Account Management
-            } else if (e.getSource() == statistic) {
+            } 
+            else if (e.getSource() == orderManagement) {
+            	orderManagement.setBackground(new Color(77, 182, 245));
+            }else if (e.getSource() == statistic) {
             	statistic.setBackground(new Color(77, 182, 245));
                 // Add action for Statistic
             } else if (e.getSource() == customerService) {
@@ -228,7 +251,10 @@ public class Manager extends JFrame {
             } else if (e.getSource() == employeeManagement) {
             	employeeManagement.setBackground(new Color(66, 165, 243));
                 // Add action for Account Management
-            } else if (e.getSource() == statistic) {
+            } 
+            else if (e.getSource() == orderManagement) {
+            	orderManagement.setBackground(new Color(66, 165, 243));
+            }else if (e.getSource() == statistic) {
             	statistic.setBackground(new Color(66, 165, 243));
                 // Add action for Statistic
             } else if (e.getSource() == customerService) {

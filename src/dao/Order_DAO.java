@@ -39,11 +39,11 @@ public class Order_DAO {
                 int adultTickets = rs.getInt(4);
                 int childTickets = rs.getInt(5);
                 LocalDateTime orderTime = rs.getTimestamp(6).toLocalDateTime();
-                BigDecimal totalAmount = rs.getBigDecimal(7);
+                double totalAmount = rs.getDouble(7);
                 String status = rs.getNString(9);
                 String confirmedBy = rs.getString(10);
 
-                Order temp = new Order(orderId, customerId, tourId, 0, 0, orderTime, totalAmount, status, confirmedBy);
+                Order temp = new Order(orderId, customerId, tourId, adultTickets, childTickets, orderTime, totalAmount, status, confirmedBy);
                 list.add(temp);
             }
         } catch (SQLException e) {
@@ -68,11 +68,11 @@ public class Order_DAO {
                 int adultTickets = rs.getInt(4);
                 int childTickets = rs.getInt(5);
                 LocalDateTime orderTime = rs.getTimestamp(6).toLocalDateTime();
-                BigDecimal totalAmount = rs.getBigDecimal(7);
+                double totalAmount = rs.getDouble(7);
                 String status = rs.getNString(8);
                 String confirmedBy = rs.getString(9);
 
-                temp = new Order(id, customerId, tourId, 0, 0, orderTime, totalAmount, status, confirmedBy);
+                temp = new Order(id, customerId, tourId, adultTickets, childTickets, orderTime, totalAmount, status, confirmedBy);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -82,7 +82,7 @@ public class Order_DAO {
 	
 	public boolean add(Order order) {
 		boolean result = false;
-        String query = "INSERT INTO [Order] (OrderID, CustomerID, TourID, AdultTickets, ChildTickets, OrderTime, TotalAmount, Status, ConfirmedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO [Order] (OrderID, CustomerID, TourID, AdultTickets, ChildTickets, TotalAmount, Status, ConfirmedBy) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try {
             PreparedStatement stmt = con.prepareStatement(query);
@@ -91,10 +91,10 @@ public class Order_DAO {
             stmt.setString(3, order.getTourId());
             stmt.setInt(4, order.getAdultTickets());
             stmt.setInt(5, order.getChildTickets());
-            stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
-            stmt.setBigDecimal(7, order.getTotalAmount());
-            stmt.setString(8, order.getStatus());
-            stmt.setString(9, order.getConfirmedBy());
+         //   stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
+            stmt.setDouble(6, order.getTotalAmount());
+            stmt.setString(7, order.getStatus());
+            stmt.setString(8, order.getConfirmedBy());
             
             if (stmt.executeUpdate() >= 1) {
                 result = true;
@@ -118,7 +118,7 @@ public class Order_DAO {
             stmt.setInt(4, order.getAdultTickets());
             stmt.setInt(5, order.getChildTickets());
             stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
-            stmt.setBigDecimal(7, order.getTotalAmount());
+            stmt.setDouble(7, order.getTotalAmount());
             stmt.setString(8, order.getStatus());
             stmt.setString(9, order.getConfirmedBy());
             stmt.setString(10, order.getOrderId());
@@ -165,5 +165,31 @@ public class Order_DAO {
         }
 
         return result;
+    }
+	
+	public String generateNextOrderId() {
+        String query = "SELECT MAX(OrderID) FROM [Order] WHERE OrderID LIKE 'ORD%'";
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                String maxId = rs.getString(1);
+                if (maxId == null) {
+                    return "ORD001";
+                }
+                
+                if (maxId.length() >= 3) {
+                    try {
+                        int currentNum = Integer.parseInt(maxId.substring(3).trim());
+                        return String.format("ORD%03d", currentNum + 1);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        return "ORD001";
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "ORD000";
     }
 }
