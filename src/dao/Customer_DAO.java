@@ -25,6 +25,11 @@ public class Customer_DAO {
         db.connect();  // Initialize the database connection
         this.con = ConnectDB.getConnection();  // Get the connection object
     }
+    
+    public Connection getCon()
+    {
+    	return con;
+    }
 
     public ArrayList<Customer> getAll() {
         String query = "SELECT * FROM Customer";
@@ -133,10 +138,13 @@ public class Customer_DAO {
         	stmt.setString(6,customer.getStatus()); 
         	stmt.setString(7,customer.getUserName()); 
         	stmt.setString(8,customer.getPassword()); 
+        	System.out.print(customer);
 
             if (stmt.executeUpdate()>=1) 
             {
-            	result = true;                
+            	result = true;              
+            	System.out.print(customer);
+
            }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -262,6 +270,8 @@ public class Customer_DAO {
         }
         return "CUS000";
     }
-
+     
+     
+     
 }
 

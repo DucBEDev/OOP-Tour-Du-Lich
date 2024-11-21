@@ -35,6 +35,7 @@ public final class Tour {
             LocalTime departureTime, String destination, String transportInfo, double adultPrice, double childPrice, 
             int maxParticipants, int currentParticipants, String status) {
     	this.tourId = tourId;
+    	this.image=image;
         this.tourName = tourName;
         this.description = description;
         this.departureDate = departureDate;
@@ -64,7 +65,8 @@ public final class Tour {
     }
 
         //Generate Getter & Setter for image
-    public Image getImage() {
+    public Image getImage() 
+    {
         return image;
     }
     public void setImage(Image image) {

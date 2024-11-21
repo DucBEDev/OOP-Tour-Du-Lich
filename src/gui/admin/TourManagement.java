@@ -15,6 +15,7 @@ import java.util.Base64;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import entity.Order;
 import entity.Tour;
 import dao.Tour_DAO;
 
@@ -127,24 +128,29 @@ public class TourManagement extends JPanel {
     }
 
     private JPanel createTourRow(Tour tour, int indexInPage) {
-        JPanel row = new JPanel(new GridLayout(1, 4));
+        JPanel row = new JPanel(new GridLayout(1, 5));
         row.setBackground(Color.WHITE);
         row.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JLabel idLabel = new JLabel(tour.getTourId());
         JLabel nameLabel = new JLabel(tour.getTourName());
         JLabel statusLabel = new JLabel(tour.getStatus());
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(new ImageIcon(tour.getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH)));
 
         idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        row.add(imageLabel);
         row.add(idLabel);
         row.add(nameLabel);
         row.add(statusLabel);
 
         row.setCursor(new Cursor(Cursor.HAND_CURSOR));
         row.putClientProperty("tour", tour);
+        
+        row.addMouseListener(new TourDetailControl(this));
 
         return row;
     }
@@ -160,6 +166,42 @@ public class TourManagement extends JPanel {
         if (currentPage < totalPages) {
             currentPage++;
             updatePage();
+        }
+    }
+    
+    private class TourDetailControl extends MouseAdapter 
+    {
+        private TourManagement tourManagement;
+
+        public TourDetailControl(TourManagement tourManagement) 
+        {
+            this.tourManagement = tourManagement;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            JPanel sourcePanel = (JPanel) e.getSource();
+            Tour tour = (Tour) sourcePanel.getClientProperty("tour");
+
+            tourManagement.removeAll();
+            TourDetail tourDetail = new TourDetail(tour);
+            tourManagement.add(tourDetail);
+            tourManagement.revalidate();
+            tourManagement.repaint();
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) 
+        {
+            JPanel tempPanel = (JPanel) e.getSource();
+            tempPanel.setBackground(Color.LIGHT_GRAY);
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) 
+        {
+            JPanel tempPanel = (JPanel) e.getSource();
+            tempPanel.setBackground(Color.WHITE);
         }
     }
 
@@ -230,7 +272,7 @@ public class TourManagement extends JPanel {
             tourNameContent = new JTextField();
             tourNameContent.addActionListener(evt -> {
                 String temp = tourNameContent.getText();
-                if (temp.matches("^[A-Za-z ]+$")) {
+                if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
                     tourName = temp;
                     System.out.println("Tour Name: " + tourName);
                 } else {
@@ -318,7 +360,7 @@ public class TourManagement extends JPanel {
             departureLocationContent = new JTextField();
             departureLocationContent.addActionListener(evt -> {
                 String temp = departureLocationContent.getText();
-                if (temp.matches("^[A-Za-z ]+$")) {
+                if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
                     departureLocation = temp;
                     System.out.println("Departure Location: " + departureLocation);
                 } else {
@@ -432,7 +474,7 @@ public class TourManagement extends JPanel {
                       {
                           // Save text to a variable
                     	  String descriptionTemp = descriptionContent.getText();
-                          if (descriptionTemp.matches("^[A-Za-z0-9 ]+$"))
+                          if (descriptionTemp.matches("^[a-zA-ZÀ-ỹ .,\\n]+$"))
                           {
                               description = descriptionTemp;
                               System.out.println("Description: " + description);
@@ -504,7 +546,7 @@ public class TourManagement extends JPanel {
                    if(base64Image!=null)
                    {
                 	   // Create the tour object
-                	   Tour tour = new Tour(null,  image,  tourName,  description,  departureDate,  duration,  departureLocation, 
+                	   Tour tour = new Tour(tourDAO.generateNextTourId(),  image,  tourName,  description,  departureDate,  duration,  departureLocation, 
                                departureTime,  destination,  transportInfo,  adultPrice,  childPrice, 
                                maxParticipants,  0,  Tour.STATUS_AVAILABLE);
                       
@@ -570,10 +612,10 @@ public class TourManagement extends JPanel {
                         
                         image = imageIcon.getImage();
                         
-                        File file = new File(selectedFile.getAbsolutePath());
-                        
+                                                
                         try 
                         {
+                        	File file = new File(selectedFile.getAbsolutePath());
 							Image imageIo = ImageIO.read(file);
 							
 							 ByteArrayOutputStream baos = new ByteArrayOutputStream();

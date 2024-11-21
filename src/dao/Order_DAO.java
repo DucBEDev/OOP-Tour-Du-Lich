@@ -82,7 +82,7 @@ public class Order_DAO {
 	
 	public boolean add(Order order) {
 		boolean result = false;
-        String query = "INSERT INTO [Order] (OrderID, CustomerID, TourID, AdultTickets, ChildTickets, OrderTime, TotalAmount, Status, ConfirmedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO [Order] (OrderID, CustomerID, TourID, AdultTickets, ChildTickets, TotalAmount, Status, ConfirmedBy) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try {
             PreparedStatement stmt = con.prepareStatement(query);
@@ -91,10 +91,10 @@ public class Order_DAO {
             stmt.setString(3, order.getTourId());
             stmt.setInt(4, order.getAdultTickets());
             stmt.setInt(5, order.getChildTickets());
-            stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
-            stmt.setDouble(7, order.getTotalAmount());
-            stmt.setString(8, order.getStatus());
-            stmt.setString(9, order.getConfirmedBy());
+         //   stmt.setTimestamp(6, Timestamp.valueOf(order.getOrderTime()));
+            stmt.setDouble(6, order.getTotalAmount());
+            stmt.setString(7, order.getStatus());
+            stmt.setString(8, order.getConfirmedBy());
             
             if (stmt.executeUpdate() >= 1) {
                 result = true;
@@ -168,7 +168,7 @@ public class Order_DAO {
     }
 	
 	public String generateNextOrderId() {
-        String query = "SELECT MAX(OrderID) FROM Order WHERE OrderID LIKE 'ORD%'";
+        String query = "SELECT MAX(OrderID) FROM [Order] WHERE OrderID LIKE 'ORD%'";
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {

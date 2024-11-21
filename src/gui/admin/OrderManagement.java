@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -428,16 +429,17 @@ public class OrderManagement extends JPanel {
                     System.out.println("Total Amount: " + totalAmount);
                 } else {
                     System.out.println("Invalid input for Total Amount");
-                    childTicketsContent.setText("");
+                    totalAmountContent.setText("");
                 }
             });
 
             // Status
             statusLabel = new JLabel("Trạng thái:");
             statusContent = new JComboBox<>();
-            statusContent.addItem("Chưa xác nhận");
-            statusContent.addItem("Đã xác nhận");
-            statusContent.addItem("Đã hủy");
+            statusContent.addItem("Đã thanh toán");
+            statusContent.addItem("Chờ thanh toán");
+            statusContent.addItem("Hủy");
+            statusContent.addItem("Hoàn thành");
             statusContent.addActionListener(e1 -> {
                 status = (String) statusContent.getSelectedItem();
                 System.out.println("Status: " + status);
@@ -446,7 +448,8 @@ public class OrderManagement extends JPanel {
             // Confirmed by (Employee)
             confirmedByLabel = new JLabel("Nhân viên phụ trách:");
             confirmedByContent = new JTextField();
-            confirmedByContent.addActionListener(e1 -> {
+            confirmedByContent.addActionListener(e1 -> 
+            {
                 confirmedBy = confirmedByContent.getText();
                 System.out.println("Confirmed By: " + confirmedBy);
             });
@@ -487,18 +490,22 @@ public class OrderManagement extends JPanel {
             JButton cancelButton = new JButton("Hủy");
 
             // Save button action
-            saveButton.addActionListener(e1 -> {
+            saveButton.addActionListener(e1 -> 
+            {
                 
                 // Save order to database or list
             	Customer customer = null;
             	        
             	if(customerTemp==null)
             	{
-            		customer = new Customer(null,  fullName,  phone,  email,  address, Customer.STATUS_INACTIVE, null, null);
+            		customer = new Customer(customerDAO.generateNextCustomerId(),  fullName,  phone,  email,  address, Customer.STATUS_INACTIVE, phone, "1");
             		customerDAO.add(customer);
+            		System.out.println(customer);
             	}
+            	else customer = customerTemp;
             	
-            	Order order = new Order(null, customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
+            	Order order = new Order(orderDAO.generateNextOrderId(), customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
+            	System.out.println(order);
             	orderDAO.add(order);
             	
                 JOptionPane.showMessageDialog(addDialog, "Thêm đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -508,6 +515,7 @@ public class OrderManagement extends JPanel {
             // Cancel button action
             cancelButton.addActionListener(e1 -> 
             {
+            	customerTemp =null;
             	fullName= null;
         		phone =null;
         		email= null;

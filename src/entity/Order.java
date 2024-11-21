@@ -147,11 +147,11 @@ public final class Order {
     }
 
     public void setStatus(String status) {
-        if (status.equals(STATUS_PENDING) || status.equals(STATUS_PAID) || status.equals(STATUS_CANCELLED)|| status.equals(STATUS_COMPLETED) ) {
+        //if (status.equals(STATUS_PENDING) || status.equals(STATUS_PAID) || status.equals(STATUS_CANCELLED)|| status.equals(STATUS_COMPLETED) ) {
             this.status = status;
-        } else {
-            throw new IllegalArgumentException("Trạng thái không hợp lệ");
-        }
+       // } else {
+         //   throw new IllegalArgumentException("Trạng thái không hợp lệ");
+        //}
     }
 
     // Generate Getter & Setter for confirmedBy
