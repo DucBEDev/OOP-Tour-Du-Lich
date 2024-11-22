@@ -12,7 +12,7 @@ public final class Customer {
 
     private String customerId;
     private String fullName;	
-    private static int nextCustomerId =1; // Long
+    private static int nextCustomerId =5; // Long
     private String phone;
     private String email;
     private String address;

@@ -292,4 +292,30 @@ public class Tour_DAO {
 
         return result;
     }
+    
+    public String generateNextTourId() {
+        String query = "SELECT MAX(TourID) FROM Tour WHERE TourID LIKE 'TOUR%'";
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                String maxId = rs.getString(1);
+                if (maxId == null) {
+                    return "TOUR001";
+                }
+                
+                if (maxId.length() >= 3) {
+                    try {
+                        int currentNum = Integer.parseInt(maxId.substring(4).trim());
+                        return String.format("TOUR%03d", currentNum + 1);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        return "TOUR001";
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "TOUR000";
+    }
 }

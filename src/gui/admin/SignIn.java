@@ -37,6 +37,7 @@ public class SignIn extends JFrame {
 	private JSeparator sepPassword;
 	private JButton btnLogin;
 	private JButton btnGuest;
+	private JButton btnRegister;
 
 	public SignIn() {
 		this.init();
@@ -120,6 +121,21 @@ public class SignIn extends JFrame {
 		btnLogin.setBounds(122, 373, 156, 38);
 		btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		pnlLogin.add(btnLogin);
+		
+		btnRegister = new JButton("Chưa có tài khoản?");
+		btnRegister.setBackground(new Color(133, 216, 255));
+		btnRegister.setBorderPainted(false);
+		btnRegister.setContentAreaFilled(false);
+		btnRegister.setFont(new Font("Tahoma", Font.ITALIC, 13));
+		btnRegister.setBounds(82, 459, 236, 32);
+		btnRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btnRegister.setFocusPainted(false);
+		btnRegister.addActionListener(e -> {
+			Register register = new Register();
+			register.setVisible(true);
+			this.dispose();
+		});
+		pnlLogin.add(btnRegister);
 		
 		btnGuest = new JButton("Đăng nhập với tài khoản khách?");
 		btnGuest.setBackground(new Color(133, 216, 255));

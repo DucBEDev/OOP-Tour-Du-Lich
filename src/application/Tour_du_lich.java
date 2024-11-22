@@ -23,7 +23,6 @@ import entity.Order;
 import entity.Tour;
 
 import gui.admin.SignIn;
-import gui.client.Test;
 
 public class Tour_du_lich {
 	public static void main(String[] args) {

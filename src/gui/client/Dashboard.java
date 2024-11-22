@@ -13,10 +13,13 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.Book;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.toedter.calendar.JDateChooser;
@@ -42,6 +46,7 @@ import com.toedter.calendar.JDateChooser;
 import connectDB.ConnectDB;
 import dao.Tour_DAO;
 import entity.Tour;
+import gui.admin.SignIn;
 import utils.VNComboBox;
 
 public class Dashboard extends JFrame {
@@ -99,7 +104,22 @@ public class Dashboard extends JFrame {
     	// User Register
     	JPanel pnlRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
     	pnlRight.setBackground(Color.WHITE);
-    	JButton btnRegister = new JButton("Đăng ký");
+    	
+    	// Chat button
+    	JButton btnMessage = new JButton("Liên hệ hỗ trợ");
+    	btnMessage.setFont(new Font("Arial", Font.BOLD, 14));
+    	btnMessage.setBackground(new Color(148, 218, 248));
+    	btnMessage.setBorder(null);
+    	btnMessage.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    	btnMessage.setPreferredSize(new Dimension(120, 32));
+    	btnMessage.setFocusPainted(false);
+    	btnMessage.addActionListener(e -> {
+    		// Change to Register 
+    		System.out.println("Change to Register");
+    	});
+    	pnlRight.add(btnMessage);
+    	
+    	JButton btnRegister = new JButton("Đăng nhập");
     	btnRegister.setFont(new Font("Arial", Font.BOLD, 14));
     	btnRegister.setBackground(new Color(148, 218, 248));
     	btnRegister.setBorder(null);
@@ -107,8 +127,9 @@ public class Dashboard extends JFrame {
     	btnRegister.setPreferredSize(new Dimension(100, 32));
     	btnRegister.setFocusPainted(false);
     	btnRegister.addActionListener(e -> {
-    		// Change to Register 
-    		System.out.println("Change to Register");
+    		SignIn signIn = new SignIn();
+    		signIn.setVisible(true);
+    		this.dispose();
     	});
     	pnlRight.add(btnRegister);
     	
@@ -196,12 +217,16 @@ public class Dashboard extends JFrame {
         int fieldWidth = availableWidth / totalFields;
         
         JLabel lblDepartureLocation = new JLabel("Điểm khởi hành");
+        lblDepartureLocation.setFont(new Font("Arial", Font.BOLD, 16));
         fieldsPanel.add(lblDepartureLocation, gbc);
         JLabel lblDestination = new JLabel("Điểm đến");
+        lblDestination.setFont(new Font("Arial", Font.BOLD, 16));
         fieldsPanel.add(lblDestination, gbc);
         JLabel lblDepartureTime = new JLabel("Ngày khởi hành");
+        lblDepartureTime.setFont(new Font("Arial", Font.BOLD, 16));
         fieldsPanel.add(lblDepartureTime, gbc);
         JLabel lblTransportInfo = new JLabel("Phương tiện");
+        lblTransportInfo.setFont(new Font("Arial", Font.BOLD, 16));
         fieldsPanel.add(lblTransportInfo, gbc);
         
         // DepartureLocation field
@@ -280,7 +305,11 @@ public class Dashboard extends JFrame {
 
             if (isValid) {
                 ArrayList<Tour> tourList = tour_dao.searchTours(departureLocation, destinationLocation, new SimpleDateFormat("dd/MM/yyyy").format(departureDate), transport);
-                Order order = new Order(tourList);
+                if (tourList.size() == 0) {
+                	JOptionPane.showMessageDialog(null, "Không có Tour thỏa mãn yêu cầu.");
+                	return;
+                }
+                BookingOrder order = new BookingOrder(tourList);
                 order.setVisible(true);
     			this.dispose();
             }
@@ -307,9 +336,31 @@ public class Dashboard extends JFrame {
     	JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(new EmptyBorder(20, 40, 20, 40));
 
+        JPanel pnlHeader = new JPanel();
+        pnlHeader.setLayout(new BoxLayout(pnlHeader, BoxLayout.X_AXIS));
+        
         JLabel tourListLabel = new JLabel("Danh sách Tour nổi bật");
         tourListLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        mainPanel.add(tourListLabel, BorderLayout.NORTH);
+        pnlHeader.add(tourListLabel);
+        pnlHeader.add(Box.createHorizontalGlue());
+        
+        JButton btnGetAll = new JButton("Xem tất cả");
+        btnGetAll.setPreferredSize(new Dimension(100, 30));
+        btnGetAll.setMaximumSize(new Dimension(100, 30));
+        btnGetAll.setBackground(new Color(0, 0, 139)); 
+        btnGetAll.setForeground(Color.WHITE);
+        btnGetAll.setFocusPainted(false);
+        btnGetAll.setBorderPainted(false);
+        btnGetAll.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnGetAll.addActionListener(e -> {
+        	ArrayList<Tour> tour_List = tour_dao.getAll();
+        	BookingOrder bookingOrder = new BookingOrder(tour_List);
+        	bookingOrder.setVisible(true);
+        	this.dispose();
+        });
+        pnlHeader.add(btnGetAll);
+        
+        mainPanel.add(pnlHeader, BorderLayout.NORTH);
 
         // Get data form the database
         tourList = tour_dao.getLimitedTours(15);
@@ -373,12 +424,34 @@ public class Dashboard extends JFrame {
         lblTransportInfo.setBackground(Color.WHITE);
         infoPanel.add(lblTransportInfo, gbc);
         
-        JLabel lblMaxParticipants = new JLabel(String.valueOf("- Số vé: " + tour.getMaxParticipants() + " vé"));
+        JLabel lblDepartureLocation = new JLabel(String.valueOf("- Địa điểm khởi hành: " + tour.getDepartureLocation()));
         gbc.gridy = 4;
+        lblDepartureLocation.setFont(new Font("Arial", Font.BOLD, 16));
+        lblDepartureLocation.setOpaque(true);
+        lblDepartureLocation.setBackground(Color.WHITE);
+        infoPanel.add(lblDepartureLocation, gbc);
+        
+        JLabel lblDepartureDate = new JLabel(String.valueOf("- Thời gian khởi hành: " + tour.getDepartureDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
+        gbc.gridy = 5;
+        lblDepartureDate.setFont(new Font("Arial", Font.BOLD, 16));
+        lblDepartureDate.setOpaque(true);
+        lblDepartureDate.setBackground(Color.WHITE);
+        infoPanel.add(lblDepartureDate, gbc);
+        
+        JLabel lblMaxParticipants = new JLabel(String.valueOf("- Số vé: " + tour.getMaxParticipants() + " vé"));
+        gbc.gridy = 6;
         lblMaxParticipants.setFont(new Font("Arial", Font.BOLD, 16));
         lblMaxParticipants.setOpaque(true);
         lblMaxParticipants.setBackground(Color.WHITE);
         infoPanel.add(lblMaxParticipants, gbc);
+        
+        JLabel lblCurrentParticipants = new JLabel(String.valueOf("- Số vé đã bán: " + tour.getCurrentParticipants() + " vé"));
+        gbc.gridy = 7;
+        lblCurrentParticipants.setFont(new Font("Arial", Font.BOLD, 16));
+        lblCurrentParticipants.setOpaque(true);
+        lblCurrentParticipants.setBackground(Color.WHITE);
+        infoPanel.add(lblCurrentParticipants, gbc);
+        
 
         JPanel pnlPrice = new JPanel(new GridLayout(2, 1, 0, 5)); 
         pnlPrice.setOpaque(false);
@@ -396,7 +469,7 @@ public class Dashboard extends JFrame {
         lblChildPrice.setHorizontalAlignment(JLabel.RIGHT);
         pnlPrice.add(lblChildPrice);
         
-        gbc.gridy = 5;
+        gbc.gridy = 8;
         gbc.anchor = GridBagConstraints.EAST; 
         infoPanel.add(pnlPrice, gbc);
         
@@ -404,6 +477,13 @@ public class Dashboard extends JFrame {
         
         // Add hover effect
         card.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		TourDetail tourDetail = new TourDetail(tour);
+        		tourDetail.setVisible(true);
+        		Window window = SwingUtilities.getWindowAncestor(card);
+                window.dispose();
+        	}
             @Override
             public void mouseEntered(MouseEvent e) {
                 card.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 2));
@@ -415,6 +495,8 @@ public class Dashboard extends JFrame {
                 card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             }
         });
+        
+        
         
         return card;
     }

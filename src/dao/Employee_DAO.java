@@ -173,4 +173,30 @@ public class Employee_DAO {
 
         return result;
     }
+    
+    public String generateNextEmployeeId() {
+        String query = "SELECT MAX(EmployeeID) FROM Employee WHERE EmployeeID LIKE 'EMP%'";
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                String maxId = rs.getString(1);
+                if (maxId == null) {
+                    return "EMP001";
+                }
+                
+                if (maxId.length() >= 3) {
+                    try {
+                        int currentNum = Integer.parseInt(maxId.substring(3).trim());
+                        return String.format("EMP%03d", currentNum + 1);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        return "EMP001";
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "EMP000";
+    }
 }

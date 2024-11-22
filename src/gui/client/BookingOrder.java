@@ -14,7 +14,9 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -33,13 +35,16 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import dao.Customer_DAO;
 import dao.Order_DAO;
 import entity.Customer;
+import entity.Order;
 import entity.Tour;
 
-public class Order extends JFrame {
+public class BookingOrder extends JFrame {
 	private JPanel pnlMain;
 	private JSplitPane splitPane;
 	private JPanel pnlTourList;
@@ -54,15 +59,16 @@ public class Order extends JFrame {
 	
 	private Tour selectedTour;
 	private Order_DAO order_dao;
+	private Customer_DAO customer_dao;
 	
-	public Order(ArrayList<Tour> tourList) {
+	public BookingOrder(ArrayList<Tour> tourList) {
 		setTitle("Đặt Tour Du Lịch");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     	
     	init(tourList);
 	}
-	
+
 	private void init(ArrayList<Tour> tourList) {
 		pnlMain = new JPanel(new BorderLayout());
 		
@@ -90,6 +96,7 @@ public class Order extends JFrame {
 		// Header
 		JLabel lblHeader = new JLabel("Thông tin đặt tour");
 		lblHeader.setFont(new Font("Arial", Font.BOLD, 24));
+		lblHeader.setHorizontalAlignment(SwingConstants.CENTER);
 		pnlMainForm.add(lblHeader);
 		pnlMainForm.add(Box.createVerticalStrut(20));
 		
@@ -98,6 +105,7 @@ public class Order extends JFrame {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(5, 5, 5, 5);
+		
 		
 		gbc.gridx = 0; gbc.gridy = 0;
 		pnlFormInput.add(new JLabel("Họ và Tên: "), gbc);
@@ -170,54 +178,43 @@ public class Order extends JFrame {
 		return pnlMainForm;
 	}
 
-	private void handleBooking() {
-		if (selectedTour == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn tour trước khi đặt", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Validate form
-        if (txtFullName.getText().trim().isEmpty() ||
-            txtEmail.getText().trim().isEmpty() ||
-            txtPhone.getText().trim().isEmpty() ||
-            txtAddress.getText().trim().isEmpty()) {
-            
-            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Here you would typically save the booking to database
-        Customer customer = new Customer();
-//        Order order = new Order("ORD001", );
-//        order_dao.add(order);
-        JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            
-        // Reset form
-        selectedTour = null;
-        updateForm();
-	}
-
-	private void updateTotalPrice() {
-		if (selectedTour != null) {
-			int numAdults = (Integer) adultSpinner.getValue();
-			int numChilds = (Integer) childSpinner.getValue();
-			
-			double totalPrice = (numAdults * selectedTour.getAdultPrice().intValue()) + (numChilds * selectedTour.getChildPrice().intValue());
-			NumberFormat formatVN = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
-			lblTotalPrice.setText(formatVN.format(totalPrice));
-		}
-	}
-
 	private JPanel createTourList(ArrayList<Tour> tourList) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
         
-        // Header
+        // Panel chứa nút home và tiêu đề
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.X_AXIS));
+
+        // Tạo nút home
+        JButton homeButton = new JButton("Trang chủ");
+        homeButton.setPreferredSize(new Dimension(100, 30));
+        homeButton.setMaximumSize(new Dimension(100, 30));
+        homeButton.setBackground(new Color(0, 0, 139)); 
+        homeButton.setForeground(Color.WHITE);
+        homeButton.setFocusPainted(false);
+        homeButton.setBorderPainted(false);
+        homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        homeButton.addActionListener(e -> {
+        	Dashboard dashboard = new Dashboard();
+        	dashboard.setVisible(true);
+        	this.dispose();
+        });
+
+        // Header label
         JLabel headerLabel = new JLabel("Danh sách Tour Du lịch");
         headerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(headerLabel);
+
+        // Thêm các components vào headerPanel
+        headerPanel.add(homeButton);
+        headerPanel.add(Box.createRigidArea(new Dimension(20, 0))); // Tạo khoảng cách
+        headerPanel.add(headerLabel);
+        headerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Thêm headerPanel vào panel chính
+        panel.add(headerPanel);
         panel.add(Box.createVerticalStrut(20));
         
         // Container for tour cards with GridBagLayout
@@ -398,6 +395,59 @@ public class Order extends JFrame {
         });
 		
 		return pnlCard;
+	}
+	
+	private void handleBooking() {
+		String fullName = txtFullName.getText().trim();
+		String email = txtEmail.getText().trim();
+		String phone = txtPhone.getText().trim();
+		String address = txtAddress.getText().trim();
+		int adultTickets = (int)adultSpinner.getValue();
+		int childTickets = (int)childSpinner.getValue();
+		
+		if (selectedTour == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn tour trước khi đặt", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Validate form
+        if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Here you would typically save the booking to database
+        customer_dao = new Customer_DAO();
+        order_dao = new Order_DAO();
+        String customer_id;
+        if (!customer_dao.checkExistByPhone(phone)) {
+        	customer_id = customer_dao.generateNextCustomerId();
+	        Customer customer = new Customer(customer_id, fullName, phone, email, address, "Khách", "user_name", "1");
+	        customer_dao.add(customer);	
+        }
+        else {
+        	Customer customer = customer_dao.getByPhone(phone);
+        	customer_id = customer.getCustomerId();
+        }
+        BigDecimal totalPrice = selectedTour.getAdultPrice().multiply(BigDecimal.valueOf(adultTickets)).add(selectedTour.getChildPrice().multiply(BigDecimal.valueOf(childTickets)));
+        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chờ thanh toán", null);
+        order_dao.add(order);
+        JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            
+        // Reset form
+        selectedTour = null;
+        updateForm();
+	}
+
+	private void updateTotalPrice() {
+		if (selectedTour != null) {
+			int numAdults = (Integer) adultSpinner.getValue();
+			int numChilds = (Integer) childSpinner.getValue();
+			
+			double totalPrice = (numAdults * selectedTour.getAdultPrice().intValue()) + (numChilds * selectedTour.getChildPrice().intValue());
+			NumberFormat formatVN = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
+			lblTotalPrice.setText(formatVN.format(totalPrice));
+		}
 	}
 
 	private void updateForm() {
