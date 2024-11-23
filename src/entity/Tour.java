@@ -57,7 +57,7 @@ public final class Tour {
         return tourId;
     }
     public void setTourId(String tourId) {
-    	this.tourId = String.format("TOUR%03d", nextTourId++);
+    	this.tourId = tourId;
     }
 
         //Generate Getter & Setter for image

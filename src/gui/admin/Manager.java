@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public class Manager extends JFrame {
 
@@ -30,7 +31,6 @@ public class Manager extends JFrame {
     private JLabel customerService;
     private JLabel logOut;
     
-    private JPanel tempPanel;
 	
 	
 
@@ -136,9 +136,7 @@ public class Manager extends JFrame {
         logOut.setOpaque(true); 
         logOut.addMouseListener(mouselistener);
 
-
-        
-        
+   
         functionPanel.add(tourManagement);
         functionPanel.add(customerManagement);
         functionPanel.add(employeeManagement);
@@ -193,6 +191,17 @@ public class Manager extends JFrame {
 			{
 				currentPanel = new CustomerManagement();
 				add(currentPanel, BorderLayout.CENTER);
+			}
+			
+			else if(e.getSource() == logOut) 
+			{
+				int confirm = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn đăng xuất", "Xác nhận", JOptionPane.YES_NO_OPTION);
+				if (confirm == JOptionPane.YES_NO_OPTION) 
+				{
+					dispose();
+					SignIn si = new SignIn();
+					si.setVisible(true);
+				}
 			}
 
 		  

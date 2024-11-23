@@ -291,9 +291,9 @@ public class Tour_DAO {
                     return "TOUR001";
                 }
                 
-                if (maxId.length() >= 3) {
+                if (maxId.length() >= 4) {
                     try {
-                        int currentNum = Integer.parseInt(maxId.substring(3).trim());
+                        int currentNum = Integer.parseInt(maxId.substring(4).trim());
                         return String.format("TOUR%03d", currentNum + 1);
                     } catch (NumberFormatException e) {
                         e.printStackTrace();

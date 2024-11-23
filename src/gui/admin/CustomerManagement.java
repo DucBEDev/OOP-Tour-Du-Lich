@@ -1,8 +1,10 @@
 package gui.admin;
 
 import java.awt.BorderLayout;
+
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -32,6 +34,7 @@ import javax.swing.table.DefaultTableModel;
 
 import dao.Customer_DAO;
 import entity.Customer;
+import entity.Employee;
 
 public class CustomerManagement extends JPanel {
 	private final Customer_DAO customerDAO;
@@ -115,7 +118,38 @@ public class CustomerManagement extends JPanel {
         nextPage = new JButton(">");
         addButton = new JButton("Thêm");
         
- 
+        JTextField searching = new JTextField("Nhập Mã Khách Hàng");
+        
+        buttonPanel.add(searching);
+        searching.addMouseListener(new MouseAdapter() 
+        {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		searching.setText("");
+        	}
+        });
+        searching.addActionListener(evt -> 
+        {
+            String customerIdTemp = searching.getText();
+            if (customerDAO.checkExistById(customerIdTemp)) 
+            {
+                customerPanel.removeAll();
+                JPanel row = createCustomerRow(customerDAO.getById(customerIdTemp), 0);
+                customerPanel.add(row);
+                customerPanel.revalidate();
+                customerPanel.repaint();
+            }
+            else if (customerIdTemp.equals("")) 
+            {
+                loadCustomerData();
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng " + customerIdTemp,
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
         buttonPanel.add(previousPage);
         buttonPanel.add(pageNumber);
         buttonPanel.add(nextPage);
@@ -187,97 +221,38 @@ public class CustomerManagement extends JPanel {
 		row.add(phoneLabel);
 		row.add(emailLabel);
 		    
-		row.addMouseListener(new MouseAdapter() {
-           public void mouseClicked (MouseEvent e) {
-        	   showCustomerDetailsDialog(customer);
-           }
-        });
+		CustomerDetailControl mouseListener = new CustomerDetailControl(this);
+	    row.addMouseListener(mouseListener);
+        row.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        row.putClientProperty("customer", customer);
 
 		return row;
 	}
 		
 		
-	// Sự kiện click hiện thông tin chi tiết của khách hàng
-	private void showCustomerDetailsDialog(Customer customer) {
-		this.customer = customer;
+	// Sự kiện chuyển panel khi bấm vào thông tin khách hàng
+	private class CustomerDetailControl extends MouseAdapter
+	{
+		private CustomerManagement customerManagement;
 		
-		JFrame infoFrame = new JFrame("Chi tiết khách hàng");
-		infoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		infoFrame.setLayout(new GridLayout(9, 2, 10, 10));
-		infoFrame.setSize(600, 600);
-        
-        customerIdTextField = new JTextField(customer.getCustomerId()); // ID không thay đổi
-        customerIdTextField.setEditable(false); // Khóa ID
-        
-        fullNameTextField = new JTextField(customer.getFullName());
-        fullNameTextField.setEditable(false);
-        
-        phoneTextField = new JTextField(customer.getPhone());
-        phoneTextField.setEditable(false);
-        
-        emailTextField = new JTextField(customer.getEmail());
-        emailTextField.setEditable(false);
-        
-        addressTextField = new JTextField(customer.getAddress());
-        addressTextField.setEditable(false);
-        
-        statusBox = new JComboBox<>(new String[]{Customer.STATUS_ACTIVE, Customer.STATUS_INACTIVE});
-        statusBox.setEnabled(false);
-        
-        userNameTextField = new JTextField(customer.getUserName());
-        userNameTextField.setEditable(false);
-        
-        passwordTextField = new JPasswordField(customer.getPassword());
-        passwordTextField.setEditable(false);
-        
-        customerIdLabel = new JLabel("ID:");
-        fullNameLabel = new JLabel("Họ tên:");
-        phoneLabel = new JLabel("Số điện thoại:");
-        emailLabel = new JLabel("Email:");
-        addressLabel = new JLabel("Địa chỉ:");
-        statusLabel = new JLabel("Trạng thái:");
-        userNameLabel = new JLabel("Tên tài khoản:");
-        passwordLabel = new JLabel("Mật khẩu:");
-        
-        
-        // Add components to dialog
-        infoFrame.add(customerIdLabel);
-        infoFrame.add(customerIdTextField);
-        
-        infoFrame.add(fullNameLabel);
-        infoFrame.add(fullNameTextField);
-        
-        infoFrame.add(phoneLabel);
-        infoFrame.add(phoneTextField);
-        
-        infoFrame.add(emailLabel);
-        infoFrame.add(emailTextField);
-        
-        infoFrame.add(addressLabel);
-        infoFrame.add(addressTextField);
-        
-        infoFrame.add(statusLabel);
-        infoFrame.add(statusBox);
-        
-        infoFrame.add(userNameLabel);
-        infoFrame.add(userNameTextField);
-        
-        infoFrame.add(passwordLabel);
-        infoFrame.add(passwordTextField);
-	    
-        updateButton = new JButton("Sửa");
-        saveButton = new JButton("Lưu");
-        saveButton.setEnabled(false);
-        
-	    infoFrame.add(updateButton);
-	    infoFrame.add(saveButton);
-	    
-	    updateButton.addActionListener(this::updateCustomerInfo);
-	    saveButton.addActionListener(this::saveCustomerInfo);
-	    
-	    infoFrame.setLocationRelativeTo(this);
-	    infoFrame.setVisible(true);
-}
+		public CustomerDetailControl(CustomerManagement customerManagement)
+		{
+			this.customerManagement=customerManagement;
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e) 
+		{
+			JPanel sourcePanel = (JPanel)e.getSource();
+			Customer customer = (Customer)sourcePanel.getClientProperty("customer");
+			
+			customerManagement.removeAll();
+			CustomerDetail customerDetail = new CustomerDetail(customer);
+			customerManagement.add(customerDetail);
+			customerManagement.revalidate();
+			customerManagement.repaint();
+		}
+	}
 	
 	
 	// Tạo event chuyển trang trước
@@ -300,161 +275,21 @@ public class CustomerManagement extends JPanel {
 
 	// Event add customer
 	private void addCustomerDialog(ActionEvent e) {
-		dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm Khách Hàng", true);
-        dialog.setLayout(new GridLayout(9, 2, 10, 10));
-        dialog.setSize(400, 400);
+		JFrame addFrame = new JFrame("Thêm thông tin khách hàng");
+		addFrame.setLayout(new GridLayout(8, 2, 10, 10));
+		addFrame.setSize(600, 600);
         
-        customerIdTextField = new JTextField();
-        customerIdTextField.addActionListener(new ActionListener() 
-        {
-        	@Override
-        	public void actionPerformed(ActionEvent e) 
-        	{
-        		String customerIdTemp = customerIdTextField.getText();
-        		if (customerIdTemp.matches("CUS%03d")) 
-        		{
-        			customerId = customerIdTemp;
-        		}
-        		
-        		else 
-        			{	
-        				JOptionPane.showInputDialog(this, "ID không hợp lệ!");
-        				customerIdTextField.setText("");
-        			}
-        	}
-        });
-        
-        
+        //customerIdTextField = new JTextField();
         fullNameTextField = new JTextField();
-        fullNameTextField.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String fullNameTemp = fullNameTextField.getText();
-                if(fullNameTemp.matches("^[A-Za-z ]+$")) 
-                {
-                	fullName = fullNameTemp;
-                	//System.out.println("Full Name: " + fullName);
-                }
-                else
-                	{
-                		JOptionPane.showInputDialog(this, "Họ tên không hợp lệ!");
-                		fullNameTextField.setText("");
-                	}
-            }
-        });
-        
-        
         phoneTextField = new JTextField();
-        phoneTextField.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String phoneTemp = phoneTextField.getText();
-                if(phoneTemp.matches("\\d{10}")) 
-                {
-                	phone = phoneTemp;
-                	//System.out.println("Phone: " + phone);
-                }
-                else
-                	{
-                		JOptionPane.showInputDialog(this, "Số điện thoại không hợp lệ!");
-                		phoneTextField.setText("");
-                	}
-            }
-        });
-        
-        
         emailTextField = new JTextField();
-        emailTextField.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String emailTemp = emailTextField.getText();
-                if(emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) 
-                {
-                	email = emailTemp;
-                	//System.out.println("Email: " + email);
-                }
-                else
-                	{
-                		JOptionPane.showInputDialog(this, "Email không hợp lệ!");
-                		emailTextField.setText("");
-                	}
-            }
-        });
-        
-        
         addressTextField = new JTextField();
-        addressTextField.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String adressTemp = addressTextField.getText();
-                if(adressTemp.matches("^[A-Za-z ]+$")) 
-                {
-                	address = adressTemp;
-                	//System.out.println("Address: " + address);
-                }
-                else
-                	{
-                		JOptionPane.showInputDialog(this, "Địa chỉ không hợp lệ!");
-                		addressTextField.setText("");
-                	}
-            }
-        });
-        
-        
         statusBox = new JComboBox<>(new String[]{Customer.STATUS_ACTIVE, Customer.STATUS_INACTIVE});
-        
-        
         userNameTextField = new JTextField();
-        userNameTextField.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String userNameContentTemp = userNameTextField.getText();
-                if(userNameContentTemp.matches("^[A-Za-z0-9_.-]+$")) 
-                {
-                	userName = userNameContentTemp;
-                	//System.out.println("Username: " + userName);
-                }
-                else
-                	{
-                		JOptionPane.showInputDialog(this, "Tên tài khoản không hợp lệ!");
-                		userNameTextField.setText("");
-                	}
-            }
-        });
-        
-        
         passwordTextField = new JPasswordField();
-        passwordTextField.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String passwordContentTemp = passwordTextField.getText();
-                if(passwordContentTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) 
-                {
-                	password = passwordContentTemp;
-                	//System.out.println("Password: " + password);
-                }
-                else
-                	{
-                		JOptionPane.showInputDialog(this, "Mật khẩu không hợp lệ!");
-                		passwordTextField.setText("");
-                	}
-            }
-        });
         
         
-        customerIdLabel = new JLabel("ID:");
+        //customerIdLabel = new JLabel("ID:");
         fullNameLabel = new JLabel("Họ tên:");
         phoneLabel = new JLabel("Số điện thoại:");
         emailLabel = new JLabel("Email:");
@@ -462,61 +297,55 @@ public class CustomerManagement extends JPanel {
         statusLabel = new JLabel("Trạng thái:");
         userNameLabel = new JLabel("Tên tài khoản:");
         passwordLabel = new JLabel("Mật khẩu:");
+       
         
+        addFrame.add(fullNameLabel);
+        addFrame.add(fullNameTextField);
         
-        // Add components to dialog
-        dialog.add(customerIdLabel);
-        dialog.add(customerIdTextField);
+        addFrame.add(phoneLabel);
+        addFrame.add(phoneTextField);
         
-        dialog.add(fullNameLabel);
-        dialog.add(fullNameTextField);
+        addFrame.add(emailLabel);
+        addFrame.add(emailTextField);
         
-        dialog.add(phoneLabel);
-        dialog.add(phoneTextField);
+        addFrame.add(addressLabel);
+        addFrame.add(addressTextField);
         
-        dialog.add(emailLabel);
-        dialog.add(emailTextField);
+        addFrame.add(statusLabel);
+        addFrame.add(statusBox);
         
-        dialog.add(addressLabel);
-        dialog.add(addressTextField);
+        addFrame.add(userNameLabel);
+        addFrame.add(userNameTextField);
         
-        dialog.add(statusLabel);
-        dialog.add(statusBox);
-        
-        dialog.add(userNameLabel);
-        dialog.add(userNameTextField);
-        
-        dialog.add(passwordLabel);
-        dialog.add(passwordTextField);
+        addFrame.add(passwordLabel);
+        addFrame.add(passwordTextField);
         
         saveButton = new JButton("Lưu");
         cancelButton = new JButton("Hủy");
-        dialog.add(saveButton);
-        dialog.add(cancelButton);
+        addFrame.add(saveButton);
+        addFrame.add(cancelButton);
         
         saveButton.addActionListener(ev -> {
-        	customerId = customerIdTextField.getText();
-        	fullName = fullNameTextField.getText();
-        	phone = phoneTextField.getText();
-        	email = emailTextField.getText();
-        	address = addressTextField.getText();
-        	status = (String) statusBox.getSelectedItem();
-        	userName = userNameTextField.getText();
-        	password= new String(passwordTextField.getPassword());
-        	
-        	
-        	// Kiểm tra ID của khách hàng có trong DB hay chưa
-        	if(customerDAO.checkExistById(customerId)) {
-        		JOptionPane.showMessageDialog(this, "ID đã tồn tại, vui lòng nhập ID khác!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        	if (!validateInput()) {
         		return;
         	}
-        	// Nếu chưa có ID thì add customer
+        	
+        	//customerId = customerIdTextField.getText().trim();
+            fullName = fullNameTextField.getText().trim();
+            phone = phoneTextField.getText().trim();
+            email = emailTextField.getText().trim();
+            address = addressTextField.getText().trim();
+            status = (String) statusBox.getSelectedItem();
+            userName = userNameTextField.getText().trim();
+            password = new String(passwordTextField.getPassword()).trim();
+        	
+        	
         	try {
-        		Customer customer = new Customer(customerId, fullName, phone, email, address, status, userName, password);
+        		Customer customer = new Customer(customerDAO.generateNextCustomerId(), fullName, phone, email, address, status, userName, password);
         		if(customerDAO.add(customer)) {
         			JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         			loadCustomerData();
-            		dialog.dispose();
+        			addFrame.dispose();
         			
         		} else {
         			JOptionPane.showMessageDialog(this, "Không thể thêm khách hàng!", "Thông báo", JOptionPane.ERROR_MESSAGE);
@@ -526,212 +355,61 @@ public class CustomerManagement extends JPanel {
         	}
         });
         
-        cancelButton.addActionListener(ev -> dialog.dispose());
-        dialog.setVisible(true);
+        cancelButton.addActionListener(ev -> addFrame.dispose());
+        addFrame.setLocationRelativeTo(null);
+        addFrame.setVisible(true);
 	}
 	
 	
-	// Event update customer
-	private void updateCustomerInfo(ActionEvent e) {
-		if (this.customer == null) {
-	        JOptionPane.showMessageDialog(this, "Không thể sửa. Không tìm thấy thông tin khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
+	// Kiểm tra định dạng các thông tin
+	private boolean validateInput() {
+		String fullNameTemp = fullNameTextField.getText().trim();
+		String phoneTemp = phoneTextField.getText().trim();
+		String emailTemp = emailTextField.getText().trim();
+		String addressTemp = addressTextField.getText().trim();			
+		String userNameTemp = userNameTextField.getText().trim();
+		String passwordTemp = new String(passwordTextField.getPassword()).trim();
 		
-	    // Khi nhấn nút "Cập nhật", cho phép chỉnh sửa các trường thông tin
-	    fullNameTextField.setEditable(true);
-	    phoneTextField.setEditable(true);
-	    emailTextField.setEditable(true);
-	    addressTextField.setEditable(true);
-	    statusBox.setEnabled(true);	    
-	    userNameTextField.setEditable(true);
-	    passwordTextField.setEditable(true);
-	    	    
-	    updateButton.setEnabled(false);
-	    saveButton.setEnabled(true);
-	}
+		
+		if (fullNameTemp.isEmpty() || !fullNameTemp.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
+	        JOptionPane.showMessageDialog(null, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        fullNameTextField.requestFocus();
+	        return false;
+	    }
 
+	    if (phoneTemp.isEmpty() || !phoneTemp.matches("\\d{10}")) {
+	        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        phoneTextField.requestFocus();
+	        return false;
+	    }
+
+	    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+	        JOptionPane.showMessageDialog(null, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        emailTextField.requestFocus();
+	        return false;
+	    }
+
+	    if (addressTemp.isEmpty() || !addressTemp.matches("^[a-zA-ZÀ-ỹ0-9 .,-/]+$")) {
+	        JOptionPane.showMessageDialog(null, "Địa chỉ không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        addressTextField.requestFocus();
+	        return false;
+	    }
+
+	    if (userNameTemp.isEmpty() || !userNameTemp.matches("^[A-Za-z0-9_.-]+$")) {
+	        JOptionPane.showMessageDialog(null, "Tên tài khoản có thể gồm các ký tự chữ cái, số và ký tự đặc biệt ( _ / . / - )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        userNameTextField.requestFocus();
+	        return false;
+	    }
+
+	    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) {
+	        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        passwordTextField.requestFocus();
+	        return false;
+	    }
+
+	    // Tất cả dữ liệu hợp lệ
+	    return true;
+	}
 	
-	// Lưu và cập nhật thông tin mới của khách hàng, hiện trên Page và cập nhật trong DB
-	private void saveCustomerInfo(ActionEvent e) {
-	    if (this.customer == null) {
-	        JOptionPane.showMessageDialog(this, "Không thể lưu do không tìm thấy thông tin khách hàng", "Thông báo", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
 
-	    // Lấy dữ liệu từ các trường văn bản
-	    customerId = customerIdTextField.getText();
-	    fullName = fullNameTextField.getText();
-	    phone = phoneTextField.getText();
-	    email = emailTextField.getText();
-	    address = addressTextField.getText();
-	    status = (String) statusBox.getSelectedItem();
-	    userName = userNameTextField.getText();
-	    password = new String(passwordTextField.getPassword());
-
-	    try {
-	        // Tạo đối tượng Customer mới với thông tin đã cập nhật
-	        Customer updatedCustomer = new Customer(customerId, fullName, phone, email, address, status, userName, password);
-	        // Gọi phương thức update từ DAO
-	        if (customerDAO.update(updatedCustomer)) {
-	            // Cập nhật dữ liệu trên giao diện
-	            JOptionPane.showMessageDialog(this, "Cập nhật thông tin khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-	            
-
-	            // Thay đổi thông tin trong danh sách khách hàng
-	            for (int i = 0; i < customers.size(); i++) {
-	                if (customers.get(i).getCustomerId().equals(this.customer.getCustomerId())) {
-	                    customers.set(i, updatedCustomer);
-	                    break;
-	                }
-	            }
-	        
-	            // Tải lại giao diện hiển thị
-	            updatePage();
-	            
-	            customerIdTextField.setEditable(false);
-	            
-	            fullNameTextField.setEditable(false);
-	            fullNameTextField.addActionListener(new ActionListener() 
-	    		{
-	                @Override
-	                public void actionPerformed(ActionEvent e) 
-	                {
-	                    String fullNameTemp = fullNameTextField.getText();
-	                    if(fullNameTemp.matches("^[A-Za-z ]+$")) 
-	                    {
-	                    	fullName = fullNameTemp;
-	                    	//System.out.println("Full Name: " + fullName);
-	                    }
-	                    else
-	                    	{
-	                    		JOptionPane.showInputDialog(this, "Họ tên không hợp lệ!");
-	                    		fullNameTextField.setText("");
-	                    	}
-	                }
-	            });
-	            
-	            
-	            phoneTextField.setEditable(false);
-	            phoneTextField.addActionListener(new ActionListener() 
-	    		{
-	                @Override
-	                public void actionPerformed(ActionEvent e) 
-	                {
-	                    String phoneTemp = phoneTextField.getText();
-	                    if(phoneTemp.matches("\\d{10}")) 
-	                    {
-	                    	phone = phoneTemp;
-	                    	//System.out.println("Phone: " + phone);
-	                    }
-	                    else
-	                    	{
-	                    		JOptionPane.showInputDialog(this, "Số điện thoại không hợp lệ!");
-	                    		phoneTextField.setText("");
-	                    	}
-	                }
-	            });
-	            
-	            
-	            emailTextField.setEditable(false);
-	            emailTextField.addActionListener(new ActionListener() 
-	    		{
-	                @Override
-	                public void actionPerformed(ActionEvent e) 
-	                {
-	                    String emailTemp = emailTextField.getText();
-	                    if(emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) 
-	                    {
-	                    	email = emailTemp;
-	                    	//System.out.println("Email: " + email);
-	                    }
-	                    else
-	                    	{
-	                    		JOptionPane.showInputDialog(this, "Email không hợp lệ!");
-	                    		emailTextField.setText("");
-	                    	}
-	                }
-	            });
-	            
-	            
-	            addressTextField.setEditable(false);
-	            addressTextField.addActionListener(new ActionListener() 
-	    		{
-	                @Override
-	                public void actionPerformed(ActionEvent e) 
-	                {
-	                    String adressTemp = addressTextField.getText();
-	                    if(adressTemp.matches("^[A-Za-z ]+$")) 
-	                    {
-	                    	address = adressTemp;
-	                    	//System.out.println("Address: " + address);
-	                    }
-	                    else
-	                    	{
-	                    		JOptionPane.showInputDialog(this, "Địa chỉ không hợp lệ!");
-	                    		addressTextField.setText("");
-	                    	}
-	                }
-	            });
-	            
-	            
-	            statusBox.setEnabled(false);        
-	            
-	            userNameTextField.setEditable(false);
-	            userNameTextField.addActionListener(new ActionListener() 
-	    		{
-	                @Override
-	                public void actionPerformed(ActionEvent e) 
-	                {
-	                    String userNameContentTemp = userNameTextField.getText();
-	                    if(userNameContentTemp.matches("^[A-Za-z0-9_.-]+$")) 
-	                    {
-	                    	userName = userNameContentTemp;
-	                    	//System.out.println("Username: " + userName);
-	                    }
-	                    else
-	                    	{
-	                    		JOptionPane.showInputDialog(this, "Tên tài khoản không hợp lệ!");
-	                    		userNameTextField.setText("");
-	                    	}
-	                }
-	            });
-	            
-	            
-	            passwordTextField.setEditable(false);
-	            passwordTextField.addActionListener(new ActionListener() 
-	    		{
-	                @Override
-	                public void actionPerformed(ActionEvent e) 
-	                {
-	                    String passwordContentTemp = passwordTextField.getText();
-	                    if(passwordContentTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) 
-	                    {
-	                    	password = passwordContentTemp;
-	                    	//System.out.println("Password: " + password);
-	                    }
-	                    else
-	                    	{
-	                    		JOptionPane.showInputDialog(this, "Mật khẩu không hợp lệ!");
-	                    		passwordTextField.setText("");
-	                    	}
-	                }
-	            });
-	            
-	    	    
-	    	    updateButton.setEnabled(false);
-	    	    saveButton.setEnabled(false);
-	    	    
-	            
-	        } else {
-	            JOptionPane.showMessageDialog(this, "Không thể cập nhật thông tin khách hàng!", "Thông báo", JOptionPane.ERROR_MESSAGE);
-	        }
-	    } catch (Exception ex) {
-	        JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
-	    }
-	    
-	    // Reset trạng thái các nút
-	    updateButton.setEnabled(true);
-	    saveButton.setEnabled(false);
-	}
 }

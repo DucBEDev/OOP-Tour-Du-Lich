@@ -1,6 +1,7 @@
 package gui.admin;
 
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
@@ -71,6 +72,13 @@ public class EmployeeManagement extends JPanel
 		
 		
 		searchTextField = new JTextField("Nhập mã nhân viên để tìm");
+		searchTextField.addMouseListener(new MouseAdapter() 
+        {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		searchTextField.setText("");
+        	}
+        });
 		searchTextField.addActionListener(evt->
 		{
 			String tempEmployeeId = searchTextField.getText();
