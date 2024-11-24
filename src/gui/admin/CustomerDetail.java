@@ -1,6 +1,7 @@
 package gui.admin;
 
 import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -173,12 +174,8 @@ public class CustomerDetail extends JPanel {
 	    add(buttonPanel, BorderLayout.SOUTH);
 	}
 	
+	
 	private void updateCustomerInfo(ActionEvent e) {
-		this.customer = customer;
-		if (this.customer == null) {
-	        JOptionPane.showMessageDialog(this, "Không thể sửa. Không tìm thấy thông tin khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
 		
 	    // Khi nhấn nút "Cập nhật", cho phép chỉnh sửa các trường thông tin
 	    fullNameTextField.setEditable(true);
@@ -196,12 +193,6 @@ public class CustomerDetail extends JPanel {
 	
 	// Lưu và cập nhật thông tin mới của khách hàng, hiện trên Page và cập nhật trong DB
 	private void saveCustomerInfo(ActionEvent e) {
-		this.customer = customer;
-	    if (this.customer == null) {
-	        JOptionPane.showMessageDialog(this, "Không thể lưu do không tìm thấy thông tin khách hàng", "Thông báo", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
-
 	    // Lấy dữ liệu từ các trường văn bản
 	    customerId = customerIdTextField.getText().trim();
 	    fullName = fullNameTextField.getText().trim();

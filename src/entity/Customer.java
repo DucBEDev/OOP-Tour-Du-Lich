@@ -43,10 +43,7 @@ public final class Customer {
     }
     public void setCustomerId() 
     {
-        this.customerId = String.format("CUS%03d", nextCustomerId++); // Format the ID as CUS001, CUS002, etc.
-    }
-    public void setNewCustomerId(String customerId) {
-    	this.customerId = customerId;
+        this.customerId = customerId;
     }
 
         //Generate Getter & Setter for fullName

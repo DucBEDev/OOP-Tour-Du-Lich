@@ -30,7 +30,7 @@ public final class Employee {
 
     public Employee(String employeeId, String fullName, String phone, String email, String address, String userName, String password, String permissions) 
     {
-    	this.employeeId=employeeId;
+    	if(employeeId==null) setEmployeeId(); else this.employeeId = employeeId;
     	System.out.println(employeeId);
         this.fullName = fullName;
         setPhone(phone);
@@ -115,7 +115,11 @@ public final class Employee {
 
     public void setEmployeeId() 
     {
-        this.employeeId = String.format("EM%03d", nextEmployeeId++); 
+        this.employeeId = employeeId;
+    }
+    
+    public void setEmployeeId(String employeeId) {
+    	this.employeeId = employeeId;
     }
 
         //Generate Getter & Setter for username
