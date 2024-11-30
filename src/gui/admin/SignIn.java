@@ -1,6 +1,7 @@
 package gui.admin;
 
 import javax.swing.JFrame;
+
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
@@ -22,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 
 public class SignIn extends JFrame {
 	private JTextField txtUserName;

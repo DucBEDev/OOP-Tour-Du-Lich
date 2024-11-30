@@ -8,9 +8,11 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -83,6 +85,7 @@ public class Manager extends JFrame {
         tourManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
         tourManagement.setOpaque(true); 
         tourManagement.addMouseListener(mouselistener);
+        tourManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/travel.png"))));
                 
         
         customerManagement = new JLabel("Customer Management");
@@ -91,7 +94,7 @@ public class Manager extends JFrame {
         customerManagement.setBackground(new Color(66, 165, 243));
         customerManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
         customerManagement.addMouseListener(mouselistener);
-
+        customerManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/customer.png"))));
         
 
         employeeManagement = new JLabel("Employee Management");
@@ -100,7 +103,7 @@ public class Manager extends JFrame {
         employeeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
         employeeManagement.setOpaque(true); 
         employeeManagement.addMouseListener(mouselistener);
-        
+        employeeManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/staff.png"))));
         
 
         orderManagement = new JLabel("Order Management");
@@ -109,7 +112,7 @@ public class Manager extends JFrame {
         orderManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
         orderManagement.setOpaque(true); 
         orderManagement.addMouseListener(mouselistener);
-        
+        orderManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/ticket.png"))));
         
         
         statistic = new JLabel("Statistic");
@@ -118,7 +121,7 @@ public class Manager extends JFrame {
         statistic.setCursor(new Cursor(Cursor.HAND_CURSOR));
         statistic.setOpaque(true); 
         statistic.addMouseListener(mouselistener);
-
+        statistic.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/statistical.png"))));
 
         
         customerService = new JLabel("Customer Service");
@@ -126,6 +129,7 @@ public class Manager extends JFrame {
         customerService.setBackground(new Color(66, 165, 243));
         customerService.setCursor(new Cursor(Cursor.HAND_CURSOR));
         customerService.setOpaque(true); 
+        customerService.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/service.png"))));
         customerService.addMouseListener(mouselistener);
 
         
@@ -133,6 +137,7 @@ public class Manager extends JFrame {
         logOut.setFont(new Font("Tahoma", Font.PLAIN, 14));
         logOut.setBackground(new Color(66, 165, 243));
         logOut.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        logOut.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/log-out.png"))));
         logOut.setOpaque(true); 
         logOut.addMouseListener(mouselistener);
 
