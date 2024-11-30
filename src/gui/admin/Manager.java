@@ -24,6 +24,7 @@ public class Manager extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel currentPanel;
+	private Recive chatBox;
 
     private JLabel tourManagement;
     private JLabel customerManagement;
@@ -196,6 +197,14 @@ public class Manager extends JFrame {
 			{
 				currentPanel = new CustomerManagement();
 				add(currentPanel, BorderLayout.CENTER);
+			}
+			
+			else if(e.getSource() == customerService) 
+			{
+				if (chatBox == null) {
+					chatBox = new Recive();
+				}
+				chatBox.setVisible(true);
 			}
 			
 			else if(e.getSource() == logOut) 
