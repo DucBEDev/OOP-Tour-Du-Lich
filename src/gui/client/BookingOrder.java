@@ -58,13 +58,16 @@ public class BookingOrder extends JFrame {
     private JLabel lblTotalPrice;
 	
 	private Tour selectedTour;
+	private Customer cus;
 	private Order_DAO order_dao;
 	private Customer_DAO customer_dao;
 	
-	public BookingOrder(ArrayList<Tour> tourList) {
+	public BookingOrder(ArrayList<Tour> tourList, Customer customer) {
 		setTitle("Đặt Tour Du Lịch");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
+        cus = customer;
     	
     	init(tourList);
 	}
@@ -111,6 +114,8 @@ public class BookingOrder extends JFrame {
 		pnlFormInput.add(new JLabel("Họ và Tên: "), gbc);
 		gbc.gridx = 1;
 		txtFullName = new JTextField();
+		if (cus.getFullName() != null) 
+			txtFullName.setText(cus.getFullName());
 		txtFullName.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtFullName, gbc);
 		
@@ -118,6 +123,8 @@ public class BookingOrder extends JFrame {
 		pnlFormInput.add(new JLabel("Số điện thoại: "), gbc);
 		gbc.gridx = 1;
 		txtPhone = new JTextField(20);
+		if (cus.getPhone() != null) 
+			txtPhone.setText(cus.getPhone());
 		txtPhone.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtPhone, gbc);
 		
@@ -125,6 +132,8 @@ public class BookingOrder extends JFrame {
 		pnlFormInput.add(new JLabel("Email: "), gbc);
 		gbc.gridx = 1;
 		txtEmail = new JTextField(20);
+		if (cus.getEmail() != null) 
+			txtEmail.setText(cus.getEmail());
 		txtEmail.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtEmail, gbc);
 		
@@ -132,6 +141,8 @@ public class BookingOrder extends JFrame {
 		pnlFormInput.add(new JLabel("Địa chỉ: "), gbc);
 		gbc.gridx = 1;
 		txtAddress = new JTextField(20);
+		if (cus.getAddress() != null) 
+			txtAddress.setText(cus.getAddress());
 		txtAddress.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtAddress, gbc);
 		
@@ -197,7 +208,7 @@ public class BookingOrder extends JFrame {
         homeButton.setBorderPainted(false);
         homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         homeButton.addActionListener(e -> {
-        	Dashboard dashboard = new Dashboard();
+        	Dashboard dashboard = new Dashboard(cus);
         	dashboard.setVisible(true);
         	this.dispose();
         });

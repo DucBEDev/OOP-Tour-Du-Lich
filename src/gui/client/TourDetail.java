@@ -58,13 +58,15 @@ public class TourDetail extends JFrame {
     private Order_DAO order_dao;
 	private Customer_DAO customer_dao;
 	private Tour selectedTour;
+	private Customer cus;
 	
-	public TourDetail(Tour tour) {
+	public TourDetail(Tour tour, Customer customer) {
 		setTitle("Chi tiết tour");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setExtendedState(MAXIMIZED_BOTH);
 		
 		selectedTour = tour;
+		cus = customer;
 		
 		init();
 	}
@@ -113,6 +115,8 @@ public class TourDetail extends JFrame {
 		pnlFormInput.add(new JLabel("Họ và Tên: "), gbc);
 		gbc.gridx = 1;
 		txtFullName = new JTextField();
+		if (cus.getFullName() != null) 
+			txtFullName.setText(cus.getFullName());
 		txtFullName.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtFullName, gbc);
 		
@@ -120,6 +124,8 @@ public class TourDetail extends JFrame {
 		pnlFormInput.add(new JLabel("Số điện thoại: "), gbc);
 		gbc.gridx = 1;
 		txtPhone = new JTextField(20);
+		if (cus.getPhone() != null) 
+			txtPhone.setText(cus.getPhone());
 		txtPhone.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtPhone, gbc);
 		
@@ -127,6 +133,8 @@ public class TourDetail extends JFrame {
 		pnlFormInput.add(new JLabel("Email: "), gbc);
 		gbc.gridx = 1;
 		txtEmail = new JTextField(20);
+		if (cus.getEmail() != null) 
+			txtEmail.setText(cus.getEmail());
 		txtEmail.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtEmail, gbc);
 		
@@ -134,6 +142,8 @@ public class TourDetail extends JFrame {
 		pnlFormInput.add(new JLabel("Địa chỉ: "), gbc);
 		gbc.gridx = 1;
 		txtAddress = new JTextField(20);
+		if (cus.getAddress() != null) 
+			txtAddress.setText(cus.getAddress());
 		txtAddress.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtAddress, gbc);
 		
@@ -200,7 +210,7 @@ public class TourDetail extends JFrame {
         homeButton.setBorderPainted(false);
         homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         homeButton.addActionListener(e -> {
-        	Dashboard dashboard = new Dashboard();
+        	Dashboard dashboard = new Dashboard(cus);
         	dashboard.setVisible(true);
         	this.dispose();
         });
@@ -317,7 +327,7 @@ public class TourDetail extends JFrame {
         JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             
         // Back to dashboard
-        Dashboard dashboard = new Dashboard();
+        Dashboard dashboard = new Dashboard(cus);
     	dashboard.setVisible(true);
     	this.dispose();
 	}

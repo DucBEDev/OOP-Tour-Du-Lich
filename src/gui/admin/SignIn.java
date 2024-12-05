@@ -6,6 +6,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
+import dao.Customer_DAO;
+import entity.Customer;
 import gui.client.Dashboard;
 
 import javax.swing.JLabel;
@@ -86,6 +88,7 @@ public class SignIn extends JFrame {
 		txtUserName.setBackground(new Color(133, 216, 255));
 		txtUserName.setBorder(null);
 		txtUserName.requestFocusInWindow();
+		txtUserName.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlLogin.add(txtUserName);
 		txtUserName.setColumns(10);
 		
@@ -105,6 +108,7 @@ public class SignIn extends JFrame {
 		txtPassword.setBackground(new Color(133, 216, 255));
 		txtPassword.setBorder(null);
 		txtPassword.requestFocusInWindow();
+		txtPassword.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlLogin.add(txtPassword);
 		txtPassword.setColumns(10);
 		
@@ -146,7 +150,8 @@ public class SignIn extends JFrame {
 		btnGuest.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnGuest.setFocusPainted(false);
 		btnGuest.addActionListener(e -> {
-			Dashboard dashboard = new Dashboard();
+			Customer cus = new Customer();
+			Dashboard dashboard = new Dashboard(cus);
 			dashboard.setVisible(true);
 			this.dispose();
 		});
@@ -154,13 +159,11 @@ public class SignIn extends JFrame {
 	}
 	
 	private void btnLoginPerformed(){
-		//Lay username & password
 		String username = txtUserName.getText();
 		String password = String.valueOf(txtPassword.getPassword());
 		Manager mag;
-		JOptionPane.showMessageDialog(null,"Dang nhap thanh cong");
 		
-//			UserDTO role = ubs.getByName(username);
+		
 		if (username.equals("1") && password.equals("1")) {
 			mag = new Manager();
 			mag.setVisible(true);
@@ -168,13 +171,22 @@ public class SignIn extends JFrame {
 		else if (username.equals("2") && password.equals("2")) {
 			System.out.println("Employee");
 			mag = new Manager();
-			//mag.getContentPane().remove(mag.getLblNewLabel_1());
 			mag.setVisible(true);
 		}
 		else {
-			System.out.println("Client");
+			Customer_DAO customer_dao = new Customer_DAO();
+			Customer customer = customer_dao.checkLogin(username, password);
+			
+			if (customer != null) {
+				Dashboard dashboard = new Dashboard(customer);
+				dashboard.setVisible(true);
+				this.dispose();
+			}
+			else {
+				JOptionPane.showMessageDialog(null,"Đăng nhập không thành công");
+				txtUserName.setText("");
+				txtPassword.setText("");
+			}
 		}
-		
-		this.dispose();
 	}
 }

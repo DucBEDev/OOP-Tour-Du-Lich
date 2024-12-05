@@ -14,9 +14,14 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.Book;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -31,12 +36,14 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -45,6 +52,7 @@ import com.toedter.calendar.JDateChooser;
 
 import connectDB.ConnectDB;
 import dao.Tour_DAO;
+import entity.Customer;
 import entity.Tour;
 import gui.admin.SignIn;
 import utils.VNComboBox;
@@ -57,8 +65,13 @@ public class Dashboard extends JFrame {
 	private JScrollPane scrollPane;
 	
 	private Tour_DAO tour_dao;
+	private Customer cus;
 	
-    public Dashboard() {
+	private static JTextArea chatArea;
+    private static JTextField messageField;
+    private static DataOutputStream dataOutputStream;
+	
+    public Dashboard(Customer customer) {
     	Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension scrSize = kit.getScreenSize();
 		int scrHeight = scrSize.height;
@@ -67,6 +80,8 @@ public class Dashboard extends JFrame {
     	setExtendedState(JFrame.MAXIMIZED_BOTH);
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	setLayout(new BorderLayout());
+    	
+    	cus = customer;
     	
     	// Header
     	topNav = createTopNav();
@@ -114,32 +129,45 @@ public class Dashboard extends JFrame {
     	btnMessage.setPreferredSize(new Dimension(120, 32));
     	btnMessage.setFocusPainted(false);
     	btnMessage.addActionListener(e -> {
-    		// Change to Register 
-    		System.out.println("Change to Register");
+    		if (cus.getCustomerId() == null) {
+    			JOptionPane.showMessageDialog(null, "Vui lòng đăng nhập để liên hệ với nhân viên hỗ trợ.");
+    			return;
+    		}
+    		showMessageDialog();
     	});
     	pnlRight.add(btnMessage);
     	
-    	JButton btnRegister = new JButton("Đăng nhập");
-    	btnRegister.setFont(new Font("Arial", Font.BOLD, 14));
-    	btnRegister.setBackground(new Color(148, 218, 248));
-    	btnRegister.setBorder(null);
-    	btnRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    	btnRegister.setPreferredSize(new Dimension(100, 32));
-    	btnRegister.setFocusPainted(false);
-    	btnRegister.addActionListener(e -> {
-    		SignIn signIn = new SignIn();
-    		signIn.setVisible(true);
-    		this.dispose();
-    	});
-    	pnlRight.add(btnRegister);
+    	
+    	if (cus.getCustomerId() == null) {
+    		JButton btnRegister = new JButton("Đăng nhập");
+    		btnRegister.setFont(new Font("Arial", Font.BOLD, 14));
+    		btnRegister.setBackground(new Color(148, 218, 248));
+    		btnRegister.setBorder(null);
+    		btnRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    		btnRegister.setPreferredSize(new Dimension(100, 32));
+    		btnRegister.setFocusPainted(false);
+    		btnRegister.addActionListener(e -> {
+    			SignIn signIn = new SignIn();
+    			signIn.setVisible(true);
+    			this.dispose();
+    		});
+    		pnlRight.add(btnRegister);    		
+    	} 
+    	else {
+    		JLabel lblUser = new JLabel("Xin chào, " + cus.getUserName());
+    		lblUser.setFont(new Font("Arial", Font.BOLD, 14));
+    		lblUser.setBackground(new Color(148, 218, 248));
+    		lblUser.setPreferredSize(new Dimension(100, 32));
+    		pnlRight.add(lblUser);    
+    	}
     	
     	pnlNav.add(pnlLeft, BorderLayout.WEST);
     	pnlNav.add(pnlRight, BorderLayout.EAST);
     	
     	return pnlNav;
     }
-    
-    public JPanel createContentHeader(int scrWidth, int scrHeight) {
+
+	public JPanel createContentHeader(int scrWidth, int scrHeight) {
         JPanel pnlMain = new JPanel(new BorderLayout());
         pnlMain.setPreferredSize(new Dimension(scrWidth, scrHeight));
 
@@ -309,7 +337,7 @@ public class Dashboard extends JFrame {
                 	JOptionPane.showMessageDialog(null, "Không có Tour thỏa mãn yêu cầu.");
                 	return;
                 }
-                BookingOrder order = new BookingOrder(tourList);
+                BookingOrder order = new BookingOrder(tourList, cus);
                 order.setVisible(true);
     			this.dispose();
             }
@@ -354,7 +382,7 @@ public class Dashboard extends JFrame {
         btnGetAll.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnGetAll.addActionListener(e -> {
         	ArrayList<Tour> tour_List = tour_dao.getAll();
-        	BookingOrder bookingOrder = new BookingOrder(tour_List);
+        	BookingOrder bookingOrder = new BookingOrder(tour_List, cus);
         	bookingOrder.setVisible(true);
         	this.dispose();
         });
@@ -479,7 +507,7 @@ public class Dashboard extends JFrame {
         card.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
-        		TourDetail tourDetail = new TourDetail(tour);
+        		TourDetail tourDetail = new TourDetail(tour, cus);
         		tourDetail.setVisible(true);
         		Window window = SwingUtilities.getWindowAncestor(card);
                 window.dispose();
@@ -496,8 +524,97 @@ public class Dashboard extends JFrame {
             }
         });
         
-        
-        
         return card;
+    }
+    
+    private void showMessageDialog() {
+    	JDialog dialog = new JDialog(this, "Liên hệ CSKH", true);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+		
+        chatArea = new JTextArea();
+        chatArea.setEditable(false);
+        chatArea.setLineWrap(true);
+        chatArea.setWrapStyleWord(true);
+        chatArea.setBackground(new Color(30, 30, 30));
+        chatArea.setForeground(Color.WHITE);
+        chatArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        JScrollPane scrollPane = new JScrollPane(chatArea);
+        
+        messageField = new JTextField(30);
+        messageField.setFont(new Font("Arial", Font.PLAIN, 16));
+        messageField.setPreferredSize(new Dimension(300, 40));
+        messageField.setBackground(new Color(50, 50, 50));
+        messageField.setForeground(Color.WHITE);
+        messageField.setBorder(new EmptyBorder(0, 10, 0, 0)); 
+        
+        JButton sendButton = new JButton("Send");
+        sendButton.setPreferredSize(new Dimension(80, 40));
+        sendButton.setBackground(new Color(0, 0, 139));
+        sendButton.setForeground(Color.WHITE);
+        sendButton.setMaximumSize(new Dimension(100, 30));
+        sendButton.setFocusPainted(false);
+        sendButton.setBorderPainted(false);
+        sendButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        sendButton.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(messageField, BorderLayout.CENTER);
+        panel.add(sendButton, BorderLayout.EAST);
+        
+        dialog.add(scrollPane, BorderLayout.CENTER);
+        dialog.add(panel, BorderLayout.SOUTH);
+        
+        dialog.setVisible(true);
+        
+        try {
+            Socket socket = new Socket("localhost", 1234);
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
+            sendButton.addActionListener((ActionEvent e) -> sendMessage());
+            messageField.addActionListener((ActionEvent e) -> sendMessage());
+
+            Thread receiveThread = new Thread(() -> {
+                try {
+                    String message;
+                    while (true) {
+                        message = dataInputStream.readUTF();
+                        chatArea.append("Server: " + message + "\n");
+                        if ("exit".equalsIgnoreCase(message)) {
+                            chatArea.append("Server has ended the chat.\n");
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            receiveThread.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+    
+    private static void sendMessage() {
+        String message = messageField.getText().trim();
+        if (!message.isEmpty()) {
+            try {
+                chatArea.append("Me: " + message + "\n");
+                dataOutputStream.writeUTF(message);
+                dataOutputStream.flush();
+
+                if ("exit".equalsIgnoreCase(message)) {
+                    messageField.setEnabled(false);
+                }
+                messageField.setText("");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
