@@ -14,6 +14,7 @@ import java.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -130,7 +131,7 @@ public class Tour_DAO {
 
         return temp;
     }
-
+        
     public boolean add(Tour tour, String base64Image) {
         boolean result = false;
         String query = "INSERT INTO Tour (TourID, Images, TourName, Description, DepartureDate, Duration, DepartureLocation, DepartureTime, Destination, TransportInfo, AdultPrice, ChildPrice, MaxParticipants, CurrentParticipants, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -270,7 +271,7 @@ public class Tour_DAO {
         return result;
     }
     
-    public Image decodeBase64ToImage(String base64Image) throws Exception 
+    public static Image decodeBase64ToImage(String base64Image) throws Exception 
     {
     	if (base64Image == null || base64Image.isEmpty()) 
     	{

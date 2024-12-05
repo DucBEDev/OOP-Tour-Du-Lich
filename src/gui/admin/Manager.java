@@ -187,6 +187,11 @@ public class Manager extends JFrame {
 				currentPanel = new OrderManagement();
 				add(currentPanel, BorderLayout.CENTER);
 			}
+			else if(e.getSource()== statistic)
+			{
+				currentPanel = new Statistic();
+				add(currentPanel, BorderLayout.CENTER);
+			}
 
 		  
 		    revalidate();

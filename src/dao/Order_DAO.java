@@ -10,13 +10,17 @@ import java.sql.Timestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.awt.Image;
 import java.math.BigDecimal;
 
 
 import connectDB.ConnectDB;
 
 import entity.Order;
+import entity.Tour;
 
 public class Order_DAO {
 	private final ConnectDB db = ConnectDB.getInstance();
@@ -79,6 +83,313 @@ public class Order_DAO {
         }
 		return temp;
 	}
+	
+	
+	public ArrayList<Tour> getMostTravelTourByInputTime(LocalDate begin, LocalDate end)
+    {
+    	String query = " SELECT \r\n"
+    			+ "    T.TourID,\r\n"
+    			+ "	T.Images,\r\n"
+    			+ "    T.TourName,\r\n"
+    			+ "    T.Description,\r\n"
+    			+ "    T.DepartureDate,\r\n"
+    			+ "    T.Duration,\r\n"
+    			+ "    T.DepartureLocation,\r\n"
+    			+ "    T.DepartureTime,\r\n"
+    			+ "    T.Destination,\r\n"
+    			+ "    T.TransportInfo,\r\n"
+    			+ "    T.AdultPrice,\r\n"
+    			+ "    T.ChildPrice,\r\n"
+    			+ "    T.MaxParticipants,\r\n"
+    			+ "    T.CurrentParticipants,\r\n"
+    			+ "    T.Status,\r\n"
+    			+ "    COUNT(O.OrderID) AS FREQUENCY\r\n"
+    			+ "FROM \r\n"
+    			+ "    Tour AS T\r\n"
+    			+ "JOIN \r\n"
+    			+ "    [Order] AS O \r\n"
+    			+ "ON \r\n"
+    			+ "    T.TourID = O.TourID\r\n"
+    			+ "WHERE \r\n"
+    			+ "    CAST(O.OrderTime AS DATE) BETWEEN ? AND ?\r\n"
+    			+ "GROUP BY \r\n"
+    			+ "    T.TourID,\r\n"
+    			+ "	T.Images,\r\n"
+    			+ "    T.TourName,\r\n"
+    			+ "    T.Description,\r\n"
+    			+ "    T.DepartureDate,\r\n"
+    			+ "    T.Duration,\r\n"
+    			+ "    T.DepartureLocation,\r\n"
+    			+ "    T.DepartureTime,\r\n"
+    			+ "    T.Destination,\r\n"
+    			+ "    T.TransportInfo,\r\n"
+    			+ "    T.AdultPrice,\r\n"
+    			+ "    T.ChildPrice,\r\n"
+    			+ "    T.MaxParticipants,\r\n"
+    			+ "    T.CurrentParticipants,\r\n"
+    			+ "    T.Status\r\n"
+    			+ "ORDER BY \r\n"
+    			+ "    FREQUENCY DESC;";
+    	ArrayList<Tour> list = new ArrayList<>();
+    	
+    	LocalDateTime dateTimeBegin = begin.atTime(LocalTime.MIDNIGHT);
+    	LocalDateTime dateTimeEnd = end.atTime(LocalTime.MIDNIGHT);
+
+	
+         try 
+         { 
+        	 PreparedStatement stmt = con.prepareStatement(query);
+        	 stmt.setTimestamp(1, Timestamp.valueOf(dateTimeBegin));
+             stmt.setTimestamp(2, Timestamp.valueOf(dateTimeEnd));
+             ResultSet rs = stmt.executeQuery();
+             int count = 0; 
+             while (rs.next() && count <10) 
+             {
+                 String tourId = rs.getString(1);
+                 String base64Image = rs.getString(2);
+                 String tourName = rs.getNString(3);
+                 String description = rs.getNString(4);
+                 LocalDate departureDate = rs.getDate(5).toLocalDate();
+                 int duration = rs.getInt(6);
+                 String departureLocation = rs.getNString(7);
+                 LocalTime departureTime = rs.getTime(8).toLocalTime();
+                 String destination = rs.getNString(9);
+                 String transportInfo = rs.getNString(10);
+                 double adultPrice = rs.getDouble(11);
+                 double childPrice = rs.getDouble(12);
+                 int maxParticipants = rs.getInt(13);
+                 int currentParticipants = rs.getInt(14);
+                 String status = rs.getNString(15);
+                 
+                 Image image = Tour_DAO.decodeBase64ToImage(base64Image);
+
+                 if(image !=null)
+                 {Tour temp = new Tour( tourId,  image,  tourName,  description,  departureDate,  duration,  departureLocation, 
+                          departureTime,  destination,  transportInfo,  adultPrice,  childPrice, 
+                          maxParticipants,  currentParticipants,  status);
+                 list.add(temp);
+                 count++;
+                 }
+                 else throw new IllegalArgumentException("image is null or empty");
+             }
+             
+         } 
+         catch (SQLException e)
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return list;
+    }
+	
+	
+	public HashMap<String, Integer> getMostTravelDestinationAllTime()
+    {
+    	String query = "SELECT DESTINATION, COUNT(O.OrderID) AS FREQUENCY FROM Tour AS T, [Order] AS O WHERE T.TourID = O.TourID GROUP BY T.DESTINATION ORDER BY FREQUENCY DESC";
+    	HashMap<String, Integer> list = new HashMap<String, Integer>();
+	
+         try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query))
+         {             
+             while (rs.next()) 
+             {
+             	String destination = rs.getString(1);
+	            System.out.println(destination);
+
+             	int frequency = rs.getInt(2);     
+	            System.out.println( frequency);
+
+             	list.put(destination, frequency);
+             }
+         } 
+         catch (SQLException e) 
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return list;
+    }
+    	
+    
+    public HashMap<String, Integer> getMostTravelDestinationByYear(int year)
+    {
+    	String query = "SELECT DESTINATION, COUNT(O.OrderID) AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE YEAR(O.ORDERTIME) = ? GROUP BY T.DESTINATION ORDER BY FREQUENCY DESC";
+    	HashMap<String, Integer> list = new HashMap<String, Integer>();
+	
+         try 
+         { 
+        	 PreparedStatement stmt = con.prepareStatement(query);
+             stmt.setInt(1, year);
+             ResultSet rs = stmt.executeQuery();
+
+             while (rs.next()) 
+             {
+             	String destination = rs.getString(1);
+             	int frequency = rs.getInt(2);            	
+             	list.put(destination, frequency);
+             }
+         } 
+         catch (SQLException e) 
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return list;
+    }
+    	
+    
+    public HashMap<String, Integer> getMostTravelDestinationByInputTime(LocalDate begin, LocalDate end)
+    {
+    	String query = "SELECT DESTINATION, COUNT(O.OrderID) AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE ORDER_TIME BETWEEN ? AND ? GROUP BY T.DESTINATION ORDER BY FREQUENCY DESC";
+    	HashMap<String, Integer> list = new HashMap<String, Integer>();
+    	
+    	LocalDateTime dateTimeBegin = begin.atTime(LocalTime.MIDNIGHT);
+    	LocalDateTime dateTimeEnd = end.atTime(LocalTime.MIDNIGHT);
+
+	
+         try 
+         { 
+        	 PreparedStatement stmt = con.prepareStatement(query);
+        	 stmt.setTimestamp(1, Timestamp.valueOf(dateTimeBegin));
+             stmt.setTimestamp(2, Timestamp.valueOf(dateTimeEnd));
+             ResultSet rs = stmt.executeQuery();
+
+             while (rs.next()) 
+             {
+             	String destination = rs.getString(1);
+	            System.out.println(destination);
+
+             	int frequency = rs.getInt(2);    
+	            System.out.println( frequency);
+
+             	list.put(destination, frequency);
+             }
+         } 
+         catch (SQLException e) 
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return list;
+    }
+
+    
+    public HashMap<Integer, Double > getTotalAmountAllTime()
+    {
+    	String query = "SELECT MONTH(o.orderTime) AS month, SUM(o.totalAmount) AS totalAmount\r\n"
+    			+ "FROM tour AS t\r\n"
+    			+ "JOIN [order] AS o ON t.tourId = o.tourId\r\n"
+    			+ "GROUP BY MONTH(o.orderTime)\r\n"
+    			+ "ORDER BY MONTH(o.orderTime);";
+    	HashMap<Integer, Double> list = new HashMap<Integer, Double>();
+	
+         try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query))
+         {             
+             if (rs.next()) 
+             {            	
+            	 int month = rs.getInt(1);      
+            	 double totalAmount = rs.getDouble(2);
+             	list.put(month, totalAmount);            	
+             	
+             }
+         } 
+         catch (SQLException e) 
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return list;
+    }
+    
+    
+    public HashMap<Integer, Double > getTotalAmountByYear(int year)
+    {
+    	String query = "SELECT MONTH(o.orderTime) AS month, SUM(o.totalAmount) AS totalAmount\r\n"
+    			+ "FROM tour AS t\r\n"
+    			+ "JOIN [order] AS o ON t.tourId = o.tourId\r\n"
+    			+ "WHERE YEAR(o.orderTime) = ?  -- You can change the year as needed\r\n"
+    			+ "GROUP BY MONTH(o.orderTime)\r\n"
+    			+ "ORDER BY MONTH(o.orderTime);";
+    	HashMap<Integer, Double> list = new HashMap<Integer, Double>();
+	
+         try
+         {     
+        	 PreparedStatement stmt = con.prepareStatement(query);
+             stmt.setInt(1, year);
+             ResultSet rs = stmt.executeQuery();
+             
+             if (rs.next()) 
+             {            	
+            	 int month = rs.getInt(1);      
+            	 double totalAmount = rs.getDouble(2);
+             	list.put(month, totalAmount);
+             }
+         } 
+         catch (SQLException e) 
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return list;
+    }
+    
+    
+    public double getTotalAmountInputTime(LocalDate begin, LocalDate end)
+    {
+    	String query = "SELECT SUM(O.TotalAmount)  AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE ORDER_TIME BETWEEN ? AND ?";
+    	HashMap<String, Integer> list = new HashMap<String, Integer>();
+    	
+    	LocalDateTime dateTimeBegin = begin.atTime(LocalTime.MIDNIGHT);
+    	LocalDateTime dateTimeEnd = end.atTime(LocalTime.MIDNIGHT);
+    	double result = 0;
+	
+         try
+         {     
+        	 PreparedStatement stmt = con.prepareStatement(query);
+        	 stmt.setTimestamp(1, Timestamp.valueOf(dateTimeBegin));
+             stmt.setTimestamp(2, Timestamp.valueOf(dateTimeEnd));
+             ResultSet rs = stmt.executeQuery();
+             
+             if (rs.next()) 
+             {            	
+            	 result = rs.getDouble(1);            	
+             	
+             }
+         } 
+         catch (SQLException e) 
+         {
+             e.printStackTrace();
+         }
+         catch (Exception e)
+         {
+             e.printStackTrace();
+         }
+
+         return result;
+    }
 	
 	public boolean add(Order order) {
 		boolean result = false;
