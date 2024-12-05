@@ -13,6 +13,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import java.util.ArrayList;
+import java.util.Base64;
+
+import javax.imageio.ImageIO;
+
+import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 
 import connectDB.ConnectDB;
@@ -33,13 +39,17 @@ public class Tour_DAO {
         this.con = ConnectDB.getConnection();  // Get the connection object
     }
 
-    public ArrayList<Tour> getAll() {
+    public ArrayList<Tour> getAll() 
+    {
         String query = "SELECT * FROM Tour";
         ArrayList<Tour> list = new ArrayList<>();
 
-        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
+        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) 
+        {
+            while (rs.next()) 
+            {
                 String tourId = rs.getString(1);
+                String base64Image = rs.getString(2);
                 String tourName = rs.getNString(3);
                 String description = rs.getNString(4);
                 LocalDate departureDate = rs.getDate(5).toLocalDate();
@@ -48,16 +58,30 @@ public class Tour_DAO {
                 LocalTime departureTime = rs.getTime(8).toLocalTime();
                 String destination = rs.getNString(9);
                 String transportInfo = rs.getNString(10);
-                BigDecimal adultPrice = rs.getBigDecimal(11);
-                BigDecimal childPrice = rs.getBigDecimal(12);
+                double adultPrice = rs.getDouble(11);
+                double childPrice = rs.getDouble(12);
                 int maxParticipants = rs.getInt(13);
                 int currentParticipants = rs.getInt(14);
                 String status = rs.getNString(15);
+                
+                Image image = decodeBase64ToImage(base64Image);
 
-                Tour temp = new Tour(tourId, tourName, description, departureDate, 0, departureLocation, departureTime, destination, transportInfo, adultPrice, childPrice, 0 ,0, status);
+                if(image !=null)
+                {Tour temp = new Tour( tourId,  image,  tourName,  description,  departureDate,  duration,  departureLocation, 
+                         departureTime,  destination,  transportInfo,  adultPrice,  childPrice, 
+                         maxParticipants,  currentParticipants,  status);
                 list.add(temp);
+                }
+                else throw new IllegalArgumentException("image is null or empty");
             }
-        } catch (SQLException e) {
+            
+        } 
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 
@@ -70,11 +94,123 @@ public class Tour_DAO {
 
         try (PreparedStatement stmt = con.prepareStatement(query)) {
             stmt.setInt(1, limit);
-            stmt.setNString(2, STATUS_AVAILABLE);
+            stmt.setNString(2, Tour.STATUS_AVAILABLE);
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
-                String tourId = rs.getString(1);
+                String tourId = rs.getString("TourID");
+                String base64Image = rs.getString("Images");
+                String tourName = rs.getNString("TourName");
+                String description = rs.getNString("Description");
+                LocalDate departureDate = rs.getDate("DepartureDate").toLocalDate();
+                int duration = rs.getInt("Duration");
+                String departureLocation = rs.getNString("DepartureLocation");
+                LocalTime departureTime = rs.getTime("DepartureTime").toLocalTime();
+                String destination = rs.getNString("Destination");
+                String transportInfo = rs.getNString("TransportInfo");
+                double adultPrice = rs.getDouble("AdultPrice");
+                double childPrice = rs.getDouble("ChildPrice");
+                int maxParticipants = rs.getInt("MaxParticipants");
+                int currentParticipants = rs.getInt("CurrentParticipants");
+                String status = rs.getNString("Status");
+
+                Image image = decodeBase64ToImage(base64Image);
+
+                Tour temp = new Tour(tourId, image, tourName, description, departureDate, duration,
+                    departureLocation, departureTime, destination, transportInfo,
+                    adultPrice, childPrice, maxParticipants, currentParticipants, status);
+                list.add(temp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public ArrayList<Tour> searchTours(String departureLocation, String destination, String departureDate, String transport) {
+        ArrayList<Tour> results = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM Tour WHERE Status = ?");
+        ArrayList<Object> params = new ArrayList<>();
+        params.add(Tour.STATUS_AVAILABLE);
+        
+        // Add search conditions if parameters are provided
+        if (departureLocation != null && !departureLocation.trim().isEmpty()) {
+            queryBuilder.append(" AND DepartureLocation LIKE ?");
+            params.add("%" + departureLocation + "%");
+        }
+        
+        if (destination != null && !destination.trim().isEmpty()) {
+            queryBuilder.append(" AND Destination LIKE ?");
+            params.add("%" + destination + "%");
+        }
+        
+        if (departureDate != null && !departureDate.trim().isEmpty()) {
+            queryBuilder.append(" AND CONVERT(varchar, DepartureDate, 103) = ?");
+            params.add(departureDate);
+        }
+        
+        if (transport != null && !transport.trim().isEmpty()) {
+            queryBuilder.append(" AND TransportInfo LIKE ?");
+            params.add("%" + transport + "%");
+        }
+        
+        queryBuilder.append(" ORDER BY DepartureDate");
+        
+        try (PreparedStatement stmt = con.prepareStatement(queryBuilder.toString())) {
+            // Set parameters
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String tourId = rs.getString("TourID");
+                String base64Image = rs.getString("Images");
+                String tourName = rs.getNString("TourName");
+                String description = rs.getNString("Description");
+                LocalDate depDate = rs.getDate("DepartureDate").toLocalDate();
+                int duration = rs.getInt("Duration");
+                String depLocation = rs.getNString("DepartureLocation");
+                LocalTime departureTime = rs.getTime("DepartureTime").toLocalTime();
+                String dest = rs.getNString("Destination");
+                String transportInfo = rs.getNString("TransportInfo");
+                double adultPrice = rs.getDouble("AdultPrice");
+                double childPrice = rs.getDouble("ChildPrice");
+                int maxParticipants = rs.getInt("MaxParticipants");
+                int currentParticipants = rs.getInt("CurrentParticipants");
+                String status = rs.getNString("Status");
+                
+                Image image = decodeBase64ToImage(base64Image);
+                
+                Tour tour = new Tour(tourId, image, tourName, description, depDate, duration, 
+                    depLocation, departureTime, dest, transportInfo, 
+                    adultPrice, childPrice, maxParticipants, currentParticipants, status);
+                results.add(tour);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return results;
+    }
+
+    public Tour getByTourId(String tourIdTemp) 
+    {
+        String query = "SELECT * FROM Tour WHERE TourID = ?";
+        Tour temp = null;
+
+        try {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, tourIdTemp);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) 
+            {
+            	String tourId = rs.getString(1);
+                String base64Image = rs.getString(2);
                 String tourName = rs.getNString(3);
                 String description = rs.getNString(4);
                 LocalDate departureDate = rs.getDate(5).toLocalDate();
@@ -83,138 +219,54 @@ public class Tour_DAO {
                 LocalTime departureTime = rs.getTime(8).toLocalTime();
                 String destination = rs.getNString(9);
                 String transportInfo = rs.getNString(10);
-                BigDecimal adultPrice = rs.getBigDecimal(11);
-                BigDecimal childPrice = rs.getBigDecimal(12);
+                double adultPrice = rs.getDouble(11);
+                double childPrice = rs.getDouble(12);
                 int maxParticipants = rs.getInt(13);
                 int currentParticipants = rs.getInt(14);
                 String status = rs.getNString(15);
-
-                Tour temp = new Tour(tourId, tourName, description, departureDate, duration,
-                    departureLocation, departureTime, destination, transportInfo,
-                    adultPrice, childPrice, maxParticipants, currentParticipants, status);
-                list.add(temp);
+                
+                Image image = decodeBase64ToImage(base64Image);
+                
+                temp = new Tour( tourId,  image,  tourName,  description,  departureDate,  duration,  departureLocation, 
+                        departureTime,  destination,  transportInfo,  adultPrice,  childPrice, 
+                        maxParticipants,  currentParticipants,  status);
+               
             }
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) 
+        {
             e.printStackTrace();
         }
-        return list;
-    }
-    
-    public ArrayList<Tour> searchTours(String departureLocation, String destination, String departureDate, String transport) {
-		ArrayList<Tour> results = new ArrayList<>();
-		StringBuilder queryBuilder = new StringBuilder("SELECT * FROM Tour WHERE Status = ?");
-		ArrayList<Object> params = new ArrayList<>();
-		params.add(STATUS_AVAILABLE);
-		
-		// Add search conditions if parameters are provided
-		if (departureLocation != null && !departureLocation.trim().isEmpty()) {
-			queryBuilder.append(" AND DepartureLocation LIKE ?");
-			params.add("%" + departureLocation + "%");
-		}
-		
-		if (destination != null && !destination.trim().isEmpty()) {
-			queryBuilder.append(" AND Destination LIKE ?");
-			params.add("%" + destination + "%");
-		}
-		
-		if (departureDate != null && !departureDate.trim().isEmpty()) {
-			queryBuilder.append(" AND CONVERT(varchar, DepartureDate, 103) = ?");
-			params.add(departureDate);
-		}
-		
-		if (transport != null && !transport.trim().isEmpty()) {
-			queryBuilder.append(" AND TransportInfo LIKE ?");
-			params.add("%" + transport + "%");
-		}
-		
-		queryBuilder.append(" ORDER BY DepartureDate");
-		
-		try (PreparedStatement stmt = con.prepareStatement(queryBuilder.toString())) {
-			// Set parameters
-			for (int i = 0; i < params.size(); i++) {
-				stmt.setObject(i + 1, params.get(i));
-			}
-			
-			ResultSet rs = stmt.executeQuery();
-			while (rs.next()) {
-				String tourId = rs.getString("TourID");
-				String tourName = rs.getNString("TourName");
-				String description = rs.getNString("Description");
-				LocalDate depDate = rs.getDate("DepartureDate").toLocalDate();
-				int duration = rs.getInt("Duration");
-				String depLocation = rs.getNString("DepartureLocation");
-				LocalTime departureTime = rs.getTime("DepartureTime").toLocalTime();
-				String dest = rs.getNString("Destination");
-				String transportInfo = rs.getNString("TransportInfo");
-				BigDecimal adultPrice = rs.getBigDecimal("AdultPrice");
-				BigDecimal childPrice = rs.getBigDecimal("ChildPrice");
-				int maxParticipants = rs.getInt("MaxParticipants");
-				int currentParticipants = rs.getInt("CurrentParticipants");
-				String status = rs.getNString("Status");
-				
-				Tour tour = new Tour(tourId, tourName, description, depDate, duration, depLocation, departureTime, dest, transportInfo, adultPrice, childPrice, maxParticipants, currentParticipants, status);
-				results.add(tour);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return results;
-	}
-
-    public Tour getByTourId(String tourId) {
-        String query = "SELECT * FROM Tour WHERE TourID = ?";
-        Tour temp = null;
-
-        try {
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, tourId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-            	String id = rs.getString(1);
-                String tourName = rs.getNString(2);
-                String description = rs.getNString(3);
-                LocalDate departureDate = rs.getDate(4) != null ? rs.getDate(4).toLocalDate() : null;
-                int duration = rs.getInt(5);
-                String departureLocation = rs.getNString(6);
-                LocalTime departureTime = rs.getTime(7).toLocalTime();
-                String destination = rs.getNString(8);
-                String transportInfo = rs.getNString(9);
-                BigDecimal adultPrice = rs.getBigDecimal(10);
-                BigDecimal childPrice = rs.getBigDecimal(11);
-                int maxParticipants = rs.getInt(12);
-                int currentParticipants = rs.getInt(13);
-                String status = rs.getNString(14);
-
-                temp = new Tour(id, tourName, description, departureDate, 0, departureLocation, departureTime, destination, transportInfo, adultPrice, childPrice, 0 ,0, status);
-            }
-        } catch (SQLException e) {
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 
         return temp;
     }
 
-    public boolean add(Tour tour) {
+    public boolean add(Tour tour, String base64Image) {
         boolean result = false;
-        String query = "INSERT INTO Tour (TourID, TourName, Description, DepartureDate, Duration, DepartureLocation, DepartureTime, Destination, TransportInfo, AdultPrice, ChildPrice, MaxParticipants, CurrentParticipants, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Tour (TourID, Images, TourName, Description, DepartureDate, Duration, DepartureLocation, DepartureTime, Destination, TransportInfo, AdultPrice, ChildPrice, MaxParticipants, CurrentParticipants, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try {
+        try 
+        {
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, tour.getTourId());
-            stmt.setString(2, tour.getTourName());
-            stmt.setString(3, tour.getDescription());
-            stmt.setDate(4, Date.valueOf(tour.getDepartureDate()));
-            stmt.setInt(5, tour.getDuration());
-            stmt.setString(6, tour.getDepartureLocation());
-            stmt.setTime(7, java.sql.Time.valueOf(tour.getDepartureTime()));
-            stmt.setString(8, tour.getDestination());
-            stmt.setString(9, tour.getTransportInfo());
-            stmt.setBigDecimal(10, tour.getAdultPrice());
-            stmt.setBigDecimal(11, tour.getChildPrice());
-            stmt.setInt(12, tour.getMaxParticipants());
-            stmt.setInt(13, tour.getCurrentParticipants());
-            stmt.setString(14, tour.getStatus());
+            stmt.setString(2, base64Image);
+            stmt.setString(3, tour.getTourName());
+            stmt.setString(4, tour.getDescription());
+            stmt.setDate(5, Date.valueOf(tour.getDepartureDate()));
+            stmt.setInt(6, tour.getDuration());
+            stmt.setString(7, tour.getDepartureLocation());
+            stmt.setTime(8, java.sql.Time.valueOf(tour.getDepartureTime()));
+            stmt.setString(9, tour.getDestination());
+            stmt.setString(10, tour.getTransportInfo());
+            stmt.setDouble(11, tour.getAdultPrice());
+            stmt.setDouble(12, tour.getChildPrice());
+            stmt.setInt(13, tour.getMaxParticipants());
+            stmt.setInt(14, tour.getCurrentParticipants());
+            stmt.setString(15, tour.getStatus());
             
             if (stmt.executeUpdate() >= 1) {
                 result = true;
@@ -226,35 +278,74 @@ public class Tour_DAO {
         return result;
     }
 
-    public boolean update(Tour tour) {
+    public boolean update(Tour tour,String base64Image) {
         boolean result = false;
-        String query = "UPDATE Tour SET TourID = ?, TourName = ?, Description = ?, DepartureDate = ?, Duration = ?, DepartureLocation = ?, DepartureTime = ?, Destination = ?, TransportInfo = ?, AdultPrice = ?, ChildPrice = ?, MaxParticipants = ?,  CurrentParticipants = ?, Status = ? WHERE TourID = ?";
+        if(base64Image!=null)
+        {
+        	String query = "UPDATE Tour SET TourID = ?, Images=?, TourName = ?, Description = ?, DepartureDate = ?, Duration = ?, DepartureLocation = ?, DepartureTime = ?, Destination = ?, TransportInfo = ?, AdultPrice = ?, ChildPrice = ?, MaxParticipants = ?,  CurrentParticipants = ?, Status = ? WHERE TourID = ?";
 
-        try {
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, tour.getTourId());
-            stmt.setString(2, tour.getTourName());
-            stmt.setString(3, tour.getDescription());
-            //stmt.setDate(4, Date.valueOf(tour.getDepartureDate()));
-            stmt.setDate(4, java.sql.Date.valueOf(tour.getDepartureDate()));
-            stmt.setInt(5, tour.getDuration());
-            stmt.setString(6, tour.getDepartureLocation());
-            stmt.setTime(7, java.sql.Time.valueOf(tour.getDepartureTime()));
-            stmt.setString(8, tour.getDestination());
-            stmt.setString(9, tour.getTransportInfo());
-            stmt.setBigDecimal(10, tour.getAdultPrice());
-            stmt.setBigDecimal(11, tour.getChildPrice());
-            stmt.setInt(12, tour.getMaxParticipants());
-            stmt.setInt(13, tour.getCurrentParticipants());
-            stmt.setString(14, tour.getStatus());
-            stmt.setString(15, tour.getTourId());
+            try {
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, tour.getTourId());
+                stmt.setString(2, base64Image);
+                stmt.setString(3, tour.getTourName());
+                stmt.setString(4, tour.getDescription());
+                stmt.setDate(5, Date.valueOf(tour.getDepartureDate()));
+                stmt.setInt(6, tour.getDuration());
+                stmt.setString(7, tour.getDepartureLocation());
+                stmt.setTime(8, java.sql.Time.valueOf(tour.getDepartureTime()));
+                stmt.setString(9, tour.getDestination());
+                stmt.setString(10, tour.getTransportInfo());
+                stmt.setDouble(11, tour.getAdultPrice());
+                stmt.setDouble(12, tour.getChildPrice());
+                stmt.setInt(13, tour.getMaxParticipants());
+                stmt.setInt(14, tour.getCurrentParticipants());
+                stmt.setString(15, tour.getStatus());
+                stmt.setString(16,tour.getTourId());
 
-            if (stmt.executeUpdate() >= 1) {
-                result = true;
+                if (stmt.executeUpdate() >= 1) 
+                {
+                    result = true;
+                }
+            } 
+            catch (SQLException e) 
+            {
+                e.printStackTrace();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        else
+        {
+        	String query = "UPDATE Tour SET TourID = ?, TourName = ?, Description = ?, DepartureDate = ?, Duration = ?, DepartureLocation = ?, DepartureTime = ?, Destination = ?, TransportInfo = ?, AdultPrice = ?, ChildPrice = ?, MaxParticipants = ?,  CurrentParticipants = ?, Status = ? WHERE TourID = ?";
+
+            try {
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, tour.getTourId());
+                stmt.setString(2, tour.getTourName());
+                stmt.setString(3, tour.getDescription());
+                stmt.setDate(4, Date.valueOf(tour.getDepartureDate()));
+                stmt.setInt(5, tour.getDuration());
+                stmt.setString(6, tour.getDepartureLocation());
+                stmt.setTime(7, java.sql.Time.valueOf(tour.getDepartureTime()));
+                stmt.setString(8, tour.getDestination());
+                stmt.setString(9, tour.getTransportInfo());
+                stmt.setDouble(10, tour.getAdultPrice());
+                stmt.setDouble(11, tour.getChildPrice());
+                stmt.setInt(12, tour.getMaxParticipants());
+                stmt.setInt(13, tour.getCurrentParticipants());
+                stmt.setString(14, tour.getStatus());
+                stmt.setString(15,tour.getTourId());
+
+                if (stmt.executeUpdate() >= 1) 
+                {
+                    result = true;
+                }
+            } 
+            catch (SQLException e) 
+            {
+                e.printStackTrace();
+            }
+        }
+        
 
         return result;
     }
@@ -292,7 +383,18 @@ public class Tour_DAO {
 
         return result;
     }
-    
+
+    public Image decodeBase64ToImage(String base64Image) throws Exception 
+    {
+    	if (base64Image == null || base64Image.isEmpty()) 
+    	{
+            throw new IllegalArgumentException("Base64 image string is null or empty");
+        }
+    	
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        return ImageIO.read(new ByteArrayInputStream(imageBytes));
+    }
+
     public String generateNextTourId() {
         String query = "SELECT MAX(TourID) FROM Tour WHERE TourID LIKE 'TOUR%'";
         try (Statement stmt = con.createStatement();
@@ -303,7 +405,7 @@ public class Tour_DAO {
                     return "TOUR001";
                 }
                 
-                if (maxId.length() >= 3) {
+                if (maxId.length() >= 4) {
                     try {
                         int currentNum = Integer.parseInt(maxId.substring(4).trim());
                         return String.format("TOUR%03d", currentNum + 1);

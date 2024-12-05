@@ -278,11 +278,11 @@ public class TourDetail extends JFrame {
         pnlDescription.add(lblCurrentParticipants);
         
         NumberFormat formatVN = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
-        JLabel lblAdultPrice = new JLabel("- Người lớn: " + String.valueOf(formatVN.format(selectedTour.getAdultPrice().intValue())) + "/ Vé");
+        JLabel lblAdultPrice = new JLabel("- Người lớn: " + String.valueOf(formatVN.format(selectedTour.getAdultPrice())) + "/ Vé");
         lblAdultPrice.setFont(new Font("Arial", Font.PLAIN, 16));
         pnlDescription.add(lblAdultPrice);
         
-        JLabel lblChildPrice = new JLabel("- Trẻ em: " + String.valueOf(formatVN.format(selectedTour.getChildPrice().intValue())) + "/ Vé");
+        JLabel lblChildPrice = new JLabel("- Trẻ em: " + String.valueOf(formatVN.format(selectedTour.getChildPrice())) + "/ Vé");
         lblChildPrice.setFont(new Font("Arial", Font.PLAIN, 16));
         pnlDescription.add(lblChildPrice);
         
@@ -321,7 +321,7 @@ public class TourDetail extends JFrame {
         	Customer customer = customer_dao.getByPhone(phone);
         	customer_id = customer.getCustomerId();
         }
-        BigDecimal totalPrice = selectedTour.getAdultPrice().multiply(BigDecimal.valueOf(adultTickets)).add(selectedTour.getChildPrice().multiply(BigDecimal.valueOf(childTickets)));
+        double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
         Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chờ thanh toán", null);
         order_dao.add(order);
         JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -337,7 +337,7 @@ public class TourDetail extends JFrame {
 			int numAdults = (Integer) adultSpinner.getValue();
 			int numChilds = (Integer) childSpinner.getValue();
 			
-			double totalPrice = (numAdults * selectedTour.getAdultPrice().intValue()) + (numChilds * selectedTour.getChildPrice().intValue());
+			double totalPrice = (numAdults * selectedTour.getAdultPrice()) + (numChilds * selectedTour.getChildPrice());
 			NumberFormat formatVN = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
 			lblTotalPrice.setText(formatVN.format(totalPrice));
 		}

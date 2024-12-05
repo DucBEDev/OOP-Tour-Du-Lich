@@ -485,13 +485,13 @@ public class Dashboard extends JFrame {
         pnlPrice.setOpaque(false);
 		NumberFormat formatVN = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
 		
-        JLabel lblAdultPrice = new JLabel("Người lớn: " + String.valueOf(formatVN.format(tour.getAdultPrice().intValue())) + "/ Vé");
+        JLabel lblAdultPrice = new JLabel("Người lớn: " + String.valueOf(formatVN.format(tour.getAdultPrice())) + "/ Vé");
         lblAdultPrice.setFont(new Font("Arial", Font.BOLD, 16));
         lblAdultPrice.setForeground(new Color(255, 153, 0)); 
         lblAdultPrice.setHorizontalAlignment(JLabel.RIGHT);
         pnlPrice.add(lblAdultPrice);
         
-        JLabel lblChildPrice = new JLabel("Trẻ em: " + String.valueOf(formatVN.format(tour.getChildPrice().intValue())) + "/ Vé");
+        JLabel lblChildPrice = new JLabel("Trẻ em: " + String.valueOf(formatVN.format(tour.getChildPrice())) + "/ Vé");
         lblChildPrice.setFont(new Font("Arial", Font.BOLD, 16));
         lblChildPrice.setForeground(new Color(255, 153, 0)); 
         lblChildPrice.setHorizontalAlignment(JLabel.RIGHT);

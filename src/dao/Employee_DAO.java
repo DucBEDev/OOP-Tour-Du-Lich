@@ -129,6 +129,7 @@ public class Employee_DAO {
             stmt.setString(7, employee.getPermissions());
             stmt.setString(8, employee.getStatus());
             stmt.setString(9, employee.getEmployeeId());
+            
 
             if (stmt.executeUpdate() >= 1) {
                 result = true;

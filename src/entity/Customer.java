@@ -43,7 +43,7 @@ public final class Customer {
     }
     public void setCustomerId() 
     {
-        this.customerId = String.format("EM%03d", nextCustomerId++); // Format the ID as EM001, EM002, etc.
+        this.customerId = customerId;
     }
 
         //Generate Getter & Setter for fullName

@@ -25,6 +25,11 @@ public class Customer_DAO {
         db.connect();  // Initialize the database connection
         this.con = ConnectDB.getConnection();  // Get the connection object
     }
+    
+    public Connection getCon()
+    {
+    	return con;
+    }
 
     public ArrayList<Customer> getAll() {
         String query = "SELECT * FROM Customer";
@@ -87,6 +92,37 @@ public class Customer_DAO {
         return temp;
     }
     
+    public Customer getByPhone(String customerPhone)
+    {
+    	String query = "SELECT * FROM Customer where Phone=?";
+    	Customer temp = null;
+    	
+        try {
+        	PreparedStatement stmt = con.prepareStatement(query); 
+        	stmt.setString(1,customerPhone); 
+        	ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+            	String customerIdTemp = rs.getString(1);
+                String fullName = rs.getNString(2);
+                String phone = rs.getString(3);
+                String email = rs.getString(4);
+                String address = rs.getNString(5);
+                String status = rs.getNString(6);
+                String userName = rs.getString(7);
+                String password = rs.getString(8);
+                LocalDate createdAt = rs.getDate(9).toLocalDate();
+                
+                temp  = new Customer(customerIdTemp, fullName, phone, email, address, status, userName, password);
+                temp.setCreatedAt(createdAt);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        
+        return temp;
+    }
+    
     public boolean add(Customer customer)
     {
     	boolean result = false;
@@ -102,10 +138,13 @@ public class Customer_DAO {
         	stmt.setString(6,customer.getStatus()); 
         	stmt.setString(7,customer.getUserName()); 
         	stmt.setString(8,customer.getPassword()); 
+        	System.out.print(customer);
 
             if (stmt.executeUpdate()>=1) 
             {
-            	result = true;                
+            	result = true;              
+            	System.out.print(customer);
+
            }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -202,35 +241,6 @@ public class Customer_DAO {
         
         return result;
     }
-
-    public Customer getByPhone(String phone) {
-        String query = "SELECT * FROM Customer WHERE Phone = ?";
-        Customer temp = null;
-        
-        try {
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, phone);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                String customerId = rs.getString(1);
-                String fullName = rs.getNString(2);
-                String phoneNumber = rs.getString(3);
-                String email = rs.getString(4);
-                String address = rs.getNString(5);
-                String status = rs.getNString(6);
-                String userName = rs.getString(7);
-                String password = rs.getString(8);
-                LocalDate createdAt = rs.getDate(9).toLocalDate();
-                
-                temp = new Customer(customerId, fullName, phoneNumber, email, address, status, userName, password);
-                temp.setCreatedAt(createdAt);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        return temp;
-    }
     
     public String generateNextCustomerId() {
         String query = "SELECT MAX(CustomerID) FROM Customer WHERE CustomerID LIKE 'CUS%'";
@@ -241,7 +251,7 @@ public class Customer_DAO {
                 if (maxId == null) {
                     return "CUS001";
                 }
-                
+             
                 if (maxId.length() >= 3) {
                     try {
                         int currentNum = Integer.parseInt(maxId.substring(3).trim());

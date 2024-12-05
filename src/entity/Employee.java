@@ -30,7 +30,7 @@ public final class Employee {
 
     public Employee(String employeeId, String fullName, String phone, String email, String address, String userName, String password, String permissions) 
     {
-    	this.employeeId=employeeId;
+    	if(employeeId==null) setEmployeeId(); else this.employeeId = employeeId;
     	System.out.println(employeeId);
         this.fullName = fullName;
         setPhone(phone);
@@ -115,7 +115,11 @@ public final class Employee {
 
     public void setEmployeeId() 
     {
-        this.employeeId = String.format("EM%03d", nextEmployeeId++); 
+        this.employeeId = employeeId;
+    }
+    
+    public void setEmployeeId(String employeeId) {
+    	this.employeeId = employeeId;
     }
 
         //Generate Getter & Setter for username
@@ -141,9 +145,11 @@ public final class Employee {
 
         //Check if permissions is valid
     public void setPermissions(String permissions) {
-        if (permissions.equals(PERMISSION_STAFF) || permissions.equals(PERMISSION_ADMIN)) {
+        if (permissions.equals(PERMISSION_STAFF) || permissions.equals(PERMISSION_ADMIN)) 
+        {
             this.permissions = permissions;
-        } else {
+        } else 
+        {
             throw new IllegalArgumentException("Vai trò không hợp lệ");
         }
     }
@@ -195,9 +201,5 @@ public final class Employee {
                ", Password: " + password;
     }
     
-    public static void main(String[] args)
-    {
-    	Employee employee = new Employee( "nigga", "0366189422", "nigga123@gmail.com", "Summoner Rift", "nigga123" , "nigga1234556788", Employee.PERMISSION_STAFF );
-    	System.out.println(employee);
-    }
+   
 }
