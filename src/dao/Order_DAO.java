@@ -479,7 +479,7 @@ public class Order_DAO {
     }
 	
 	public String generateNextOrderId() {
-        String query = "SELECT MAX(OrderID) FROM [Order] WHERE OrderID LIKE 'ORD%'";
+		String query = "SELECT MAX(OrderID) FROM [Order] WHERE OrderID LIKE 'ORD%'";
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {

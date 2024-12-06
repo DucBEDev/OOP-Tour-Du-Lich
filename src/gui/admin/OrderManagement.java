@@ -58,6 +58,13 @@ public class OrderManagement extends JPanel {
         nextPage.addActionListener(evt -> NextPagePanel(evt));
 
         searchTextField = new JTextField("Nhập mã đơn hàng để tìm");
+        searchTextField.addMouseListener(new MouseAdapter() 
+        {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		searchTextField.setText("");
+        	}
+        });
         searchTextField.addActionListener(evt -> 
         {
             String tempOrderId = searchTextField.getText();

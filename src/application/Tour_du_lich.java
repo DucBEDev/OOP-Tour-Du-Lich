@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
 import dao.Customer_DAO;
 import dao.Employee_DAO;
 import dao.Tour_DAO;
@@ -22,10 +25,17 @@ import entity.Tour;
 import gui.admin.SignIn;
 
 public class Tour_du_lich {
-	public static void main(String[] args) 
-	{
-       SignIn si = new SignIn();
-       si.setVisible(true);
+	public static void main(String[] args) {
+       try {
+           UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+       
+       SwingUtilities.invokeLater(() -> {
+    	   SignIn si = new SignIn();
+           si.setVisible(true);
+       });
     }
 }
 

@@ -1,6 +1,7 @@
 package gui.admin;
 
 import javax.swing.JFrame;
+
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
@@ -8,6 +9,8 @@ import javax.swing.border.EmptyBorder;
 
 import dao.Employee_DAO;
 import entity.Employee;
+import dao.Customer_DAO;
+import entity.Customer;
 import gui.client.Dashboard;
 
 import javax.swing.JLabel;
@@ -25,6 +28,7 @@ import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
 public class SignIn extends JFrame {
 	private JTextField txtUserName;
 	private JPasswordField txtPassword;
@@ -41,6 +45,8 @@ public class SignIn extends JFrame {
 	private JButton btnGuest;
 	
 	private static Employee employee;
+	
+	private JButton btnRegister;
 
 	public SignIn() {
 		this.init();
@@ -89,6 +95,7 @@ public class SignIn extends JFrame {
 		txtUserName.setBackground(new Color(133, 216, 255));
 		txtUserName.setBorder(null);
 		txtUserName.requestFocusInWindow();
+		txtUserName.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlLogin.add(txtUserName);
 		txtUserName.setColumns(10);
 		
@@ -108,6 +115,7 @@ public class SignIn extends JFrame {
 		txtPassword.setBackground(new Color(133, 216, 255));
 		txtPassword.setBorder(null);
 		txtPassword.requestFocusInWindow();
+		txtPassword.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		pnlLogin.add(txtPassword);
 		txtPassword.setColumns(10);
 		
@@ -125,6 +133,21 @@ public class SignIn extends JFrame {
 		btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		pnlLogin.add(btnLogin);
 		
+		btnRegister = new JButton("Chưa có tài khoản?");
+		btnRegister.setBackground(new Color(133, 216, 255));
+		btnRegister.setBorderPainted(false);
+		btnRegister.setContentAreaFilled(false);
+		btnRegister.setFont(new Font("Tahoma", Font.ITALIC, 13));
+		btnRegister.setBounds(82, 459, 236, 32);
+		btnRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btnRegister.setFocusPainted(false);
+		btnRegister.addActionListener(e -> {
+			Register register = new Register();
+			register.setVisible(true);
+			this.dispose();
+		});
+		pnlLogin.add(btnRegister);
+		
 		btnGuest = new JButton("Đăng nhập với tài khoản khách?");
 		btnGuest.setBackground(new Color(133, 216, 255));
 		btnGuest.setBorderPainted(false);
@@ -134,7 +157,8 @@ public class SignIn extends JFrame {
 		btnGuest.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnGuest.setFocusPainted(false);
 		btnGuest.addActionListener(e -> {
-			Dashboard dashboard = new Dashboard();
+			Customer cus = new Customer();
+			Dashboard dashboard = new Dashboard(cus);
 			dashboard.setVisible(true);
 			this.dispose();
 		});
@@ -142,7 +166,6 @@ public class SignIn extends JFrame {
 	}
 	
 	private void btnLoginPerformed(){
-		//Lay username & password
 		String username = txtUserName.getText();
 		String password = String.valueOf(txtPassword.getPassword());
 		Manager mag;
@@ -154,21 +177,24 @@ public class SignIn extends JFrame {
 		{
 			employee = employeeDAO.getByUsername(username);
 			mag = new Manager(employee);
-			mag.setVisible(true);
-		}
-		else if(username.equals("1") && password.equals("1"))
-		{
-			System.out.println("Employee");
-
-			mag = new Manager(employee);
-			mag.setVisible(true);
-		}
-		else 
-		{
-			System.out.println("Client");
 		}
 		
-		this.dispose();
+		else 
+		{
+			Customer_DAO customer_dao = new Customer_DAO();
+			Customer customer = customer_dao.checkLogin(username, password);
+			
+			if (customer != null) {
+				Dashboard dashboard = new Dashboard(customer);
+				dashboard.setVisible(true);
+				this.dispose();
+			}
+			else {
+				JOptionPane.showMessageDialog(null,"Đăng nhập không thành công");
+				txtUserName.setText("");
+				txtPassword.setText("");
+			}
+		}
 	}
 	
 	public static Employee getEmployee()

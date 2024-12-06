@@ -26,6 +26,7 @@ public final class Tour {
     private int maxParticipants;
     private int currentParticipants;
     private String status;
+    private static int nextTourId =1;
 
     public Tour() {
 
@@ -56,12 +57,7 @@ public final class Tour {
         return tourId;
     }
     public void setTourId(String tourId) {
-        if (tourId.length() <= 10) {
-            this.tourId = tourId;
-        }
-        else {
-            throw new IllegalArgumentException("ID tour không hợp lệ");
-        }
+    	this.tourId = tourId;
     }
 
         //Generate Getter & Setter for image

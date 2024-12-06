@@ -1,6 +1,8 @@
 package gui.admin;
 
 import java.awt.BorderLayout;
+
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
@@ -22,6 +24,30 @@ import dao.Employee_DAO;
 
 public class EmployeeManagement extends JPanel
 {
+	private JLabel fullNameLabel;
+	private JLabel phoneLabel;
+	private JLabel emailLabel;
+	private JLabel addressLabel;
+	private JLabel userNameLabel;
+	private JLabel passwordLabel;
+	private JLabel permissionsLabel;
+	
+	private JTextField fullNameContent;
+	private JTextField phoneContent;
+	private JTextField emailContent;
+	private JTextField addressContent;
+	private JTextField userNameContent;
+	private JPasswordField passwordContent;
+	private JComboBox<String> permissionsContent;
+	
+	private String fullName;
+	private String phone;
+	private String email;
+	private String address;
+	private String userName;
+	private String password;
+	private String permissions;
+	
 	private int totalPages = 1;
 	private int currentPage = 1;
 	private  int rowPerPage = 10;
@@ -64,13 +90,20 @@ public class EmployeeManagement extends JPanel
 		
 		
 		JButton previousPage = new JButton("<");
-		previousPage.addActionListener(evt->PreviousPagePanel(evt));
+		previousPage.addActionListener(evt->previousPagePanel(evt));
 		
 		JButton nextPage = new JButton(">");
 		nextPage.addActionListener(evt->NextPagePanel(evt));
 		
 		
 		searchTextField = new JTextField("Nhập mã nhân viên để tìm");
+		searchTextField.addMouseListener(new MouseAdapter() 
+        {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		searchTextField.setText("");
+        	}
+        });
 		searchTextField.addActionListener(evt->
 		{
 			String tempEmployeeId = searchTextField.getText();
@@ -84,7 +117,7 @@ public class EmployeeManagement extends JPanel
 			}
 			else if(tempEmployeeId.equals(""))
 			{
-				LoadEmployeeData();
+				loadEmployeeData();
 			}
 			else 
 			{
@@ -109,21 +142,21 @@ public class EmployeeManagement extends JPanel
         add(pageControlButtonPanel, BorderLayout.SOUTH);
         
         
-        LoadEmployeeData();
+        loadEmployeeData();
 	}
 	
 	// Hiện thông tin khách hàng
-		private void LoadEmployeeData() 
+		private void loadEmployeeData() 
 		{
 		    // Lấy danh sách khách hàng
 			employees = employeeDAO.getAll();
 			totalPages = (int) Math.ceil((double) employees.size() / rowPerPage);
-			UpdatePage(); // Chỉ tải dữ liệu của trang đầu tiên
+			updatePage(); // Chỉ tải dữ liệu của trang đầu tiên
 		}
 		
 		
 		// Cập nhật UI ở trang hiện tại
-		private void UpdatePage() 
+		private void updatePage() 
 		{
 	        employeeListPanel.removeAll();
 
@@ -189,12 +222,12 @@ public class EmployeeManagement extends JPanel
 		
 		
 		// Tạo event chuyển trang trước
-		private void PreviousPagePanel(ActionEvent e) 
+		private void previousPagePanel(ActionEvent e) 
 		{
 		    if (currentPage > 1) 
 		    {
 		        currentPage--;
-		        UpdatePage();
+		        updatePage();
 		    }
 		}
 		
@@ -205,7 +238,7 @@ public class EmployeeManagement extends JPanel
 		    if (currentPage < totalPages) 
 		    {
 		        currentPage++;
-		        UpdatePage();
+		        updatePage();
 		    }
 		}
 		
@@ -249,30 +282,6 @@ public class EmployeeManagement extends JPanel
 	
 	private class AddEmployeeDialog implements ActionListener
 	{
-		
-		private JLabel fullNameLabel;
-		private JLabel phoneLabel;
-		private JLabel emailLabel;
-		private JLabel addressLabel;
-		private JLabel userNameLabel;
-		private JLabel passwordLabel;
-		private JLabel permissionsLabel;
-		
-		private JTextField fullNameContent;
-		private JTextField phoneContent;
-		private JTextField emailContent;
-		private JTextField addressContent;
-		private JTextField userNameContent;
-		private JTextField passwordContent;
-		private JComboBox<String> permissionsContent;
-		
-		private String fullName;
-		private String phone;
-		private String email;
-		private String address;
-		private String userName;
-		private String password;
-		private String permissions;
 
 		@Override
 		public void actionPerformed(ActionEvent e) 
@@ -284,143 +293,32 @@ public class EmployeeManagement extends JPanel
 			
 			fullNameLabel = new JLabel("Họ tên:");
 			fullNameContent = new JTextField();
-			fullNameContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String fullNameTemp = fullNameContent.getText();
-	                if(fullNameTemp.matches("^[A-Za-z ]+$")) 
-	                {
-	                	fullName = fullNameTemp;
-	                	System.out.println("Full Name: " + fullName);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		fullNameContent.setText("");
-	                	}
-	            }
-	        });
-
-
+			
 			phoneLabel = new JLabel("Số điện thoại:");
 			phoneContent = new JTextField();
-			phoneContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String phoneTemp = phoneContent.getText();
-	                if(phoneTemp.matches("\\d{10}")) 
-	                {
-	                	phone = phoneTemp;
-	                	System.out.println("Phone: " + phone);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		phoneContent.setText("");
-	                	}
-	            }
-	        });
-
+			
 			emailLabel = new JLabel("Email:");
 			emailContent = new JTextField();
-			emailContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String emailTemp = emailContent.getText();
-	                if(emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) 
-	                {
-	                	email = emailTemp;
-	                	System.out.println("Email: " + email);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		emailContent.setText("");
-	                	}
-	            }
-	        });
-
 
 			addressLabel = new JLabel("Địa chỉ:");
 			addressContent = new JTextField();
-			addressContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String adressTemp = addressContent.getText();
-	                if(adressTemp.matches("^[A-Za-z ]+$")) 
-	                {
-	                	address = adressTemp;
-	                	System.out.println("Address: " + address);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		addressContent.setText("");
-	                	}
-	            }
-	        });
-
 			
 			userNameLabel = new JLabel("Tên tài khoản:");
 			userNameContent = new JTextField();
-			userNameContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String userNameContentTemp = userNameContent.getText();
-	                if(userNameContentTemp.matches("^[A-Za-z0-9_.-]+$")) 
-	                {
-	                	userName = userNameContentTemp;
-	                	System.out.println("Username: " + userName);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		userNameContent.setText("");
-	                	}
-	            }
-	        });
 
 			passwordLabel = new JLabel("Mật khẩu:");
 			passwordContent = new JPasswordField();
-			passwordContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String passwordContentTemp = passwordContent.getText();
-	                if(passwordContentTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) 
-	                {
-	                	password = passwordContentTemp;
-	                	System.out.println("Username: " + password);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		passwordContent.setText("");
-	                	}
-	            }
-	        });
 
 			permissionsLabel = new JLabel("Quyền hạn:");
 			permissionsContent =  new JComboBox<>();
-			permissionsContent.addItem("Nhân viên");
-			permissionsContent.addItem("Admin");
+			permissionsContent.addItem("staff");
+			permissionsContent.addItem("admin");
 			permissionsContent.addActionListener(new ActionListener() 
 			{
 			    @Override
 			    public void actionPerformed(ActionEvent e) 
 			    {
-			        if (permissionsContent.getSelectedItem().equals("Admin")) 
+			        if (permissionsContent.getSelectedItem().equals("admin")) 
 			        {
 			            permissions = Employee.PERMISSION_ADMIN;
 			        } else 
@@ -460,13 +358,31 @@ public class EmployeeManagement extends JPanel
 	            @Override
 	            public void actionPerformed(ActionEvent e) 
 	            {
-	            	Employee_DAO employeeDAO = new Employee_DAO();
-	            	Employee temp = new Employee( fullName, phone, email, address, userName, password, permissions);
-	            	System.out.println(temp);
-	            	employeeDAO.add(temp);
+	            	if (!validateInput()) {
+	            		return;
+	            	}
+	            	
+	            	//customerId = customerIdTextField.getText().trim();
+	                fullName = fullNameContent.getText().trim();
+	                phone = phoneContent.getText().trim();
+	                email = emailContent.getText().trim();
+	                address = addressContent.getText().trim();
+	                permissions = (String) permissionsContent.getSelectedItem();
+	                userName = userNameContent.getText().trim();
+	                password = new String(passwordContent.getPassword()).trim();
 	                
-	                JOptionPane.showMessageDialog(addDialog, "Thêm tour thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-	                addDialog.dispose(); // Close the dialog after saving
+	            	try {
+	            		Employee_DAO employeeDAO = new Employee_DAO();
+		            	Employee temp = new Employee(employeeDAO.generateNextEmployeeId(), fullName, phone, email, address, userName, password, permissions);
+		            	System.out.println(temp);
+		            	employeeDAO.add(temp);
+		                
+		                JOptionPane.showMessageDialog(addDialog, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		                loadEmployeeData();
+		                addDialog.dispose(); // Close the dialog after saving
+	            	} catch (Exception ex) {
+	            		JOptionPane.showMessageDialog(addDialog, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+	            	}
 	            }
 	        });
 
@@ -494,15 +410,60 @@ public class EmployeeManagement extends JPanel
 	        addDialog.setSize(400, 500); // Set a reasonable size for the dialog
 	        addDialog.setLocationRelativeTo(null); // Center the dialog on the screen
 	        addDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-	        addDialog.setVisible(true); // Show the dialog
-			
-			
-			
+	        addDialog.setVisible(true); // Show the dialog	
 		}
-		
-				
-	
 	}		
 
+	
+	// Kiểm tra định dạng các thông tin
+		private boolean validateInput() 
+		{
+			String fullNameTemp = fullNameContent.getText().trim();
+			String phoneTemp = phoneContent.getText().trim();
+			String emailTemp = emailContent.getText().trim();
+			String addressTemp = addressContent.getText().trim();			
+			String userNameTemp = userNameContent.getText().trim();
+			String passwordTemp = new String(passwordContent.getPassword()).trim();
+			
+			
+			if (fullNameTemp.isEmpty() || !fullNameTemp.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
+		        JOptionPane.showMessageDialog(null, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        fullNameContent.requestFocus();
+		        return false;
+		    }
+
+		    if (phoneTemp.isEmpty() || !phoneTemp.matches("\\d{10}")) {
+		        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        phoneContent.requestFocus();
+		        return false;
+		    }
+
+		    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+		        JOptionPane.showMessageDialog(null, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        emailContent.requestFocus();
+		        return false;
+		    }
+
+		    if (addressTemp.isEmpty() || !addressTemp.matches("^[a-zA-ZÀ-ỹ0-9 .,-/]+$")) {
+		        JOptionPane.showMessageDialog(null, "Địa chỉ không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        addressContent.requestFocus();
+		        return false;
+		    }
+
+		    if (userNameTemp.isEmpty() || !userNameTemp.matches("^[A-Za-z0-9_.-]+$")) {
+		        JOptionPane.showMessageDialog(null, "Tên tài khoản có thể gồm các ký tự chữ cái, số và ký tự đặc biệt ( _ / . / - )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        userNameContent.requestFocus();
+		        return false;
+		    }
+
+		    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) {
+		        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        passwordContent.requestFocus();
+		        return false;
+		    }
+
+		    // Tất cả dữ liệu hợp lệ
+		    return true;
+		}	
 
 }

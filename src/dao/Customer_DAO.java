@@ -226,26 +226,23 @@ public class Customer_DAO {
         return result;
     }
     
-    public boolean checkExistByPhone(String customerPhone)
-    {
-    	String query = "SELECT * FROM Customer where Phone=?";
-    	boolean result=false;
-    	
+    public boolean checkExistByPhone(String phone) {
+        String query = "SELECT * FROM Customer WHERE Phone = ?";
+        boolean result = false;
+        
         try {
-        	PreparedStatement stmt = con.prepareStatement(query); 
-        	stmt.setString(1,customerPhone); 
-        	ResultSet rs = stmt.executeQuery();
-            result = rs.next();            
-        }
-         catch (SQLException e) {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, phone);
+            ResultSet rs = stmt.executeQuery();
+            result = rs.next();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        
         
         return result;
     }
     
-     public String generateNextCustomerId() {
+    public String generateNextCustomerId() {
         String query = "SELECT MAX(CustomerID) FROM Customer WHERE CustomerID LIKE 'CUS%'";
         try (Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -254,7 +251,7 @@ public class Customer_DAO {
                 if (maxId == null) {
                     return "CUS001";
                 }
-                
+             
                 if (maxId.length() >= 3) {
                     try {
                         int currentNum = Integer.parseInt(maxId.substring(3).trim());
@@ -270,8 +267,34 @@ public class Customer_DAO {
         }
         return "CUS000";
     }
-     
-     
-     
+    
+    public Customer checkLogin(String userName, String password) {
+        String query = "SELECT * FROM Customer WHERE Username = ? AND Password = ?";
+        Customer customer = null;
+        
+        try {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, userName);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                String customerId = rs.getString(1);
+                String fullName = rs.getNString(2);
+                String phone = rs.getString(3);
+                String email = rs.getString(4);
+                String address = rs.getNString(5);
+                String status = rs.getNString(6);
+                LocalDate createdAt = rs.getDate(9).toLocalDate();
+                
+                customer = new Customer(customerId, fullName, phone, email, address, status, userName, password);
+                customer.setCreatedAt(createdAt);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return customer;
+    }
 }
 

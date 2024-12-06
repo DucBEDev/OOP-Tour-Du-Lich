@@ -62,6 +62,13 @@ public class TourManagement extends JPanel {
         nextPage.addActionListener(evt -> nextPagePanel(evt));
 
         searchTextField = new JTextField("Nhập mã tour để tìm");
+        searchTextField.addMouseListener(new MouseAdapter() 
+        {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		searchTextField.setText("");
+        	}
+        });
         searchTextField.addActionListener(evt -> {
             String tempTourId = searchTextField.getText();
             if (tourDAO.checkExistById(tempTourId)) 
