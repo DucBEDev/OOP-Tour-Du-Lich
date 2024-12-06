@@ -6,6 +6,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
 
+import dao.Employee_DAO;
+import entity.Employee;
 import gui.client.Dashboard;
 
 import javax.swing.JLabel;
@@ -37,6 +39,8 @@ public class SignIn extends JFrame {
 	private JSeparator sepPassword;
 	private JButton btnLogin;
 	private JButton btnGuest;
+	
+	private static Employee employee;
 
 	public SignIn() {
 		this.init();
@@ -143,22 +147,32 @@ public class SignIn extends JFrame {
 		String password = String.valueOf(txtPassword.getPassword());
 		Manager mag;
 		JOptionPane.showMessageDialog(null,"Dang nhap thanh cong");
+		Employee_DAO employeeDAO = new Employee_DAO();
 		
 //			UserDTO role = ubs.getByName(username);
-		if (username.equals("1") && password.equals("1")) {
-			mag = new Manager();
+		if (employeeDAO.checkExistByUsername(username)) 
+		{
+			employee = employeeDAO.getByUsername(username);
+			mag = new Manager(employee);
 			mag.setVisible(true);
 		}
-		else if (username.equals("2") && password.equals("2")) {
+		else if(username.equals("1") && password.equals("1"))
+		{
 			System.out.println("Employee");
-			mag = new Manager();
-			//mag.getContentPane().remove(mag.getLblNewLabel_1());
+
+			mag = new Manager(employee);
 			mag.setVisible(true);
 		}
-		else {
+		else 
+		{
 			System.out.println("Client");
 		}
 		
 		this.dispose();
+	}
+	
+	public static Employee getEmployee()
+	{
+		return employee;
 	}
 }

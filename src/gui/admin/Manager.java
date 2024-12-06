@@ -14,6 +14,9 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import entity.Employee;
+
 import javax.swing.JLabel;
 
 public class Manager extends JFrame {
@@ -40,7 +43,7 @@ public class Manager extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Manager frame = new Manager();
+					Manager frame = new Manager(SignIn.getEmployee());
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,7 +55,7 @@ public class Manager extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Manager() {
+	public Manager(Employee employee) {
 		ManagerControl mouselistener = new ManagerControl();
 
 		// Initialize the content pane before adding components
@@ -92,14 +95,14 @@ public class Manager extends JFrame {
         customerManagement.addMouseListener(mouselistener);
 
         
-
+       
         employeeManagement = new JLabel("Employee Management");
         employeeManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         employeeManagement.setBackground(new Color(66, 165, 243));
         employeeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
         employeeManagement.setOpaque(true); 
         employeeManagement.addMouseListener(mouselistener);
-        
+             
         
 
         orderManagement = new JLabel("Order Management");
@@ -140,7 +143,7 @@ public class Manager extends JFrame {
         
         functionPanel.add(tourManagement);
         functionPanel.add(customerManagement);
-        functionPanel.add(employeeManagement);
+        if(employee.getPermissions().equals(Employee.PERMISSION_ADMIN)) functionPanel.add(employeeManagement);
         functionPanel.add(orderManagement);
         functionPanel.add(statistic);
         functionPanel.add(customerService);

@@ -87,6 +87,39 @@ public class Employee_DAO {
 
         return temp;
     }
+    
+    public Employee getByUsername(String username) {
+        String query = "SELECT * FROM Employee WHERE Username = ?";
+        Employee temp = null;
+
+        try {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                String id = rs.getString(1);
+                String fullName = rs.getNString(2);
+                String phone = rs.getString(3);
+                String email = rs.getString(4);
+                String address = rs.getNString(5);
+                String userName = rs.getString(6);
+                String password = rs.getString(7);
+                String permissions = rs.getString(8);
+                LocalDate hireDate = rs.getDate(9).toLocalDate();
+                String status = rs.getNString(10);
+
+
+                temp = new Employee(id, fullName, phone, email, address, userName, password, permissions);
+                temp.setHireDate(hireDate);
+                temp.setStatus(status);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return temp;
+    }
 
     public boolean add(Employee employee) {
         boolean result = false;
@@ -166,6 +199,22 @@ public class Employee_DAO {
         try {
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
+            result = rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    
+    public boolean checkExistByUsername(String username) {
+        String query = "SELECT * FROM Employee WHERE Username = ?";
+        boolean result = false;
+
+        try {
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();
         } catch (SQLException e) {
