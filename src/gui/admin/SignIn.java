@@ -177,6 +177,8 @@ public class SignIn extends JFrame {
 		{
 			employee = employeeDAO.getByUsername(username);
 			mag = new Manager(employee);
+			mag.setVisible(true);
+			this.dispose();
 		}
 		
 		else 
@@ -195,6 +197,7 @@ public class SignIn extends JFrame {
 				txtPassword.setText("");
 			}
 		}
+		
 	}
 	
 	public static Employee getEmployee()

@@ -22,6 +22,7 @@ public class OrderDetail extends JPanel {
 
     private JButton saveButton;
     private JButton cancelButton;
+    private JButton confirmButton;
 
     private JLabel orderIdLabel;
     private JLabel customerIdLabel;
@@ -60,9 +61,13 @@ public class OrderDetail extends JPanel {
     private Tour_DAO tourDAO = new Tour_DAO();
     
     private Employee_DAO employeeDAO = new Employee_DAO();
+    
+    private boolean isConfirmed;
 
-    public OrderDetail(Order order) 
+    public OrderDetail(Order order, boolean isConfirmed) 
     {
+    	this.isConfirmed=isConfirmed;
+    	
         setLayout(new BorderLayout(10, 10));
 
         formPanel = new JPanel();
@@ -84,20 +89,25 @@ public class OrderDetail extends JPanel {
                 repaint();
             }
         });
+        
+        if(!isConfirmed)
+        {
+        	editButton = new JLabel("Sửa");
+            editButton.setPreferredSize(new Dimension(100, 50));
+            editButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            editButton.setBorder(BorderFactory.createLineBorder(Color.black));
+            editButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    enableEditing(true);
+                }
+            });
+        }
 
-        editButton = new JLabel("Sửa");
-        editButton.setPreferredSize(new Dimension(100, 50));
-        editButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        editButton.setBorder(BorderFactory.createLineBorder(Color.black));
-        editButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                enableEditing(true);
-            }
-        });
+      
 
         functionButton.add(backButton, BorderLayout.WEST);
-        functionButton.add(editButton, BorderLayout.EAST);
+        if(!isConfirmed) functionButton.add(editButton, BorderLayout.EAST);
        
 
        
@@ -333,77 +343,120 @@ public class OrderDetail extends JPanel {
         formPanel.add(confirmedByContent);
         
         
-        
-        saveButton = new JButton("Lưu");
-        cancelButton = new JButton("Hủy");
-
-        // Action for the Save button
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-            	order.setCustomerId(customerId);
-            	order.setTourId(tourId);
-            	order.setAdultTickets(adultTickets);
-            	order.setChildTickets(childTickets);
-            	order.setOrderTime(orderTime);
-            	order.setTotalAmount(totalAmount);
-            	order.setStatus(status);
-            	order.setConfirmedBy(confirmedBy);
-
-            	
-            	if(orderDAO.update(order))
+        if(isConfirmed)
+        {
+        	confirmButton = new JButton("Xác nhận");
+        	confirmButton.addActionListener(e->
+        	{
+        		order.setStatus(Order.STATUS_PAID);
+        		if(orderDAO.update(order))
             	{
-                    JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Xác nhận đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
             	}
-            	else JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            	else JOptionPane.showMessageDialog(null, "Xác nhận đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+         	
+            	
+            	enableEditing(false);
+            	formPanel.revalidate();
+     		    formPanel.repaint(); // Close the dialog after saving            	
+        	});
+        	
+            cancelButton = new JButton("Hủy");        
+            cancelButton.addActionListener(e->
+            {
+            	order.setStatus(Order.STATUS_CANCELLED);
+        		if(orderDAO.update(order))
+            	{
+                    JOptionPane.showMessageDialog(null, "Hủy đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+            	}
+            	else JOptionPane.showMessageDialog(null, "Hủy đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
          	
             	
             	enableEditing(false);
             	formPanel.revalidate();
      		    formPanel.repaint(); // Close the dialog after saving
-            }
-        });
-
-        // Action for the Cancel button
-        cancelButton.addActionListener(new ActionListener() 
+            });
+            
+            formPanel.add(confirmButton);
+            formPanel.add(cancelButton);
+        }
+        else
         {
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-            	 orderId = order.getOrderId();
-                 customerId = order.getCustomerId();
-                 tourId = order.getTourId();
-                 adultTickets = order.getAdultTickets();
-                 childTickets = order.getChildTickets();
-                 orderTime = order.getOrderTime();
-                 totalAmount = order.getTotalAmount();
-                 status = order.getStatus();
-                 confirmedBy = order.getConfirmedBy();
+            saveButton = new JButton("Lưu");
+            saveButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) 
+                {
+                	order.setCustomerId(customerId);
+                	order.setTourId(tourId);
+                	order.setAdultTickets(adultTickets);
+                	order.setChildTickets(childTickets);
+                	order.setOrderTime(orderTime);
+                	order.setTotalAmount(totalAmount);
+                	order.setStatus(status);
+                	order.setConfirmedBy(confirmedBy);
 
-        		
-            	orderIdContent.setText(orderId);
-                customerIdContent.setText(customerId);
-                tourIdContent.setText(tourId);
-                adultTicketsContent.setText(String.valueOf(adultTickets));
-                childTicketsContent.setText(String.valueOf(childTickets));
-                orderTimeContent.setText(orderTime.toString());
-                totalAmountContent.setText(String.format("%.2f", totalAmount));
-                statusContent.setSelectedItem(status);
-                confirmedByContent.setText(confirmedBy);
-                
-		        
-                enableEditing(false);
-        		
-        		formPanel.revalidate();
-     		    formPanel.repaint(); // Close the dialog after saving
-            }
-        });
+                	
+                	if(orderDAO.update(order))
+                	{
+                        JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+                	}
+                	else JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+             	
+                	
+                	enableEditing(false);
+                	formPanel.revalidate();
+         		    formPanel.repaint(); // Close the dialog after saving
+                }
+            });
+            
+            cancelButton = new JButton("Hủy");        
+
+            // Action for the Cancel button
+            cancelButton.addActionListener(new ActionListener() 
+            {
+                @Override
+                public void actionPerformed(ActionEvent e) 
+                {
+                	 orderId = order.getOrderId();
+                     customerId = order.getCustomerId();
+                     tourId = order.getTourId();
+                     adultTickets = order.getAdultTickets();
+                     childTickets = order.getChildTickets();
+                     orderTime = order.getOrderTime();
+                     totalAmount = order.getTotalAmount();
+                     status = order.getStatus();
+                     confirmedBy = order.getConfirmedBy();
+
+            		
+                	orderIdContent.setText(orderId);
+                    customerIdContent.setText(customerId);
+                    tourIdContent.setText(tourId);
+                    adultTicketsContent.setText(String.valueOf(adultTickets));
+                    childTicketsContent.setText(String.valueOf(childTickets));
+                    orderTimeContent.setText(orderTime.toString());
+                    totalAmountContent.setText(String.format("%.2f", totalAmount));
+                    statusContent.setSelectedItem(status);
+                    confirmedByContent.setText(confirmedBy);
+                    
+    		        
+                    enableEditing(false);
+            		
+            		formPanel.revalidate();
+         		    formPanel.repaint(); // Close the dialog after saving
+                }
+            });
+            
+            formPanel.add(saveButton);
+            formPanel.add(cancelButton);
+        }
+        
 
         // Add buttons to the dialog
-        formPanel.add(saveButton);
-        formPanel.add(cancelButton);
+
         
         enableEditing(false);
 
@@ -423,8 +476,9 @@ public class OrderDetail extends JPanel {
         totalAmountContent.setEnabled(isEnabled);
         statusContent.setEnabled(isEnabled);
         confirmedByContent.setEnabled(isEnabled);
-        saveButton.setEnabled(isEnabled);
-        cancelButton.setEnabled(isEnabled);
+        if(!isConfirmed) saveButton.setEnabled(isEnabled);
+        if(!isConfirmed) cancelButton.setEnabled(isEnabled);
+        
     }
 
     private void showInvalidInputMessage(JTextField field) {

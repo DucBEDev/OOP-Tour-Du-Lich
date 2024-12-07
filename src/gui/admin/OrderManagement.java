@@ -21,10 +21,14 @@ public class OrderManagement extends JPanel {
     private JPanel orderListPanel;
     private JPanel functionButtonPanel;
     private JPanel pageControlButtonPanel;
+    private JPanel listChangingPanel;
+    private JPanel functionPanel;
 
     private JTextField searchTextField;
 
     private JLabel pageNumber;
+    private JLabel orderListLabel;
+    private JLabel orderListConfirmLabel;
 
     private Order_DAO orderDAO = new Order_DAO();
 
@@ -32,8 +36,27 @@ public class OrderManagement extends JPanel {
 
     public OrderManagement() 
     {
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout());
+        
+        listChangingPanel = new JPanel();
+        listChangingPanel.setBackground(new Color(66, 165, 243));
 
+        
+        MouseListener listChanger = new OrderListChanger();
+
+        orderListLabel = new JLabel("Danh sách đơn hàng");
+        orderListLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        orderListLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        orderListLabel.addMouseListener(listChanger);
+        
+        orderListConfirmLabel = new JLabel("Danh sách đơn hàng chưa xác nhận");
+        orderListConfirmLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        orderListConfirmLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        orderListConfirmLabel.addMouseListener(listChanger);
+        
+        listChangingPanel.add(orderListLabel);
+        listChangingPanel.add(orderListConfirmLabel);
+        
         orderListPanel = new JPanel();
         orderListPanel.setLayout(new GridLayout(10, 1));
 
@@ -42,8 +65,7 @@ public class OrderManagement extends JPanel {
         pageControlButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
 
         functionButtonPanel = new JPanel();
-        functionButtonPanel.setBackground(Color.CYAN);
-        functionButtonPanel.setLayout(new BorderLayout());
+        functionButtonPanel.setBackground(new Color(66, 165, 243));
 
         pageNumber = new JLabel("Page: " + currentPage);
 
@@ -71,14 +93,14 @@ public class OrderManagement extends JPanel {
             if (orderDAO.checkExistById(tempOrderId)) 
             {
                 orderListPanel.removeAll();
-                JPanel row = CreateOrderRow(orderDAO.getById(tempOrderId), 0);
+                JPanel row = CreateOrderRow(orderDAO.getById(tempOrderId), 0 ,false);
                 orderListPanel.add(row);
                 orderListPanel.revalidate();
                 orderListPanel.repaint();
             }
             else if (tempOrderId.equals("")) 
             {
-                LoadOrderData();
+                LoadOrderData(orderDAO.getAll(), false);
             }
             else
             {
@@ -86,9 +108,19 @@ public class OrderManagement extends JPanel {
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
+        
+        
+        functionButtonPanel.add(searchTextField);
+        functionButtonPanel.add(addOrder);
+        
+        functionPanel= new JPanel();
+        functionPanel.setLayout(new BorderLayout());
+        functionPanel.setBackground(new Color(66, 165, 243));
 
-        functionButtonPanel.add(addOrder, BorderLayout.EAST);
-        functionButtonPanel.add(searchTextField, BorderLayout.WEST);
+        
+        functionPanel.add(functionButtonPanel, BorderLayout.WEST);
+        functionPanel.add(listChangingPanel, BorderLayout.EAST);
+        
 
         pageControlButtonPanel.add(previousPage);
         pageControlButtonPanel.add(pageNumber);
@@ -96,24 +128,24 @@ public class OrderManagement extends JPanel {
 
         JScrollPane scrollBar = new JScrollPane(orderListPanel);
 
-        add(functionButtonPanel, BorderLayout.NORTH);
+        add(functionPanel, BorderLayout.NORTH);
         add(scrollBar, BorderLayout.CENTER);
         add(pageControlButtonPanel, BorderLayout.SOUTH);
-
-        LoadOrderData();
+        
+        LoadOrderData(orderDAO.getAll(), false);
     }
 
     // Hiện thông tin đơn hàng
-    private void LoadOrderData() 
+    private void LoadOrderData(ArrayList<Order> orders, boolean isConfirmed) 
     {
         // Lấy danh sách đơn hàng
-        orders = orderDAO.getAll();
+    	this.orders = orders;
         totalPages = (int) Math.ceil((double) orders.size() / rowPerPage);
-        UpdatePage(); // Chỉ tải dữ liệu của trang đầu tiên
+        UpdatePage(isConfirmed); // Chỉ tải dữ liệu của trang đầu tiên
     }
 
     // Cập nhật UI ở trang hiện tại
-    private void UpdatePage() 
+    private void UpdatePage(boolean isConfirmed) 
     {
         orderListPanel.removeAll();
 
@@ -122,7 +154,7 @@ public class OrderManagement extends JPanel {
 
         for (int i = start; i < end; i++) 
         {
-            JPanel row = CreateOrderRow(orders.get(i), i - start);
+            JPanel row = CreateOrderRow(orders.get(i), i - start, isConfirmed);
 
             orderListPanel.add(row);
         }
@@ -141,7 +173,7 @@ public class OrderManagement extends JPanel {
     }
 
     // Tạo dòng hiển thị thông tin trên Page
-    private JPanel CreateOrderRow(Order order, int indexInPage) 
+    private JPanel CreateOrderRow(Order order, int indexInPage, boolean isConfirmed) 
     {
         JPanel row = new JPanel(new GridLayout(2, 4)); // 4 cột: orderId, customerId, totalAmount, orderTime
         row.setBackground(Color.WHITE);
@@ -162,8 +194,18 @@ public class OrderManagement extends JPanel {
         row.add(customerIdLabel);
         row.add(totalAmountLabel);
         row.add(orderTimeLabel);
+        
+        OrderDetailControl mouseListener =null;
 
-        OrderDetailControl mouseListener = new OrderDetailControl(this);
+        if(isConfirmed) 
+        	{
+        		mouseListener = new OrderDetailControl(this, true);
+        	}
+        else
+        {
+    		 mouseListener = new OrderDetailControl(this, false);
+        }
+
         row.addMouseListener(mouseListener);
         row.setCursor(new Cursor(Cursor.HAND_CURSOR));
         row.putClientProperty("order", order);
@@ -177,7 +219,7 @@ public class OrderManagement extends JPanel {
         if (currentPage > 1)
         {
             currentPage--;
-            UpdatePage();
+            UpdatePage(false);
         }
     }
 
@@ -187,17 +229,19 @@ public class OrderManagement extends JPanel {
         if (currentPage < totalPages) 
         {
             currentPage++;
-            UpdatePage();
+            UpdatePage(false);
         }
     }
 
     private class OrderDetailControl extends MouseAdapter 
     {
         private OrderManagement orderManagement;
+        private boolean isConfirmed;
 
-        public OrderDetailControl(OrderManagement orderManagement) 
+        public OrderDetailControl(OrderManagement orderManagement, boolean isConfirmed) 
         {
             this.orderManagement = orderManagement;
+            this.isConfirmed =isConfirmed;
         }
 
         @Override
@@ -206,7 +250,7 @@ public class OrderManagement extends JPanel {
             Order order = (Order) sourcePanel.getClientProperty("order");
 
             orderManagement.removeAll();
-            OrderDetail orderDetail = new OrderDetail(order);
+            OrderDetail orderDetail = new OrderDetail(order, isConfirmed);
             orderManagement.add(orderDetail);
             orderManagement.revalidate();
             orderManagement.repaint();
@@ -225,6 +269,24 @@ public class OrderManagement extends JPanel {
             JPanel tempPanel = (JPanel) e.getSource();
             tempPanel.setBackground(Color.WHITE);
         }
+        
+        
+    }
+    
+    private class OrderListChanger extends MouseAdapter
+    {
+    	@Override
+    	public void mouseClicked(MouseEvent e)
+    	{
+    		if(e.getSource()==orderListLabel)
+    		{
+    			LoadOrderData(orderDAO.getAll(), false);
+    		}
+    		else if(e.getSource()==orderListConfirmLabel)
+    		{
+    			LoadOrderData(orderDAO.getAllUnconfirmed(), true);
+    		}
+    	}
     }
     
     private class AddOrderDialog implements ActionListener 

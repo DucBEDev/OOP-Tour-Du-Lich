@@ -32,7 +32,7 @@ public class Order_DAO {
 	}
 	
 	public ArrayList<Order> getAll() {
-		String query = "SELECT * FROM [Order]";
+		String query = "SELECT * FROM [Order] WHERE STATUS = N'Đã thanh toán' OR STATUS = N'Hoàn thành'";
 		ArrayList<Order> list = new ArrayList<>();
 		
 		try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
@@ -48,6 +48,34 @@ public class Order_DAO {
                 String confirmedBy = rs.getString(10);
 
                 Order temp = new Order(orderId, customerId, tourId, adultTickets, childTickets, orderTime, totalAmount, status, confirmedBy);
+                System.out.println(temp);
+                list.add(temp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+	
+	public ArrayList<Order> getAllUnconfirmed() {
+		String query = "SELECT * FROM [Order] WHERE STATUS = N'Chờ thanh toán'";
+		ArrayList<Order> list = new ArrayList<>();
+		
+		try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+			while(rs.next()) {
+				String orderId = rs.getString(1);
+                String customerId = rs.getString(2);
+                String tourId = rs.getString(3);
+                int adultTickets = rs.getInt(4);
+                int childTickets = rs.getInt(5);
+                LocalDateTime orderTime = rs.getTimestamp(6).toLocalDateTime();
+                double totalAmount = rs.getDouble(7);
+                String status = rs.getNString(9);
+                String confirmedBy = rs.getString(10);
+
+                Order temp = new Order(orderId, customerId, tourId, adultTickets, childTickets, orderTime, totalAmount, status, confirmedBy);
+                System.out.println(temp);
                 list.add(temp);
             }
         } catch (SQLException e) {
