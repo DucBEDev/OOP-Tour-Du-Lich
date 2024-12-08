@@ -265,9 +265,9 @@ public class TourManagement extends JPanel {
         public void actionPerformed(ActionEvent e) 
         {
 
-            JDialog addDialog = new JDialog();
-            addDialog.setAlwaysOnTop(true);
-            addDialog.setLayout(new BorderLayout());
+            JFrame addFrame = new JFrame("Thêm tour mới");
+            addFrame.setAlwaysOnTop(true);
+            addFrame.setLayout(new BorderLayout());
             
 
             // Image (for illustration, no functionality added here)
@@ -562,12 +562,12 @@ public class TourManagement extends JPanel {
                       tourDAO.add(tour, base64Image);
                       System.out.println("Tour saved: " + tour);
                       
-                      addDialog.dispose();  // Close the dialog after saving
+                      addFrame.dispose();  // Close the dialog after saving
 
                    }
                    else
                    {
-                       JOptionPane.showMessageDialog(addDialog, "Chưa thêm hình!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                       JOptionPane.showMessageDialog(addFrame, "Chưa thêm hình!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                    }
                     
                 }
@@ -593,7 +593,7 @@ public class TourManagement extends JPanel {
                     
                     base64Image=null;
                     
-                    addDialog.dispose();  
+                    addFrame.dispose();  
                 }
             });
             
@@ -606,7 +606,7 @@ public class TourManagement extends JPanel {
                     filechooser.setDialogTitle("Choose an Image");
                     filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-                    int result = filechooser.showOpenDialog(addDialog);
+                    int result = filechooser.showOpenDialog(addFrame);
                     if (result == JFileChooser.APPROVE_OPTION) 
                     {
                         File selectedFile = filechooser.getSelectedFile();
@@ -647,15 +647,15 @@ public class TourManagement extends JPanel {
             functionButtonPanel.add(cancelButton);
             functionButtonPanel.add(addImageButton);
             
-            addDialog.add(new JScrollPane(formPanel), BorderLayout.NORTH);
-            addDialog.add(new JScrollPane(descriptionContent), BorderLayout.CENTER);
-            addDialog.add(functionButtonPanel, BorderLayout.SOUTH);
+            addFrame.add(new JScrollPane(formPanel), BorderLayout.NORTH);
+            addFrame.add(new JScrollPane(descriptionContent), BorderLayout.CENTER);
+            addFrame.add(functionButtonPanel, BorderLayout.SOUTH);
             
           
             
-            addDialog.setSize(400, 600);  // Set a suitable size for the dialog
-            addDialog.setLocationRelativeTo(null);
-            addDialog.setVisible(true);
+            addFrame.setSize(600, 600);  // Set a suitable size for the dialog
+            addFrame.setLocationRelativeTo(null);
+            addFrame.setVisible(true);
         }
     }
 

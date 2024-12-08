@@ -273,7 +273,7 @@ public class Statistic extends JPanel
 			
 			for(int i =0; i<10; i++)
 			{
-				if(tourList.get(i) != null)
+				if(i >= 0 && i < tourList.size())
 				{
 					JPanel row = new JPanel(new GridLayout(1, 5));
 			        row.setBackground(Color.WHITE);

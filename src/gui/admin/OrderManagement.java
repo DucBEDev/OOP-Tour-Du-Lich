@@ -70,7 +70,7 @@ public class OrderManagement extends JPanel {
         pageNumber = new JLabel("Page: " + currentPage);
 
         JButton addOrder = new JButton("Thêm Đơn Hàng");
-        AddOrderDialog actionListenerAdd = new AddOrderDialog();
+        AddOrderFrame actionListenerAdd = new AddOrderFrame();
         addOrder.addActionListener(actionListenerAdd);
 
         JButton previousPage = new JButton("<");
@@ -289,7 +289,7 @@ public class OrderManagement extends JPanel {
     	}
     }
     
-    private class AddOrderDialog implements ActionListener 
+    private class AddOrderFrame implements ActionListener 
     {
 
     	private JLabel fullNameLabel;
@@ -333,9 +333,9 @@ public class OrderManagement extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JDialog addDialog = new JDialog();
-            addDialog.setAlwaysOnTop(true);
-            addDialog.setLayout(new GridLayout(11, 2, 10, 10));
+            JFrame addFrame = new JFrame("Thêm đơn mới");
+            addFrame.setAlwaysOnTop(true);
+            addFrame.setLayout(new GridLayout(11, 2, 10, 10));
             
 
             phoneLabel = new JLabel("Số điện thoại:");
@@ -524,35 +524,35 @@ public class OrderManagement extends JPanel {
             });
 
             // Add components to dialog  
-            addDialog.add(phoneLabel);
-			addDialog.add(phoneContent);
+            addFrame.add(phoneLabel);
+            addFrame.add(phoneContent);
 			
-            addDialog.add(fullNameLabel);
-			addDialog.add(fullNameContent);			
+            addFrame.add(fullNameLabel);
+            addFrame.add(fullNameContent);			
 
-			addDialog.add(emailLabel);
-			addDialog.add(emailContent);
+            addFrame.add(emailLabel);
+            addFrame.add(emailContent);
 
-			addDialog.add(addressLabel);
-			addDialog.add(addressContent);
+            addFrame.add(addressLabel);
+            addFrame.add(addressContent);
             
-            addDialog.add(tourIdLabel);
-            addDialog.add(tourIdContent);
+            addFrame.add(tourIdLabel);
+            addFrame.add(tourIdContent);
 
-            addDialog.add(adultTicketsLabel);
-            addDialog.add(adultTicketsContent);
+            addFrame.add(adultTicketsLabel);
+            addFrame.add(adultTicketsContent);
 
-            addDialog.add(childTicketsLabel);
-            addDialog.add(childTicketsContent);
+            addFrame.add(childTicketsLabel);
+            addFrame.add(childTicketsContent);
 
-            addDialog.add(totalAmountLabel);
-            addDialog.add(totalAmountContent);
+            addFrame.add(totalAmountLabel);
+            addFrame.add(totalAmountContent);
 
-            addDialog.add(statusLabel);
-            addDialog.add(statusContent);
+            addFrame.add(statusLabel);
+            addFrame.add(statusContent);
 
-            addDialog.add(confirmedByLabel);
-            addDialog.add(confirmedByContent);
+            addFrame.add(confirmedByLabel);
+            addFrame.add(confirmedByContent);
 
             // Save and Cancel buttons
             JButton saveButton = new JButton("Lưu");
@@ -577,8 +577,8 @@ public class OrderManagement extends JPanel {
             	System.out.println(order);
             	orderDAO.add(order);
             	
-                JOptionPane.showMessageDialog(addDialog, "Thêm đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                addDialog.dispose();
+                JOptionPane.showMessageDialog(addFrame, "Thêm đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                addFrame.dispose();
             });
 
             // Cancel button action
@@ -595,18 +595,18 @@ public class OrderManagement extends JPanel {
                 totalAmount = 0;
                 status = null;
                 confirmedBy = null;
-                addDialog.dispose();
+                addFrame.dispose();
             });
 
             // Add buttons to dialog
-            addDialog.add(saveButton);
-            addDialog.add(cancelButton);
+            addFrame.add(saveButton);
+            addFrame.add(cancelButton);
 
             // Set dialog properties
-            addDialog.setSize(400, 600);
-            addDialog.setLocationRelativeTo(null);
-            addDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            addDialog.setVisible(true);
+            addFrame.setSize(600, 600);
+            addFrame.setLocationRelativeTo(null);
+            addFrame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            addFrame.setVisible(true);
         }
     }
 

@@ -159,7 +159,7 @@ public class CustomerManagement extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
         
         // Gán sự kiện các button
-        addButton.addActionListener(this::addCustomerDialog);
+        addButton.addActionListener(this::addCustomerFrame);
         
         previousPage.addActionListener(this::previousPagePanel);
         nextPage.addActionListener(this::nextPagePanel);
@@ -275,7 +275,7 @@ public class CustomerManagement extends JPanel {
 
 
 	// Event add customer
-	private void addCustomerDialog(ActionEvent e) {
+	private void addCustomerFrame(ActionEvent e) {
 		JFrame addFrame = new JFrame("Thêm thông tin khách hàng");
 		addFrame.setLayout(new GridLayout(8, 2, 10, 10));
 		addFrame.setSize(600, 600);

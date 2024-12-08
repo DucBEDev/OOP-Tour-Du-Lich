@@ -260,7 +260,7 @@ public class CustomerDetail extends JPanel {
 		String passwordTemp = new String(passwordTextField.getPassword()).trim();
 		
 		
-		if (fullNameTemp.isEmpty() || !fullNameTemp.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
+		if (fullNameTemp.trim().isEmpty() || !fullNameTemp.matches("^[A-Za-zÀ-ỹĐđ\\s]+$")) {
 	        JOptionPane.showMessageDialog(null, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 	        fullNameTextField.requestFocus();
 	        return false;
@@ -290,8 +290,8 @@ public class CustomerDetail extends JPanel {
 	        return false;
 	    }
 
-	    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) {
-	        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&_]+$")) {
+	        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & / _)", "Lỗi", JOptionPane.ERROR_MESSAGE);
 	        passwordTextField.requestFocus();
 	        return false;
 	    }

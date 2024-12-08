@@ -314,7 +314,6 @@ public class OrderDetail extends JPanel {
             confirmedByContent.setText(confirmedBy);
         }
         
-        
         formPanel.add(orderIdLabel);
         formPanel.add(orderIdContent);
         

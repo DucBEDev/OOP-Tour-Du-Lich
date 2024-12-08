@@ -85,7 +85,7 @@ public class EmployeeManagement extends JPanel
 		pageNumber = new JLabel("Page: " + currentPage);
 		
 		JButton addEmployee = new JButton("Thêm");
-		AddEmployeeDialog actionListenerAdd = new AddEmployeeDialog();
+		AddEmployeeFrame actionListenerAdd = new AddEmployeeFrame();
 		addEmployee.addActionListener(actionListenerAdd);
 		
 		
@@ -280,16 +280,16 @@ public class EmployeeManagement extends JPanel
 		}
 	
 	
-	private class AddEmployeeDialog implements ActionListener
+	private class AddEmployeeFrame implements ActionListener
 	{
 
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
 			
-			JDialog addDialog = new JDialog();
-			addDialog.setAlwaysOnTop(true);
-			addDialog.setLayout(new GridLayout(8,2,10,10));
+			JFrame addFrame = new JFrame("Thêm thông tin nhân viên");
+			addFrame.setAlwaysOnTop(true);
+			addFrame.setLayout(new GridLayout(8,2,10,10));
 			
 			fullNameLabel = new JLabel("Họ tên:");
 			fullNameContent = new JTextField();
@@ -329,26 +329,26 @@ public class EmployeeManagement extends JPanel
 			});
 
 			
-			addDialog.add(fullNameLabel);
-			addDialog.add(fullNameContent);
+			addFrame.add(fullNameLabel);
+			addFrame.add(fullNameContent);
 
-			addDialog.add(phoneLabel);
-			addDialog.add(phoneContent);
+			addFrame.add(phoneLabel);
+			addFrame.add(phoneContent);
 
-			addDialog.add(emailLabel);
-			addDialog.add(emailContent);
+			addFrame.add(emailLabel);
+			addFrame.add(emailContent);
 
-			addDialog.add(addressLabel);
-			addDialog.add(addressContent);
+			addFrame.add(addressLabel);
+			addFrame.add(addressContent);
 
-			addDialog.add(userNameLabel);
-			addDialog.add(userNameContent);
+			addFrame.add(userNameLabel);
+			addFrame.add(userNameContent);
 
-			addDialog.add(passwordLabel);
-			addDialog.add(passwordContent);
+			addFrame.add(passwordLabel);
+			addFrame.add(passwordContent);
 
-			addDialog.add(permissionsLabel);
-			addDialog.add(permissionsContent);
+			addFrame.add(permissionsLabel);
+			addFrame.add(permissionsContent);
 			
 			JButton saveButton = new JButton("Lưu");
 	        JButton cancelButton = new JButton("Hủy");
@@ -377,11 +377,11 @@ public class EmployeeManagement extends JPanel
 		            	System.out.println(temp);
 		            	employeeDAO.add(temp);
 		                
-		                JOptionPane.showMessageDialog(addDialog, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		                JOptionPane.showMessageDialog(addFrame, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 		                loadEmployeeData();
-		                addDialog.dispose(); // Close the dialog after saving
+		                addFrame.dispose(); // Close the dialog after saving
 	            	} catch (Exception ex) {
-	            		JOptionPane.showMessageDialog(addDialog, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+	            		JOptionPane.showMessageDialog(addFrame, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 	            	}
 	            }
 	        });
@@ -398,19 +398,19 @@ public class EmployeeManagement extends JPanel
 	        		userName=null;
 	        		password=null;
 	        		permissions=null;
-	                addDialog.dispose(); 
+	        		addFrame.dispose(); 
 	            }
 	        });
 
 	        // Add buttons to the dialog
-	        addDialog.add(saveButton);
-	        addDialog.add(cancelButton);
+	        addFrame.add(saveButton);
+	        addFrame.add(cancelButton);
 
 	        // Set dialog properties
-	        addDialog.setSize(400, 500); // Set a reasonable size for the dialog
-	        addDialog.setLocationRelativeTo(null); // Center the dialog on the screen
-	        addDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-	        addDialog.setVisible(true); // Show the dialog	
+	        addFrame.setSize(600, 600); // Set a reasonable size for the dialog
+	        addFrame.setLocationRelativeTo(null); // Center the dialog on the screen
+	        addFrame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	        addFrame.setVisible(true); // Show the dialog	
 		}
 	}		
 

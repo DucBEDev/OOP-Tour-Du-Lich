@@ -567,8 +567,6 @@ public class Dashboard extends JFrame {
         dialog.add(scrollPane, BorderLayout.CENTER);
         dialog.add(panel, BorderLayout.SOUTH);
         
-        dialog.setVisible(true);
-        
         try {
             Socket socket = new Socket("localhost", 1234);
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
@@ -598,6 +596,10 @@ public class Dashboard extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        dialog.setVisible(true);
+        
+        
 	}
     
     private static void sendMessage() {

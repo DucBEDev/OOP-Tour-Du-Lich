@@ -63,7 +63,7 @@ public class Manager extends JFrame {
 		ManagerControl mouselistener = new ManagerControl();
 
 		// Initialize the content pane before adding components
-		setSize(1100,700);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
         // Title panel
@@ -83,7 +83,7 @@ public class Manager extends JFrame {
         functionPanel.setLayout(new GridLayout(7,1));
         
         
-        tourManagement = new JLabel("Tour Management");
+        tourManagement = new JLabel("Quản Lý Tour");
         tourManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         tourManagement.setBackground(new Color(66, 165, 243));
         tourManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -92,7 +92,7 @@ public class Manager extends JFrame {
         tourManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/travel.png"))));
                 
         
-        customerManagement = new JLabel("Customer Management");
+        customerManagement = new JLabel("Quản Lý Khách Hàng");
         customerManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         customerManagement.setOpaque(true); 
         customerManagement.setBackground(new Color(66, 165, 243));
@@ -101,7 +101,7 @@ public class Manager extends JFrame {
         customerManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/customer.png"))));
         
        
-        employeeManagement = new JLabel("Employee Management");
+        employeeManagement = new JLabel("Quản Lý Nhân Viên");
         employeeManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         employeeManagement.setBackground(new Color(66, 165, 243));
         employeeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -112,7 +112,7 @@ public class Manager extends JFrame {
 
         
 
-        orderManagement = new JLabel("Order Management");
+        orderManagement = new JLabel("Quản Lý Đơn");
         orderManagement.setFont(new Font("Tahoma", Font.PLAIN, 14));
         orderManagement.setBackground(new Color(66, 165, 243));
         orderManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -121,7 +121,7 @@ public class Manager extends JFrame {
         orderManagement.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/ticket.png"))));
         
         
-        statistic = new JLabel("Statistic");
+        statistic = new JLabel("Thống Kê");
         statistic.setFont(new Font("Tahoma", Font.PLAIN, 14));
         statistic.setBackground(new Color(66, 165, 243));
         statistic.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -130,7 +130,7 @@ public class Manager extends JFrame {
         statistic.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(Manager.class.getResource("/images/statistical.png"))));
 
         
-        customerService = new JLabel("Customer Service");
+        customerService = new JLabel("Dịch Vụ Khách Hàng");
         customerService.setFont(new Font("Tahoma", Font.PLAIN, 14));
         customerService.setBackground(new Color(66, 165, 243));
         customerService.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -139,7 +139,7 @@ public class Manager extends JFrame {
         customerService.addMouseListener(mouselistener);
 
         
-        logOut = new JLabel("Log Out");
+        logOut = new JLabel("Đăng Xuất");
         logOut.setFont(new Font("Tahoma", Font.PLAIN, 14));
         logOut.setBackground(new Color(66, 165, 243));
         logOut.setCursor(new Cursor(Cursor.HAND_CURSOR));
