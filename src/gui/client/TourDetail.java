@@ -51,6 +51,7 @@ public class TourDetail extends JFrame {
 	private JTextField txtPhone;
 	private JTextField txtEmail;
 	private JTextField txtAddress;
+	private JTextField txtChosenTour;
 	private JSpinner adultSpinner;
     private JSpinner childSpinner;
     private JLabel lblTotalPrice;
@@ -64,7 +65,7 @@ public class TourDetail extends JFrame {
 		setTitle("Chi tiết tour");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setExtendedState(MAXIMIZED_BOTH);
-		
+				
 		selectedTour = tour;
 		cus = customer;
 		
@@ -110,8 +111,16 @@ public class TourDetail extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(5, 5, 5, 5);
 		
-		
 		gbc.gridx = 0; gbc.gridy = 0;
+		pnlFormInput.add(new JLabel("Tour đã chọn: "), gbc);
+		gbc.gridx = 1;
+		txtChosenTour = new JTextField();
+		if (selectedTour != null) 
+			txtChosenTour.setText(selectedTour.getTourName());
+		txtChosenTour.setPreferredSize(new Dimension(200, 30));
+		pnlFormInput.add(txtChosenTour, gbc);
+		
+		gbc.gridx = 0; gbc.gridy = 1;
 		pnlFormInput.add(new JLabel("Họ và Tên: "), gbc);
 		gbc.gridx = 1;
 		txtFullName = new JTextField();
@@ -120,7 +129,7 @@ public class TourDetail extends JFrame {
 		txtFullName.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtFullName, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.gridx = 0; gbc.gridy = 2;
 		pnlFormInput.add(new JLabel("Số điện thoại: "), gbc);
 		gbc.gridx = 1;
 		txtPhone = new JTextField(20);
@@ -129,7 +138,7 @@ public class TourDetail extends JFrame {
 		txtPhone.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtPhone, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.gridx = 0; gbc.gridy = 3;
 		pnlFormInput.add(new JLabel("Email: "), gbc);
 		gbc.gridx = 1;
 		txtEmail = new JTextField(20);
@@ -138,7 +147,7 @@ public class TourDetail extends JFrame {
 		txtEmail.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtEmail, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 3;
+		gbc.gridx = 0; gbc.gridy = 4;
 		pnlFormInput.add(new JLabel("Địa chỉ: "), gbc);
 		gbc.gridx = 1;
 		txtAddress = new JTextField(20);
@@ -147,7 +156,7 @@ public class TourDetail extends JFrame {
 		txtAddress.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtAddress, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 4;
+		gbc.gridx = 0; gbc.gridy = 5;
 		pnlFormInput.add(new JLabel("Số người lớn:"), gbc);
 		gbc.gridx = 1;
 		SpinnerNumberModel adultModel = new SpinnerNumberModel(0, 0, 10, 1);
@@ -156,7 +165,7 @@ public class TourDetail extends JFrame {
 		adultSpinner.addChangeListener(e -> updateTotalPrice());
 		pnlFormInput.add(adultSpinner, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 5;
+		gbc.gridx = 0; gbc.gridy = 6;
 		pnlFormInput.add(new JLabel("Số trẻ em:"), gbc);
 		gbc.gridx = 1;
 		SpinnerNumberModel childModel = new SpinnerNumberModel(0, 0, 10, 1);
@@ -165,7 +174,7 @@ public class TourDetail extends JFrame {
 		childSpinner.addChangeListener(e -> updateTotalPrice());
 		pnlFormInput.add(childSpinner, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 6;
+		gbc.gridx = 0; gbc.gridy = 7;
 		pnlFormInput.add(new JLabel("Tổng tiền: "), gbc);
 		gbc.gridx = 1;
 		lblTotalPrice = new JLabel("0 VNĐ");
@@ -173,7 +182,7 @@ public class TourDetail extends JFrame {
 		lblTotalPrice.setForeground(new Color(255, 153, 0));
 		pnlFormInput.add(lblTotalPrice, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 7;
+		gbc.gridx = 0; gbc.gridy = 8;
 		gbc.gridwidth = 2;
 		JButton btnSubmit = new JButton("Xác nhận đặt Tour");
 		btnSubmit.setFont(new Font("Arial", Font.BOLD, 16));
@@ -223,7 +232,7 @@ public class TourDetail extends JFrame {
         pnlImage.add(lblTourName);
         pnlImage.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/images/background.jpg"));
+        ImageIcon originalIcon = new ImageIcon(selectedTour.getImage());
         Image scaledImage = originalIcon.getImage().getScaledInstance(width * 70 / 100, height * 40 / 100, Image.SCALE_SMOOTH);
         JLabel lblImage = new JLabel(new ImageIcon(scaledImage));
         lblImage.setAlignmentX(Component.CENTER_ALIGNMENT); 
@@ -322,7 +331,7 @@ public class TourDetail extends JFrame {
         	customer_id = customer.getCustomerId();
         }
         double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
-        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chờ thanh toán", null);
+        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chưa hoàn thành", null);
         order_dao.add(order);
         JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             

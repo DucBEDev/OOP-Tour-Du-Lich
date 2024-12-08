@@ -618,7 +618,6 @@ public class TourManagement extends JPanel {
                         imageContent.setText(""); 
                         
                         image = imageIcon.getImage();
-                        
                                                 
                         try 
                         {

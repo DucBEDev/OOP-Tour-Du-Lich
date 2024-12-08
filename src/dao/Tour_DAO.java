@@ -420,4 +420,32 @@ public class Tour_DAO {
         }
         return "TOUR000";
     }
+    
+    public int getTotalTourCount() {
+    	String status = STATUS_AVAILABLE;
+        int count = 0;
+        String query;
+        
+        // If status is null or empty, count all tours
+        if (status == null || status.trim().isEmpty()) {
+            query = "SELECT COUNT(*) FROM Tour";
+        } else {
+            query = "SELECT COUNT(*) FROM Tour WHERE Status = ?";
+        }
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            if (status != null && !status.trim().isEmpty()) {
+                stmt.setString(1, status);
+            }
+            
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
 }

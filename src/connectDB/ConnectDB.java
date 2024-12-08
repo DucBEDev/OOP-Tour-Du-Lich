@@ -18,7 +18,7 @@ public class ConnectDB {
         try {
         	String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=TourManagement;encrypt=true;trustServerCertificate=true";
             String user = "sa";
-            String password = "xxx";
+            String password = "minhduc63";
             con = DriverManager.getConnection(url, user, password);
             System.out.println("Connected");
         } catch (SQLException e) {

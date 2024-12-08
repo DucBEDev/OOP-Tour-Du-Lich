@@ -157,7 +157,7 @@ public class Dashboard extends JFrame {
     		JLabel lblUser = new JLabel("Xin chào, " + cus.getUserName());
     		lblUser.setFont(new Font("Arial", Font.BOLD, 14));
     		lblUser.setBackground(new Color(148, 218, 248));
-    		lblUser.setPreferredSize(new Dimension(100, 32));
+    		lblUser.setPreferredSize(new Dimension(200, 32));
     		pnlRight.add(lblUser);    
     	}
     	
@@ -411,7 +411,7 @@ public class Dashboard extends JFrame {
         
         // Placeholder image panel
         JPanel imagePanel = new JPanel(new BorderLayout());
-        ImageIcon originalIcon = new ImageIcon(Dashboard.class.getResource("/images/background.jpg"));
+        ImageIcon originalIcon = new ImageIcon(tour.getImage());
         Image originalImage = originalIcon.getImage();
         Image scaledImage = originalImage.getScaledInstance(600, 250, Image.SCALE_SMOOTH);
         JLabel lblBackground = new JLabel(new ImageIcon(scaledImage));
@@ -495,7 +495,7 @@ public class Dashboard extends JFrame {
         lblChildPrice.setFont(new Font("Arial", Font.BOLD, 16));
         lblChildPrice.setForeground(new Color(255, 153, 0)); 
         lblChildPrice.setHorizontalAlignment(JLabel.RIGHT);
-        pnlPrice.add(lblChildPrice);
+        pnlPrice.add(lblChildPrice); 
         
         gbc.gridy = 8;
         gbc.anchor = GridBagConstraints.EAST; 
@@ -537,7 +537,8 @@ public class Dashboard extends JFrame {
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
-        chatArea.setBackground(new Color(30, 30, 30));
+        chatArea.setBackground(Color.WHITE);
+        chatArea.setCaretColor(Color.WHITE);
         chatArea.setForeground(Color.WHITE);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 16));
         JScrollPane scrollPane = new JScrollPane(chatArea);
@@ -545,8 +546,8 @@ public class Dashboard extends JFrame {
         messageField = new JTextField(30);
         messageField.setFont(new Font("Arial", Font.PLAIN, 16));
         messageField.setPreferredSize(new Dimension(300, 40));
-        messageField.setBackground(new Color(50, 50, 50));
-        messageField.setForeground(Color.WHITE);
+        messageField.setBackground(new Color(240, 240, 240));
+        messageField.setForeground(Color.BLACK);
         messageField.setBorder(new EmptyBorder(0, 10, 0, 0)); 
         
         JButton sendButton = new JButton("Send");
@@ -567,8 +568,6 @@ public class Dashboard extends JFrame {
         dialog.add(scrollPane, BorderLayout.CENTER);
         dialog.add(panel, BorderLayout.SOUTH);
         
-        dialog.setVisible(true);
-        
         try {
             Socket socket = new Socket("localhost", 1234);
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
@@ -580,13 +579,15 @@ public class Dashboard extends JFrame {
             Thread receiveThread = new Thread(() -> {
                 try {
                     String message;
-                    while (true) {
-                        message = dataInputStream.readUTF();
-                        chatArea.append("Server: " + message + "\n");
-                        if ("exit".equalsIgnoreCase(message)) {
-                            chatArea.append("Server has ended the chat.\n");
-                            break;
-                        }
+                    while ((message = dataInputStream.readUTF()) != null) {
+                        final String finalMessage = message;
+                        SwingUtilities.invokeLater(() -> {
+                        	chatArea.setForeground(Color.BLACK);
+                            chatArea.append("Admin: " + finalMessage + "\n");
+                            if ("exit".equalsIgnoreCase(finalMessage)) {
+                                chatArea.append("Admin đã ngắt kết nối.\n");
+                            }
+                        });
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -598,6 +599,8 @@ public class Dashboard extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        dialog.setVisible(true);
 	}
     
     private static void sendMessage() {
