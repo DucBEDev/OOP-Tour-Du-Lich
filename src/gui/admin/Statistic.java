@@ -3,6 +3,7 @@ package gui.admin;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -10,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,8 @@ import java.awt.event.MouseAdapter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import com.toedter.calendar.JDateChooser;
 
 import dao.Order_DAO;
 import entity.Order;
@@ -40,14 +44,17 @@ public class Statistic extends JPanel
 		
 		inputTimeLabel = new JLabel("Thống kê theo 1 khoảng thời gian");
 		inputTimeLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		inputTimeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
 		inputTimeLabel.addMouseListener(new StatisticModeChange());
 		
 		yearLabel = new JLabel("Thống kê theo năm nhất định");
 		yearLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		yearLabel.setBorder(BorderFactory.createLineBorder(Color.black));
 		yearLabel.addMouseListener(new StatisticModeChange());
 		
 		allTimeLabel = new JLabel("Thống kê toàn bộ");
 		allTimeLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		allTimeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
 		allTimeLabel.addMouseListener(new StatisticModeChange());
 		
 		functionPanel = new JPanel();
@@ -172,10 +179,15 @@ public class Statistic extends JPanel
 		private JPanel centerPanel;
 		private JPanel totalAmountPanel;
 		private JPanel totalByMonthPanel;
+		private JPanel inputPanel;
 		
 		private JLabel totalAmountLabel;
 		
 		private JTable destinationTable;
+		
+		private JTextField yearInputTf;
+		
+		private JButton accountingButton;
 		
 		private Order_DAO orderDAO= new Order_DAO();
 		
@@ -186,46 +198,65 @@ public class Statistic extends JPanel
 		public  ByYearPanel()
 		{
 			setLayout(new BorderLayout());
-					
 			
-			list = orderDAO.getMostTravelDestinationByYear(2024);
+			inputPanel = new JPanel();
 			
-	        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Điểm đến", "Số lần được đăng ký"}, 0);
-	        
-	        for (Entry<String, Integer> entry : list.entrySet())
+			yearInputTf = new JTextField(4);
+			
+			accountingButton = new JButton("Thống kê");
+			accountingButton.addActionListener(e->
 			{
-				tableModel.addRow(new Object[] {entry.getKey(), entry.getValue()});
-			}
+				list = orderDAO.getMostTravelDestinationByYear(Integer.parseInt(yearInputTf.getText()));
 				
-			destinationTable = new JTable(tableModel);
+		        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Điểm đến", "Số lần được đăng ký"}, 0);
+		        
+		        for (Entry<String, Integer> entry : list.entrySet())
+				{
+					tableModel.addRow(new Object[] {entry.getKey(), entry.getValue()});
+				}
+					
+				destinationTable = new JTable(tableModel);
+				
+				
+				
+				totalByMonthPanel = new JPanel();
+				totalByMonthPanel.setLayout(new GridLayout(12,2,10, 10));
+				
+				totalAmountByMonthList = orderDAO.getTotalAmountByYear(2024);
+				
+				for(int i =0; i<12; i++)
+				{
+					totalByMonthPanel.add(new JLabel("Tháng " + (i+1)));
+					if(totalAmountByMonthList.containsKey(i+1)) totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": " + totalAmountByMonthList.get(i+1)));
+					else totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": 0" ));
+				}
+				
+				centerPanel.add(totalByMonthPanel);
+				centerPanel.add(new JScrollPane(destinationTable));
+				
+			        
+			     totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountByYear(Integer.parseInt(yearInputTf.getText())));
+			        
+			     totalAmountPanel.add(totalAmountLabel, FlowLayout.LEFT);
+				
+				this.revalidate();
+			    this.repaint();
+			});
+					
+			inputPanel.add(new JLabel("Tổng doanh thu trong năm:"));
+			inputPanel.add(yearInputTf);
+			inputPanel.add(accountingButton);
 			
-			
-			
-			totalByMonthPanel = new JPanel();
-			totalByMonthPanel.setLayout(new GridLayout(12,2,10, 10));
-			
-			totalAmountByMonthList = orderDAO.getTotalAmountByYear(2024);
-			
-			for(int i =0; i<12; i++)
-			{
-				totalByMonthPanel.add(new JLabel("Tháng " + (i+1)));
-				if(totalAmountByMonthList.containsKey(i+1)) totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": " + totalAmountByMonthList.get(i+1)));
-				else totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": 0" ));
-			}
-			
+						
 			
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new GridLayout(1,2));
 			
-			centerPanel.add(totalByMonthPanel);
-			centerPanel.add(new JScrollPane(destinationTable));
+			totalAmountPanel= new JPanel();
+
 	        
-	        totalAmountPanel= new JPanel();
-	        
-	        totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountAllTime());
-	        
-	        totalAmountPanel.add(totalAmountLabel, FlowLayout.LEFT);
-	        
+	       
+	        add(inputPanel, BorderLayout.NORTH);
 	        add(centerPanel, BorderLayout.CENTER);
 	        add(totalAmountPanel, BorderLayout.SOUTH);
 		}
@@ -238,11 +269,16 @@ public class Statistic extends JPanel
 		private JPanel centerPanel;
 		private JPanel totalAmountPanel;
 		private JPanel tourListPanel;
-
+		private JPanel inputPanel;
+		
 		private JLabel totalAmountLabel;
 		
 		private JTable destinationTable;
-		private JTable tourTable;
+		
+		private JDateChooser beginDate;
+		private JDateChooser endDate;
+		
+		private JButton accountingButton;
 		
 		private Order_DAO orderDAO = new Order_DAO();
 		
@@ -253,64 +289,147 @@ public class Statistic extends JPanel
 		public InputTimePanel()
 		{
 			setLayout(new BorderLayout());
-					
 			
-			list = orderDAO.getMostTravelDestinationByYear(2024);
+			inputPanel = new JPanel();
 			
-	        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Điểm đến", "Số lần được đăng ký"}, 0);
-	        
-	        for (Entry<String, Integer> entry : list.entrySet())
+			beginDate = new JDateChooser();
+			beginDate.setPreferredSize(new Dimension(20, 35));
+			beginDate.setDateFormatString("dd/MM/yyyy");
+			beginDate.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(
+	            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+	            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+	        ));
+			
+			endDate = new JDateChooser();
+			endDate.setPreferredSize(new Dimension(20, 35));
+			endDate.setDateFormatString("dd/MM/yyyy");
+			endDate.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(
+	            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+	            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+	        ));
+			
+			accountingButton = new JButton("Thống kê");
+			accountingButton.addActionListener(e->
 			{
-				tableModel.addRow(new Object[] {entry.getKey(), entry.getValue()});
-			}
+				list = orderDAO.getMostTravelDestinationByInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+				tourList = orderDAO.getMostTravelTourByInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+				DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Điểm đến", "Số lần được đăng ký"}, 0);
+		        
+		        if(list!=null)
+		        {
+		        	for (Entry<String, Integer> entry : list.entrySet())
+					{
+						tableModel.addRow(new Object[] {entry.getKey(), entry.getValue()});
+					}
+
+		        }
+		        
+				destinationTable = new JTable(tableModel);
 				
-			destinationTable = new JTable(tableModel);
-			
-			tourListPanel = new JPanel();
-			tourListPanel.setLayout(new GridLayout(10,0));
-			
-			tourList = orderDAO.getMostTravelTourByInputTime(LocalDate.of(2024, 01, 01), LocalDate.of(2024, 12,31));
-			
-			for(int i =0; i<10; i++)
-			{
-				if(tourList.get(i) != null)
+				tourListPanel = new JPanel();
+				tourListPanel.setLayout(new GridLayout(10,0));
+				
+				
+				for(int i =0; i<10; i++)
 				{
-					JPanel row = new JPanel(new GridLayout(1, 5));
-			        row.setBackground(Color.WHITE);
-			        row.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+					if(i >= 0 && tourList!=null && i < tourList.size())
+					{
+						JPanel wrapperPanel = new JPanel(new GridLayout(1, 1));
+					    wrapperPanel.setBackground(Color.white);
+				    	
+				        JPanel row = new JPanel(new GridLayout(1, 5));
+				        row.setBackground(Color.WHITE);
+				        row.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-			        JLabel idLabel = new JLabel(tourList.get(i).getTourId());
-			        JLabel nameLabel = new JLabel(tourList.get(i).getTourName());
-			        JLabel statusLabel = new JLabel(tourList.get(i).getStatus());
-			        JLabel imageLabel = new JLabel();
-			        imageLabel.setIcon(new ImageIcon(tourList.get(i).getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH)));
+				        JLabel idLabel = new JLabel("Mã tour: "+tourList.get(i).getTourId());
+				        JLabel nameLabel = new JLabel("Tên tour"+tourList.get(i).getTourName());
+				        JLabel statusLabel = new JLabel("Trạng thái: " + tourList.get(i).getStatus());
+				        JLabel departureDateLabel = new JLabel("Ngày khởi hành: " + tourList.get(i).getDepartureDate());
+				        JLabel durationLabel = new JLabel("Thời gian tour: " + tourList.get(i).getDuration());
+				        JLabel departureLocationLabel = new JLabel("Địa điểm khởi hành: " + tourList.get(i).getDepartureLocation());
+				        JLabel destinationLabel = new JLabel("Địa điểm đến: " + tourList.get(i).getDestination());
+				        JLabel transportInfoLabel = new JLabel("Phương tiện di chuyển: " + tourList.get(i).getTransportInfo());
+				        JLabel imageLabel = new JLabel();
+				        imageLabel.setIcon(new ImageIcon(tourList.get(i).getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH)));
 
-			        idLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        idLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        departureDateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        durationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        departureLocationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        destinationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        transportInfoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				        
+				        JPanel column2 = new JPanel(new GridLayout(2, 1));
+					    column2.setBackground( Color.white );
+					    column2.add(idLabel);
+					    column2.add(nameLabel);
+					    
+					    JPanel column3 = new JPanel(new GridLayout(2, 1));
+					    column3.setBackground( Color.white );
+					    column3.add(departureDateLabel);
+					    column3.add(durationLabel);
+					    
+					    JPanel column4 = new JPanel(new GridLayout(2, 1));
+					    column4.setBackground( Color.white );
+					    column4.add(departureLocationLabel);
+					    column4.add(destinationLabel);
+					    
+					    JPanel column5 = new JPanel(new GridLayout(2, 1));
+					    column5.setBackground( Color.white );
+					    column5.add(transportInfoLabel);
+					    column5.add(statusLabel);
+					    
 
-			        row.add(imageLabel);
-			        row.add(idLabel);
-			        row.add(nameLabel);
-			        row.add(statusLabel);
-			        
-			        tourListPanel.add(row);
-				}				
+				        row.add(imageLabel);
+				        row.add(column2);
+				        row.add(column3);
+				        row.add(column4);
+				        row.add(column5);
+				        
+				        wrapperPanel.add(row);
+				        
+				        tourListPanel.add(row);
+					}				
+					
+				}
 				
-			}
+				centerPanel.add(new JScrollPane(tourListPanel));
+		        centerPanel.add(new JScrollPane(destinationTable));
+		        
+		        totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountAllTime());
+		        totalAmountPanel.add(totalAmountLabel);
+
+		        
+			    this.revalidate();
+			    this.repaint();
+			});
+			
+			inputPanel.add(new JLabel("Từ"));
+			inputPanel.add(beginDate);
+			inputPanel.add(new JLabel("Dến"));
+			inputPanel.add(endDate);
+			inputPanel.add(accountingButton);
+
+			
+			
+	        
 			
 			totalAmountPanel= new JPanel();
 	        
-	        totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountAllTime());
+	        
 	        
 	        centerPanel = new JPanel();
 	        centerPanel.setLayout(new GridLayout(0,2));
+	        	        
 	        
-	        centerPanel.add(new JScrollPane(tourListPanel));
-	        centerPanel.add(new JScrollPane(destinationTable));
-	        
+	        add(inputPanel, BorderLayout.NORTH);
 	        add(centerPanel, BorderLayout.CENTER);
 	        add(totalAmountPanel, BorderLayout.SOUTH);
 		}
+		
 	}
+	
 }

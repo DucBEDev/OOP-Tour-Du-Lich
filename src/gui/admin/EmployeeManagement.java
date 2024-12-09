@@ -67,18 +67,18 @@ public class EmployeeManagement extends JPanel
 	
 	public EmployeeManagement()
 	{
-		setLayout(new BorderLayout(10,10));
+		setLayout(new BorderLayout());
 		
 		employeeListPanel = new JPanel();
 		employeeListPanel.setLayout(new GridLayout(10,1));
 		
 		
 		pageControlButtonPanel= new JPanel();
-		pageControlButtonPanel.setBackground(Color.PINK);
+		pageControlButtonPanel.setBackground(Color.WHITE);
 		pageControlButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER,15, 15));
 		
 		functionButtonPanel = new JPanel();
-		functionButtonPanel.setBackground(Color.cyan);
+		functionButtonPanel.setBackground(Color.WHITE);
 		functionButtonPanel.setLayout(new BorderLayout());
 		
 		
@@ -188,15 +188,21 @@ public class EmployeeManagement extends JPanel
 		// Tạo dòng hiển thị thông tin trên Page
 			private JPanel CreateEmployeeRow(Employee employee, int indexInPage	) 
 			{
-			    JPanel row = new JPanel(new GridLayout(2, 3)); // 4 cột: customerId, fullName, phone, email
+			    JPanel wrapperPanel = new JPanel(new GridLayout(1, 1));
+			    wrapperPanel.setBackground(Color.white);
+
+
+			    JPanel row = new JPanel(new GridLayout(1, 4)); // 4 cột: customerId, fullName, phone, email
 			    row.setBackground( Color.white );
 			    row.setBorder(BorderFactory.createLineBorder(Color.black));
-
-			    JLabel idLabel = new JLabel(employee.getEmployeeId());
-			    JLabel nameLabel = new JLabel(employee.getFullName());
-			    JLabel phoneLabel = new JLabel(employee.getPhone());
-			    JLabel emailLabel = new JLabel(employee.getEmail());
-			    JLabel permissionLabel = new JLabel(employee.getPermissions());
+			    
+			    JLabel imageLabel = new JLabel();
+			    imageLabel.setIcon(new ImageIcon("C:\\Users\\longh\\eclipse-workspace\\OOP-Test\\src\\images\\person(1).jpg"));
+			    JLabel idLabel = new JLabel("ID nhân viên: "+employee.getEmployeeId());
+			    JLabel nameLabel = new JLabel("Họ và tên: "+employee.getFullName());
+			    JLabel phoneLabel = new JLabel("Số điện thoại: "+employee.getPhone());
+			    JLabel emailLabel = new JLabel("Email: "+employee.getEmail());
+			    JLabel permissionLabel = new JLabel("Quyền hạn: "+employee.getPermissions());
 
 			    // Căn chỉnh văn bản
 			    idLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -204,20 +210,36 @@ public class EmployeeManagement extends JPanel
 			    phoneLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			    emailLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			    permissionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			    
+			    JPanel column2 = new JPanel(new GridLayout(2, 1));
+			    column2.setBackground( Color.white );
+			    column2.add(idLabel);
+			    column2.add(nameLabel);
+			    
+			    JPanel column3 = new JPanel(new GridLayout(2, 1));
+			    column3.setBackground( Color.white );
+			    column3.add(phoneLabel);
+			    column3.add(emailLabel);
+			    
+//			    JPanel column4 = new JPanel(new GridLayout(2, 1));
 
-
-			    row.add(idLabel);
-			    row.add(phoneLabel);
+			    row.add(imageLabel);
+			    row.add(column2);
+			    row.add(column3);
+//			    row.add(permissionLabel);
+//			    row.add(nameLabel); 
 			    row.add(permissionLabel);
-			    row.add(nameLabel); 
-			    row.add(emailLabel);
+			    
+			    wrapperPanel.add(row);
 			    
 			    EmployeeDetailControl mouseListener = new EmployeeDetailControl(this);
-			    row.addMouseListener(mouseListener);
-		        row.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		        row.putClientProperty("employee", employee);
+			    wrapperPanel.addMouseListener(mouseListener);
 
-			    return row;
+
+			    wrapperPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			    wrapperPanel.putClientProperty("employee", employee);
+
+			    return wrapperPanel;
 			}
 		
 		
@@ -268,14 +290,25 @@ public class EmployeeManagement extends JPanel
 			public void mouseEntered(MouseEvent e) 
 			{
 				JPanel tempPanel = (JPanel)e.getSource();
-				tempPanel.setBackground(Color.LIGHT_GRAY);
+				JPanel row = (JPanel) tempPanel.getComponent(0);
+				JPanel column2=(JPanel)row.getComponent(1);
+				JPanel column3=(JPanel)row.getComponent(2);
+				row.setBackground(Color.LIGHT_GRAY);
+				column2.setBackground(Color.LIGHT_GRAY);
+				column3.setBackground(Color.LIGHT_GRAY);
+
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) 
 			{
 				JPanel tempPanel = (JPanel)e.getSource();
-				tempPanel.setBackground(Color.WHITE);			
+				JPanel row = (JPanel) tempPanel.getComponent(0);
+				JPanel column2=(JPanel)row.getComponent(1);
+				JPanel column3=(JPanel)row.getComponent(2);
+				row.setBackground(Color.WHITE);
+				column2.setBackground(Color.WHITE);
+				column3.setBackground(Color.WHITE);		
 			}
 		}
 	

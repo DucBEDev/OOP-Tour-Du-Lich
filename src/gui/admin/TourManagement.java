@@ -134,32 +134,70 @@ public class TourManagement extends JPanel {
         tourListPanel.repaint();
     }
 
-    private JPanel createTourRow(Tour tour, int indexInPage) {
+    private JPanel createTourRow(Tour tour, int indexInPage) 
+    {
+    	JPanel wrapperPanel = new JPanel(new GridLayout(1, 1));
+	    wrapperPanel.setBackground(Color.white);
+    	
         JPanel row = new JPanel(new GridLayout(1, 5));
         row.setBackground(Color.WHITE);
         row.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        JLabel idLabel = new JLabel(tour.getTourId());
-        JLabel nameLabel = new JLabel(tour.getTourName());
-        JLabel statusLabel = new JLabel(tour.getStatus());
+        JLabel idLabel = new JLabel("Mã tour: "+tour.getTourId());
+        JLabel nameLabel = new JLabel("Tên tour"+tour.getTourName());
+        JLabel statusLabel = new JLabel("Trạng thái: " + tour.getStatus());
+        JLabel departureDateLabel = new JLabel("Ngày khởi hành: " + tour.getDepartureDate());
+        JLabel durationLabel = new JLabel("Thời gian tour: " + tour.getDuration());
+        JLabel departureLocationLabel = new JLabel("Địa điểm khởi hành: " + tour.getDepartureLocation());
+        JLabel destinationLabel = new JLabel("Địa điểm đến: " + tour.getDestination());
+        JLabel transportInfoLabel = new JLabel("Phương tiện di chuyển: " + tour.getTransportInfo());
         JLabel imageLabel = new JLabel();
         imageLabel.setIcon(new ImageIcon(tour.getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH)));
 
         idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        departureDateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        durationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        departureLocationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        destinationLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        transportInfoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        JPanel column2 = new JPanel(new GridLayout(2, 1));
+	    column2.setBackground( Color.white );
+	    column2.add(idLabel);
+	    column2.add(nameLabel);
+	    
+	    JPanel column3 = new JPanel(new GridLayout(2, 1));
+	    column3.setBackground( Color.white );
+	    column3.add(departureDateLabel);
+	    column3.add(durationLabel);
+	    
+	    JPanel column4 = new JPanel(new GridLayout(2, 1));
+	    column4.setBackground( Color.white );
+	    column4.add(departureLocationLabel);
+	    column4.add(destinationLabel);
+	    
+	    JPanel column5 = new JPanel(new GridLayout(2, 1));
+	    column5.setBackground( Color.white );
+	    column5.add(transportInfoLabel);
+	    column5.add(statusLabel);
+	    
 
         row.add(imageLabel);
-        row.add(idLabel);
-        row.add(nameLabel);
-        row.add(statusLabel);
-
-        row.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        row.putClientProperty("tour", tour);
+        row.add(column2);
+        row.add(column3);
+        row.add(column4);
+        row.add(column5);
         
-        row.addMouseListener(new TourDetailControl(this));
+        wrapperPanel.add(row);
 
-        return row;
+        wrapperPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        wrapperPanel.putClientProperty("tour", tour);
+        
+        wrapperPanel.addMouseListener(new TourDetailControl(this));
+
+        return wrapperPanel;
     }
 
     private void previousPagePanel(ActionEvent e) {
@@ -198,18 +236,37 @@ public class TourManagement extends JPanel {
         }
 
         @Override
-        public void mouseEntered(MouseEvent e) 
-        {
-            JPanel tempPanel = (JPanel) e.getSource();
-            tempPanel.setBackground(Color.LIGHT_GRAY);
-        }
+		public void mouseEntered(MouseEvent e) 
+		{
+			JPanel tempPanel = (JPanel)e.getSource();
+			JPanel row = (JPanel) tempPanel.getComponent(0);
+			JPanel column2=(JPanel)row.getComponent(1);
+			JPanel column3=(JPanel)row.getComponent(2);
+			JPanel column4=(JPanel)row.getComponent(3);
+			JPanel column5=(JPanel)row.getComponent(4);
+			row.setBackground(Color.LIGHT_GRAY);
+			column2.setBackground(Color.LIGHT_GRAY);
+			column3.setBackground(Color.LIGHT_GRAY);
+			column4.setBackground(Color.LIGHT_GRAY);
+			column5.setBackground(Color.LIGHT_GRAY);
 
-        @Override
-        public void mouseExited(MouseEvent e) 
-        {
-            JPanel tempPanel = (JPanel) e.getSource();
-            tempPanel.setBackground(Color.WHITE);
-        }
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) 
+		{
+			JPanel tempPanel = (JPanel)e.getSource();
+			JPanel row = (JPanel) tempPanel.getComponent(0);
+			JPanel column2=(JPanel)row.getComponent(1);
+			JPanel column3=(JPanel)row.getComponent(2);
+			JPanel column4=(JPanel)row.getComponent(3);
+			JPanel column5=(JPanel)row.getComponent(4);
+			row.setBackground(Color.WHITE);
+			column2.setBackground(Color.WHITE);
+			column3.setBackground(Color.WHITE);	
+			column4.setBackground(Color.WHITE);
+			column5.setBackground(Color.WHITE);
+		}
     }
 
     private class AddTourDialog implements ActionListener 

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -190,7 +191,7 @@ public class CustomerManagement extends JPanel {
         // Thêm các dòng trống nếu trang không đầy
         for (int i = end - start; i < rowPerPage; i++) {
             JPanel emptyRow = new JPanel();
-            emptyRow.setBackground(i % 2 == 0 ? Color.white : Color.gray);
+            emptyRow.setBackground(Color.white);
             customerPanel.add(emptyRow);
         }
 
@@ -202,32 +203,59 @@ public class CustomerManagement extends JPanel {
 	
 	// Tạo dòng hiển thị thông tin trên Page
 	private JPanel createCustomerRow(Customer customer, int indexInPage	) {
+		
+		JPanel wrapperPanel = new JPanel(new GridLayout(1, 1));
+	    wrapperPanel.setBackground(Color.white);
+
 		JPanel row = new JPanel(new GridLayout(1, 4)); // 4 cột: customerId, fullName, phone, email
-		row.setBackground(indexInPage % 2 == 0 ? Color.white : Color.gray);
+		row.setBackground(Color.WHITE);
 		row.setBorder(BorderFactory.createLineBorder(Color.black));
 
-		JLabel idLabel = new JLabel(customer.getCustomerId());
-		JLabel nameLabel = new JLabel(customer.getFullName());
-		JLabel phoneLabel = new JLabel(customer.getPhone());
-		JLabel emailLabel = new JLabel(customer.getEmail());
+		JLabel imageLabel = new JLabel();
+	    imageLabel.setIcon(new ImageIcon("C:\\Users\\longh\\eclipse-workspace\\OOP-Test\\src\\images\\person(1).jpg"));
+		JLabel idLabel = new JLabel("ID khách hàng: "+customer.getCustomerId());
+		JLabel nameLabel = new JLabel("Họ và tên: "+customer.getFullName());
+		JLabel phoneLabel = new JLabel("Số điện thoại: " +customer.getPhone());
+		JLabel emailLabel = new JLabel("Email: "+customer.getEmail());
+		JLabel statusLabel = new JLabel("Trạng thái: "+customer.getStatus());
 
 		// Căn chỉnh văn bản
 		idLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		phoneLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		emailLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		
 
-		row.add(idLabel);
-		row.add(nameLabel);
-		row.add(phoneLabel);
-		row.add(emailLabel);
-		    
-		CustomerDetailControl mouseListener = new CustomerDetailControl(this);
-	    row.addMouseListener(mouseListener);
-        row.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        row.putClientProperty("customer", customer);
+		JPanel column2 = new JPanel(new GridLayout(2, 1));
+	    column2.setBackground( Color.white );
+	    column2.add(idLabel);
+	    column2.add(nameLabel);
+	    
+	    JPanel column3 = new JPanel(new GridLayout(2, 1));
+	    column3.setBackground( Color.white );
+	    column3.add(phoneLabel);
+	    column3.add(emailLabel);
+	    
+//	    JPanel column4 = new JPanel(new GridLayout(2, 1));
 
-		return row;
+	    row.add(imageLabel);
+	    row.add(column2);
+	    row.add(column3);
+//	    row.add(permissionLabel);
+//	    row.add(nameLabel); 
+	    row.add(statusLabel);
+	    
+	    wrapperPanel.add(row);
+	    
+	    CustomerDetailControl mouseListener = new CustomerDetailControl(this);
+	    wrapperPanel.addMouseListener(mouseListener);
+
+
+	    wrapperPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    wrapperPanel.putClientProperty("customer", customer);
+
+	    return wrapperPanel;
 	}
 		
 		
@@ -252,6 +280,31 @@ public class CustomerManagement extends JPanel {
 			customerManagement.add(customerDetail);
 			customerManagement.revalidate();
 			customerManagement.repaint();
+		}
+		
+		@Override
+		public void mouseEntered(MouseEvent e) 
+		{
+			JPanel tempPanel = (JPanel)e.getSource();
+			JPanel row = (JPanel) tempPanel.getComponent(0);
+			JPanel column2=(JPanel)row.getComponent(1);
+			JPanel column3=(JPanel)row.getComponent(2);
+			row.setBackground(Color.LIGHT_GRAY);
+			column2.setBackground(Color.LIGHT_GRAY);
+			column3.setBackground(Color.LIGHT_GRAY);
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) 
+		{
+			JPanel tempPanel = (JPanel)e.getSource();
+			JPanel row = (JPanel) tempPanel.getComponent(0);
+			JPanel column2=(JPanel)row.getComponent(1);
+			JPanel column3=(JPanel)row.getComponent(2);
+			row.setBackground(Color.WHITE);
+			column2.setBackground(Color.WHITE);
+			column3.setBackground(Color.WHITE);		
 		}
 	}
 	
