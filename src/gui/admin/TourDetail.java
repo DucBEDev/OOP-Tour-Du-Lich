@@ -16,12 +16,17 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Base64;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
+import com.toedter.calendar.JDateChooser;
 
 import dao.Tour_DAO;
 import entity.Tour;
@@ -31,6 +36,8 @@ public class TourDetail extends JPanel
     private JPanel formPanel;
     private JPanel formButtonPanel;
     private JPanel functionButton;
+    private JPanel imageAndFormWrapperPanel;
+    private JPanel wrapperPanel;
 
     private JLabel backButton;
     private JLabel editButton;
@@ -40,9 +47,9 @@ public class TourDetail extends JPanel
     private JButton addImageButton;
 
     private JLabel tourIdLabel;
-    private JLabel imageLabel;
+//    private JLabel imageLabel;
     private JLabel tourNameLabel;
-    private JLabel descriptionLabel;
+//    private JLabel descriptionLabel;
     private JLabel departureDateLabel;
     private JLabel durationLabel;
     private JLabel departureLocationLabel;
@@ -59,7 +66,7 @@ public class TourDetail extends JPanel
     private JLabel imageContent;
     private JTextField tourNameContent;
     private JTextArea descriptionContent;
-    private JTextField departureDateContent;
+    private JDateChooser departureDateContent;
     private JTextField durationContent;
     private JTextField departureLocationContent;
     private JTextField departureTimeContent;
@@ -95,7 +102,7 @@ public class TourDetail extends JPanel
         setLayout(new BorderLayout(10, 10));
 
         formPanel = new JPanel();
-        formPanel.setLayout(new GridLayout(16, 2, 10, 10));
+        formPanel.setLayout(new GridLayout(1, 2, 10, 10));
 
         functionButton = new JPanel();
         functionButton.setLayout(new BorderLayout());
@@ -144,7 +151,7 @@ public class TourDetail extends JPanel
             }
         });
 
-        imageLabel = new JLabel("Hình ảnh:");
+//        imageLabel = new JLabel("Hình ảnh:");
         imageContent = new JLabel(); // Image logic xử lý sau.
 
         // Tour name
@@ -183,30 +190,14 @@ public class TourDetail extends JPanel
 
         // Departure Date
         departureDateLabel = new JLabel("Ngày khởi hành:");
-        departureDateContent = new JTextField();
-        departureDateContent.addActionListener(evt->
-        {
-            
-                String departureDateTemp = departureDateContent.getText();
-                if (departureDateTemp.matches("\\d{4}-\\d{2}-\\d{2}"))
-                {
-                    String[] dateParts = departureDateTemp.split("-");
-                    
-                    int year = Integer.parseInt(dateParts[0]);
-                    int month = Integer.parseInt(dateParts[1]);
-                    int day = Integer.parseInt(dateParts[2]);
-                    
-                    departureDate = LocalDate.of(year, month, day);
-                    
-                    System.out.println("Departure Date: " + departureDate);
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    departureDateContent.setText("");
-                }
-            
-        });
+        departureDateContent = new JDateChooser();
+        departureDateContent.setPreferredSize(new Dimension(20, 35));
+        departureDateContent.setDateFormatString("dd/MM/yyyy");
+        departureDateContent.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+
         
         // Departure Time
         departureTimeLabel = new JLabel("Giờ khởi hành:");
@@ -361,9 +352,9 @@ public class TourDetail extends JPanel
         });
 
         // Description
-        descriptionLabel = new JLabel("Mô Tả:");
+//        descriptionLabel = new JLabel("Mô Tả:");
         descriptionContent = new JTextArea(5,30);
-        descriptionContent.setBorder(BorderFactory.createTitledBorder("Description"));
+        descriptionContent.setBorder(BorderFactory.createTitledBorder("Mô tả Tour"));
         descriptionContent.addKeyListener(new KeyAdapter() 
         {
         	  @Override
@@ -423,10 +414,11 @@ public class TourDetail extends JPanel
             
             
             tourIdContent.setText(tourId);
-            imageContent.setIcon(new ImageIcon(tour.getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH)));
+            imageContent.setIcon(new ImageIcon(tour.getImage().getScaledInstance(700, 250, Image.SCALE_SMOOTH)));
+            imageContent.setHorizontalAlignment(SwingConstants.CENTER);
             tourNameContent.setText(tourName);
             descriptionContent.setText(description);
-            departureDateContent.setText(departureDate.toString());
+            departureDateContent.setDate(Date.from(tour.getDepartureDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             durationContent.setText(String.valueOf(duration));
             departureLocationContent.setText(departureLocation);
             departureTimeContent.setText(departureTime.toString());
@@ -440,52 +432,67 @@ public class TourDetail extends JPanel
 
        }
         
+        wrapperPanel = new JPanel(new BorderLayout());
+        
+        JPanel leftPanel = new JPanel(new GridLayout(7,2,10,10));
+        JPanel rightPanel = new JPanel(new GridLayout(7,2,10,10));
+       
 
         // Add tất cả các fields vào formPanel.
-        formPanel.add(tourIdLabel);
-        formPanel.add(tourIdContent);
+        leftPanel.add(tourIdLabel);
+        leftPanel.add(tourIdContent);
         
-        formPanel.add(imageLabel);
-        formPanel.add(imageContent);
+//        formPanel.add(imageLabel);
+//        formPanel.add(imageContent);
         
-        formPanel.add(tourNameLabel);
-        formPanel.add(tourNameContent);                
+        leftPanel.add(tourNameLabel);
+        leftPanel.add(tourNameContent);                
         
-        formPanel.add(departureDateLabel);
-        formPanel.add(departureDateContent);
+        leftPanel.add(departureDateLabel);
+        leftPanel.add(departureDateContent);
         
-        formPanel.add(durationLabel);
-        formPanel.add(durationContent);
+        leftPanel.add(durationLabel);
+        leftPanel.add(durationContent);
         
-        formPanel.add(departureLocationLabel);
-        formPanel.add(departureLocationContent);
+        leftPanel.add(departureLocationLabel);
+        leftPanel.add(departureLocationContent);
         
-        formPanel.add(departureTimeLabel);
-        formPanel.add(departureTimeContent);
+        leftPanel.add(departureTimeLabel);
+        leftPanel.add(departureTimeContent);
         
-        formPanel.add(destinationLabel);
-        formPanel.add(destinationContent);
+        leftPanel.add(destinationLabel);
+        leftPanel.add(destinationContent);
         
-        formPanel.add(transportInfoLabel);
-        formPanel.add(transportInfoContent);
+        rightPanel.add(transportInfoLabel);
+        rightPanel.add(transportInfoContent);
         
-        formPanel.add(adultPriceLabel);
-        formPanel.add(adultPriceContent);
+        rightPanel.add(adultPriceLabel);
+        rightPanel.add(adultPriceContent);
         
-        formPanel.add(childPriceLabel);
-        formPanel.add(childPriceContent);
+        rightPanel.add(childPriceLabel);
+        rightPanel.add(childPriceContent);
         
-        formPanel.add(maxParticipantsLabel);
-        formPanel.add(maxParticipantsContent);
+        rightPanel.add(maxParticipantsLabel);
+        rightPanel.add(maxParticipantsContent);
         
-        formPanel.add(currentParticipantsLabel);
-        formPanel.add(currentParticipantsContent);
+        rightPanel.add(currentParticipantsLabel);
+        rightPanel.add(currentParticipantsContent);
         
-        formPanel.add(statusLabel);
-        formPanel.add(statusContent);
+        rightPanel.add(statusLabel);
+        rightPanel.add(statusContent);
         
-        formPanel.add(descriptionLabel);
-        formPanel.add(new JScrollPane(descriptionContent));
+//        formPanel.add(descriptionLabel);
+//        descriptionPanel.add(new JScrollPane(descriptionContent));
+        
+        formPanel.add(leftPanel);
+        formPanel.add(rightPanel);
+        
+        
+        TitledBorder titleBorderForm = BorderFactory.createTitledBorder("Thông tin Tour");       
+        formPanel.setBorder(titleBorderForm);
+        
+        wrapperPanel.add(formPanel, BorderLayout.NORTH);
+        wrapperPanel.add(new JScrollPane(descriptionContent), BorderLayout.CENTER);
        
         saveButton = new JButton("Lưu");
         cancelButton = new JButton("Hủy");
@@ -552,7 +559,7 @@ public class TourDetail extends JPanel
                 tourIdContent.setText(tourId);
                 tourNameContent.setText(tourName);
                 descriptionContent.setText(description);
-                departureDateContent.setText(departureDate.toString());
+                departureDateContent.setDate(Date.from(tour.getDepartureDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 durationContent.setText(String.valueOf(duration));
                 departureLocationContent.setText(departureLocation);
                 departureTimeContent.setText(departureTime.toString());
@@ -626,11 +633,15 @@ public class TourDetail extends JPanel
         formButtonPanel.add(saveButton);
         formButtonPanel.add(cancelButton);
         formButtonPanel.add(addImageButton);
-                
+        wrapperPanel.add(formButtonPanel, BorderLayout.SOUTH);
+
+        imageAndFormWrapperPanel = new JPanel(new BorderLayout());
+        imageAndFormWrapperPanel.add(imageContent, BorderLayout.CENTER);
+        imageAndFormWrapperPanel.add(wrapperPanel, BorderLayout.SOUTH);
         
-        add(formPanel, BorderLayout.CENTER);
+        add(new JScrollPane(imageAndFormWrapperPanel), BorderLayout.CENTER);
         add(functionButton, BorderLayout.NORTH);
-        add(formButtonPanel, BorderLayout.SOUTH);
+//        add(wrapperPanel, BorderLayout.SOUTH);
     }
 
     private void enableEditing(boolean enable) 

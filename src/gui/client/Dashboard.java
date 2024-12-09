@@ -568,7 +568,10 @@ public class Dashboard extends JFrame {
         dialog.add(panel, BorderLayout.SOUTH);
         
         try {
-            Socket socket = new Socket("localhost", 1234);
+        	System.out.println("Connecting to the server...");
+            Socket socket = new Socket("127.0.0.1", 1234);
+            System.out.println("Connected to the server.");
+//            Socket socket = new Socket("localhost", 1234);
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
 

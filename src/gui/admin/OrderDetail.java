@@ -63,9 +63,12 @@ public class OrderDetail extends JPanel {
     private Employee_DAO employeeDAO = new Employee_DAO();
     
     private boolean isConfirmed;
+    
+    private Employee employee;
 
-    public OrderDetail(Order order, boolean isConfirmed) 
+    public OrderDetail(Order order, boolean isConfirmed, Employee employee) 
     {
+    	this.employee=employee;
     	this.isConfirmed=isConfirmed;
     	
         setLayout(new BorderLayout(10, 10));
@@ -84,7 +87,7 @@ public class OrderDetail extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 removeAll();
-        		add(new OrderManagement());
+        		add(new OrderManagement(employee));
                 revalidate();
                 repaint();
             }
@@ -271,25 +274,7 @@ public class OrderDetail extends JPanel {
 
         confirmedByLabel = new JLabel("Xác nhận bởi:");
         confirmedByContent = new JTextField();
-        confirmedByContent.addActionListener(new ActionListener() 
-		{
-            @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                String confirmedByTemp = confirmedByContent.getText();
-                if(employeeDAO.checkExistById(confirmedByTemp))
-                {
-                	confirmedBy = confirmedByTemp;
-              
-                	System.out.println("Confirmed By: " + confirmedBy);
-                }
-                else
-                	{
-                		System.out.println("Employee Not Found");
-                		confirmedByContent.setText("");
-                	}
-            }
-        });
+        
         
         
         if (order != null) {
@@ -348,6 +333,7 @@ public class OrderDetail extends JPanel {
         	confirmButton.addActionListener(e->
         	{
         		order.setStatus(Order.STATUS_PAID);
+        		order.setConfirmedBy(employee.getEmployeeId());
         		if(orderDAO.update(order))
             	{
                     JOptionPane.showMessageDialog(null, "Xác nhận đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -365,6 +351,8 @@ public class OrderDetail extends JPanel {
             cancelButton.addActionListener(e->
             {
             	order.setStatus(Order.STATUS_CANCELLED);
+            	order.setConfirmedBy(employee.getEmployeeId());
+            	
         		if(orderDAO.update(order))
             	{
                     JOptionPane.showMessageDialog(null, "Hủy đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
@@ -395,7 +383,7 @@ public class OrderDetail extends JPanel {
                 	order.setOrderTime(orderTime);
                 	order.setTotalAmount(totalAmount);
                 	order.setStatus(status);
-                	order.setConfirmedBy(confirmedBy);
+//                	order.setConfirmedBy(confirmedBy);
 
                 	
                 	if(orderDAO.update(order))

@@ -32,7 +32,7 @@ public class Customer_DAO {
     }
 
     public ArrayList<Customer> getAll() {
-        String query = "SELECT * FROM Customer";
+        String query = "SELECT * FROM Customer ";
         ArrayList<Customer> list = new ArrayList<>();
 
         try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {

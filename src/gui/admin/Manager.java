@@ -37,29 +37,12 @@ public class Manager extends JFrame {
     private JLabel customerService;
     private JLabel logOut;
     
-	
-	
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Manager frame = new Manager(SignIn.getEmployee());
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
+    private Employee employee;
+	 
+    
 	public Manager(Employee employee) {
+		this.employee=employee;
+		
 		ManagerControl mouselistener = new ManagerControl();
 
 		// Initialize the content pane before adding components
@@ -150,7 +133,7 @@ public class Manager extends JFrame {
    
         functionPanel.add(tourManagement);
         functionPanel.add(customerManagement);
-        if(employee.getPermissions().equals(Employee.PERMISSION_ADMIN)) functionPanel.add(employeeManagement);
+        if(this.employee.getPermissions().equals(Employee.PERMISSION_ADMIN)) functionPanel.add(employeeManagement);
         functionPanel.add(orderManagement);
         functionPanel.add(statistic);
         functionPanel.add(customerService);
@@ -194,7 +177,7 @@ public class Manager extends JFrame {
 			
 			else if(e.getSource()==orderManagement)
 			{
-				currentPanel = new OrderManagement();
+				currentPanel = new OrderManagement(employee);
 				add(currentPanel, BorderLayout.CENTER);
 			}
 			else if(e.getSource()== statistic)

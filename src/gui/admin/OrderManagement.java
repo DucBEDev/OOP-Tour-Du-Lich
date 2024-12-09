@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import entity.Customer;
+import entity.Employee;
 import entity.Order;
 import dao.Order_DAO;
 import dao.Customer_DAO;
@@ -33,9 +34,13 @@ public class OrderManagement extends JPanel {
     private Order_DAO orderDAO = new Order_DAO();
 
     private ArrayList<Order> orders = new ArrayList<>();
+    
+    private Employee employee;
 
-    public OrderManagement() 
+    public OrderManagement(Employee employee) 
     {
+    	this.employee = employee;
+    	
         setLayout(new BorderLayout());
         
         listChangingPanel = new JPanel();
@@ -175,25 +180,32 @@ public class OrderManagement extends JPanel {
     // Tạo dòng hiển thị thông tin trên Page
     private JPanel CreateOrderRow(Order order, int indexInPage, boolean isConfirmed) 
     {
-        JPanel row = new JPanel(new GridLayout(2, 4)); // 4 cột: orderId, customerId, totalAmount, orderTime
+        JPanel row = new JPanel(new GridLayout(2, 3)); // 4 cột: orderId, customerId, totalAmount, orderTime
         row.setBackground(Color.WHITE);
         row.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        JLabel orderIdLabel = new JLabel(order.getOrderId());
-        JLabel customerIdLabel = new JLabel(order.getCustomerId());
-        JLabel totalAmountLabel = new JLabel(String.valueOf(order.getTotalAmount()));
-        JLabel orderTimeLabel = new JLabel(order.getOrderTime().toString());
+        JLabel orderIdLabel = new JLabel("Mã đơn hàng: "+order.getOrderId());
+        JLabel customerIdLabel = new JLabel("Mã khách hàng: "+order.getCustomerId());
+        JLabel tourIdLabel = new JLabel("Mã Tour: "+ order.getTourId());
+        JLabel totalAmountLabel = new JLabel("Tổng số tiền: "+String.valueOf(order.getTotalAmount()));
+        JLabel orderTimeLabel = new JLabel("Thời gian đặt hàng: "+order.getOrderTime().toString());
+        JLabel statusLabel = new JLabel("Trạng thái: " + order.getStatus());
+        
 
         // Căn chỉnh văn bản
         orderIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
         customerIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
         totalAmountLabel.setHorizontalAlignment(SwingConstants.CENTER);
         orderTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        tourIdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         row.add(orderIdLabel);
+        row.add(tourIdLabel);
+        row.add(orderTimeLabel);
         row.add(customerIdLabel);
         row.add(totalAmountLabel);
-        row.add(orderTimeLabel);
+        row.add(statusLabel);
         
         OrderDetailControl mouseListener =null;
 
@@ -250,7 +262,7 @@ public class OrderManagement extends JPanel {
             Order order = (Order) sourcePanel.getClientProperty("order");
 
             orderManagement.removeAll();
-            OrderDetail orderDetail = new OrderDetail(order, isConfirmed);
+            OrderDetail orderDetail = new OrderDetail(order, isConfirmed, employee);
             orderManagement.add(orderDetail);
             orderManagement.revalidate();
             orderManagement.repaint();
@@ -505,8 +517,8 @@ public class OrderManagement extends JPanel {
             // Status
             statusLabel = new JLabel("Trạng thái:");
             statusContent = new JComboBox<>();
-            statusContent.addItem("Đã thanh toán");
             statusContent.addItem("Chờ thanh toán");
+            statusContent.addItem("Đã thanh toán");
             statusContent.addItem("Hủy");
             statusContent.addItem("Hoàn thành");
             statusContent.addActionListener(e1 -> {
@@ -517,11 +529,8 @@ public class OrderManagement extends JPanel {
             // Confirmed by (Employee)
             confirmedByLabel = new JLabel("Nhân viên phụ trách:");
             confirmedByContent = new JTextField();
-            confirmedByContent.addActionListener(e1 -> 
-            {
-                confirmedBy = confirmedByContent.getText();
-                System.out.println("Confirmed By: " + confirmedBy);
-            });
+            confirmedByContent.setText(employee.getEmployeeId());
+            confirmedByContent.setEnabled(false);
 
             // Add components to dialog  
             addFrame.add(phoneLabel);

@@ -279,7 +279,7 @@ public class Order_DAO {
     
     public HashMap<String, Integer> getMostTravelDestinationByInputTime(LocalDate begin, LocalDate end)
     {
-    	String query = "SELECT DESTINATION, COUNT(O.OrderID) AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE ORDER_TIME BETWEEN ? AND ? GROUP BY T.DESTINATION ORDER BY FREQUENCY DESC";
+    	String query = "SELECT DESTINATION, COUNT(O.OrderID) AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE ORDERTIME BETWEEN ? AND ? GROUP BY T.DESTINATION ORDER BY FREQUENCY DESC";
     	HashMap<String, Integer> list = new HashMap<String, Integer>();
     	
     	LocalDateTime dateTimeBegin = begin.atTime(LocalTime.MIDNIGHT);
