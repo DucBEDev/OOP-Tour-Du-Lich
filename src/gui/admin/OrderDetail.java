@@ -269,7 +269,7 @@ public class OrderDetail extends JPanel {
                 	else
                 	{
                 		adultTicketsTemp = Integer.parseInt(adultTicketsContent.getText().trim());
-                       childTicketsTemp = Integer.parseInt(childTicketsContent.getText().trim());
+                        childTicketsTemp = Integer.parseInt(childTicketsContent.getText().trim());
                         statusTemp = (String) statusContent.getSelectedItem();
                         totalAmountTemp = Double.parseDouble(totalAmountContent.getText().trim());
                 	}

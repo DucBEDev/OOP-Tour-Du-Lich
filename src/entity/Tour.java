@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import dao.Order_DAO;
+
 public final class Tour {
     public static final String STATUS_AVAILABLE = "CÒN VÉ";
     public static final String STATUS_SOLD_OUT = "HẾT VÉ";
@@ -91,11 +93,6 @@ public final class Tour {
 
         //departureDate must be after or at the present day.
     public void setDepartureDate(LocalDate departureDate) {
-//        if (departureDate.isAfter(LocalDate.now()) || departureDate.isEqual(LocalDate.now())) {
-//            this.departureDate = departureDate;
-//        } else {
-//            throw new IllegalArgumentException("Ngày khởi hành không hợp lệ");
-//        }
     	this.departureDate = departureDate;
     }
 
@@ -129,12 +126,6 @@ public final class Tour {
 
         //Check the departureTime must be after the present day
     public void setDepartureTime(LocalTime departureTime) {
-//        if (departureTime.isAfter(LocalTime.now())) {
-//            this.departureTime = departureTime;
-//        }
-//        else {
-//            throw new IllegalArgumentException("Giờ khởi hành không hợp lệ");
-//        }
         this.departureTime = departureTime;
     }
 
@@ -198,11 +189,6 @@ public final class Tour {
 
     //Check if the status Valid / Invalid
     public void setStatus(String status) {
-//        if (status.equals(STATUS_AVAILABLE) || status.equals(STATUS_SOLD_OUT)) {
-//            this.status = status;
-//        } else {
-//            throw new IllegalArgumentException("Trạng thái không hợp lệ");
-//        }
         this.status = status;
     }
 
@@ -223,7 +209,8 @@ public final class Tour {
 	}
 
 	public int getCurrentParticipants() {
-		return currentParticipants;
+		Order_DAO orderDAO = new Order_DAO();
+		return orderDAO.getCurrentParticipants(this.tourId);
 	}
 
 	public void setCurrentParticipants(int currentParticipants) {
@@ -236,8 +223,4 @@ public final class Tour {
 				+ "Departure location: " + departureLocation + "Departure Time: " + departureTime + "Destination: " + destination + "Transport info: " + transportInfo
 				+ "Adult price: " + adultPrice + "Child price: " + childPrice+ "Max participants: " + maxParticipants + "Current participants: " + currentParticipants + "Status: " + status;
 	}
-	
-	/*public Tour(String tourId, String tourName, String description, LocalDate departureDate, int duration, String departureLocation, 
-    LocalTime departureTime, String destination, String transportInfo, BigDecimal adultPrice, BigDecimal childPrice, 
-    int maxParticipants, int currentParticipants, String status)*/
 }

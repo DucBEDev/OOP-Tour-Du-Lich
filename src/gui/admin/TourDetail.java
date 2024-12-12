@@ -188,6 +188,7 @@ public class TourDetail extends JPanel
         
         currentParticipantsLabel = new JLabel("Số người hiện tại:");
         currentParticipantsContent = new JTextField();
+        currentParticipantsContent.setEnabled(false);
 
         // Transport Info (ComboBox)
         transportInfoLabel = new JLabel("Phương tiện:");
@@ -341,8 +342,8 @@ public class TourDetail extends JPanel
                    	
                    	destination= destinationContent.getText().trim();
                    	transportInfo= transportInfoContent.getSelectedItem().toString().trim();
-                   	adultPrice= Integer.parseInt(adultPriceContent.getText().trim());
-                   	childPrice= Integer.parseInt(childPriceContent.getText().trim());
+                   	adultPrice = Integer.parseInt(adultPriceContent.getText().trim().replace(",", ""));
+                   	childPrice = Integer.parseInt(childPriceContent.getText().trim().replace(",", ""));
                    	maxParticipants= Integer.parseInt(maxParticipantsContent.getText().trim());
                    	currentParticipants= Integer.parseInt(currentParticipantsContent.getText().trim());
                    	status= statusContent.getSelectedItem().toString().trim();
@@ -372,6 +373,7 @@ public class TourDetail extends JPanel
             	}
             	else JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);        	
             	
+            	currentParticipantsContent.setEnabled(false);
             	enableEditing(false);
             	formPanel.revalidate();
      		    formPanel.repaint();
@@ -411,11 +413,12 @@ public class TourDetail extends JPanel
                 adultPriceContent.setText(String.format("%.2f", adultPrice));
                 childPriceContent.setText(String.format("%.2f", childPrice));
                 maxParticipantsContent.setText(String.valueOf(maxParticipants));
-                currentParticipantsContent.setText(String.valueOf(currentParticipants));
+                //currentParticipantsContent.setText(String.valueOf(currentParticipants));
                 statusContent.setSelectedItem(status);
                 
                 base64Image = null;
 		        
+                currentParticipantsContent.setEnabled(false);
                 enableEditing(false);
         		
         		formPanel.revalidate();
@@ -499,7 +502,6 @@ public class TourDetail extends JPanel
         adultPriceContent.setEnabled(enable);
         childPriceContent.setEnabled(enable);
         maxParticipantsContent.setEnabled(enable);
-        currentParticipantsContent.setEnabled(enable);
         statusContent.setEnabled(enable);
         saveButton.setEnabled(enable);
         cancelButton.setEnabled(enable);
@@ -575,7 +577,7 @@ public class TourDetail extends JPanel
         }
 
 
-        if (adultPrice.isEmpty() || !adultPrice.matches("\\d+")) {
+        if (adultPrice.isEmpty() || !adultPrice.matches("^\\d{1,3}(,\\d{3})*$")) {
             JOptionPane.showMessageDialog(null, 
                 "Giá vé người lớn không hợp lệ! Vui lòng nhập số tiền hợp lệ.", 
                 "Lỗi", 
@@ -584,7 +586,7 @@ public class TourDetail extends JPanel
             return false;
         }
 
-        if (childPrice.isEmpty() || !childPrice.matches("\\d+")) {
+        if (childPrice.isEmpty() || !childPrice.matches("^\\d{1,3}(,\\d{3})*$")) {
             JOptionPane.showMessageDialog(null, 
                 "Giá vé trẻ em không hợp lệ! Vui lòng nhập số tiền hợp lệ.", 
                 "Lỗi", 

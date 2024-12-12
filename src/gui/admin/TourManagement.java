@@ -153,7 +153,7 @@ public class TourManagement extends JPanel {
         row.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JLabel idLabel = new JLabel("Mã tour: "+tour.getTourId());
-        JLabel nameLabel = new JLabel("Tên tour"+tour.getTourName());
+        JLabel nameLabel = new JLabel("Tên tour: "+tour.getTourName());
         JLabel statusLabel = new JLabel("Trạng thái: " + tour.getStatus());
         JLabel departureDateLabel = new JLabel("Ngày khởi hành: " + tour.getDepartureDate());
         JLabel durationLabel = new JLabel("Thời gian tour: " + tour.getDuration());
@@ -190,7 +190,8 @@ public class TourManagement extends JPanel {
 	    JPanel column5 = new JPanel(new GridLayout(2, 1));
 	    column5.setBackground( Color.white );
 	    column5.add(transportInfoLabel);
-	    column5.add(statusLabel);    
+	    column5.add(statusLabel);
+	    
 
         row.add(imageLabel);
         row.add(column2);

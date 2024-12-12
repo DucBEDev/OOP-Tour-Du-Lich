@@ -531,4 +531,52 @@ public class Order_DAO {
         }
         return "ORD000";
     }
+	
+	public int getCurrentParticipants(String tourId) {
+	    String query = "SELECT " +
+	                   "    COALESCE(SUM(o.AdultTickets + o.ChildTickets), 0) AS CurrentParticipants " +
+	                   "FROM " +
+	                   "    Tour t " +
+	                   "LEFT JOIN " +
+	                   "    [Order] o ON t.TourID = o.TourID " +
+	                   "WHERE " +
+	                   "    t.TourID = ? " +
+	                   "GROUP BY " +
+	                   "    t.TourID;";
+	    int result = 0;
+
+	    try {
+	        PreparedStatement stmt = con.prepareStatement(query);
+	        stmt.setString(1, tourId); // Bind the tourId parameter
+	        ResultSet rs = stmt.executeQuery();
+
+	        if (rs.next()) { // Use if since there's only one row expected
+	            result = rs.getInt("CurrentParticipants");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
+	
+	
+	public int getMaxParticipants(String tourId) {
+	    String query = "SELECT MaxParticipants FROM Tour WHERE TourID = ?";
+	    int result = 0;
+
+	    try {
+	        PreparedStatement stmt = con.prepareStatement(query);
+	        stmt.setString(1, tourId); // Bind the tourId parameter
+	        ResultSet rs = stmt.executeQuery();
+
+	        if (rs.next()) { // Use if since there's only one row expected
+	            result = rs.getInt("MaxParticipants");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
 }

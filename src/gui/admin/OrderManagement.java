@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import entity.Customer;
 import entity.Employee;
 import entity.Order;
+import entity.Tour;
 import dao.Order_DAO;
+import dao.Tour_DAO;
 import dao.Customer_DAO;
 
 public class OrderManagement extends JPanel {
@@ -353,12 +355,14 @@ public class OrderManagement extends JPanel {
         private Customer_DAO customerDAO= new Customer_DAO();
         
         private Order_DAO orderDAO= new Order_DAO();
+        
+        private Tour_DAO tourDAO = new Tour_DAO();
 
         @Override
         public void actionPerformed(ActionEvent e) {
             JFrame addFrame = new JFrame("Thêm đơn mới");
             addFrame.setAlwaysOnTop(true);
-            addFrame.setLayout(new GridLayout(11, 2, 10, 10));         
+            addFrame.setLayout(new GridLayout(12, 2, 10, 10));         
 
             phoneLabel = new JLabel("Số điện thoại:");
 			phoneContent = new JTextField();
@@ -483,6 +487,33 @@ public class OrderManagement extends JPanel {
             // Save and Cancel buttons
             JButton saveButton = new JButton("Lưu");
             JButton cancelButton = new JButton("Hủy");
+            
+            JButton totalAmountButton = new JButton("Tổng tiền");
+            // Chức năng tính tổng số tiền
+            totalAmountButton = new JButton("Tính tổng tiền");
+            totalAmountButton.addActionListener(ex->{
+            	String adultTicketsTemp = adultTicketsContent.getText().trim();
+                String childTicketsTemp = childTicketsContent.getText().trim();
+
+            	if(!adultTicketsTemp.isEmpty() && !childTicketsTemp.isEmpty())
+            	{
+            		int adultTicketsIntTemp = Integer.parseInt(adultTicketsTemp);
+            		int childTicketsIntTemp = Integer.parseInt(childTicketsTemp);
+            		
+            		tourId = tourIdContent.getText().trim();
+            		Tour tourTemp = tourDAO.getByTourId(this.tourId);          
+            		
+                    DecimalFormat decimalFormat = new DecimalFormat("#,###");
+                    
+            		this.totalAmount = adultTicketsIntTemp * tourTemp.getAdultPrice() + childTicketsIntTemp * tourTemp.getChildPrice();
+                    String formatted = decimalFormat.format(this.totalAmount);
+
+            		totalAmountContent.setText(String.valueOf(formatted));
+            		totalAmountContent.repaint();
+            		totalAmountContent.revalidate();
+            	}
+            });
+            
 
             // Save button action
             saveButton.addActionListener(e1 -> 
@@ -498,9 +529,10 @@ public class OrderManagement extends JPanel {
                 tourId = tourIdContent.getText().trim();
                 adultTickets = Integer.parseInt(adultTicketsContent.getText().trim());
                 childTickets = Integer.parseInt(childTicketsContent.getText().trim());
-                totalAmount = Double.parseDouble(totalAmountContent.getText().trim());
+                totalAmount = Double.parseDouble(totalAmountContent.getText().trim().replace(",", ""));
                 status = (String) statusContent.getSelectedItem();
                 confirmedBy = confirmedByContent.getText().trim();
+                
                 // Save order to database or list
             	Customer customer = null;
             	        
@@ -516,7 +548,8 @@ public class OrderManagement extends JPanel {
             	try {
             		Order order = new Order(orderDAO.generateNextOrderId(), customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
             		System.out.println(order);
-            		if (orderDAO.add(order)) {
+            		
+            		if (orderDAO.add(order) && (orderDAO.getCurrentParticipants(tourId) <= orderDAO.getMaxParticipants(tourId))) {
             			JOptionPane.showMessageDialog(addFrame, "Thêm đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 	        			loadOrderData(orderDAO.getAll(), false);
 	        			addFrame.dispose();
@@ -546,10 +579,12 @@ public class OrderManagement extends JPanel {
                 confirmedBy = null;
                 addFrame.dispose();
             });
+           
 
             // Add buttons to dialog
             addFrame.add(saveButton);
             addFrame.add(cancelButton);
+            addFrame.add(totalAmountButton);
 
             // Set dialog properties
             addFrame.setSize(600, 600);
@@ -569,7 +604,6 @@ public class OrderManagement extends JPanel {
 			String tourIdTemp = tourIdContent.getText().trim();
 			String adultTicketsTemp = adultTicketsContent.getText().trim();
 			String childTicketsTemp = childTicketsContent.getText().trim();
-			String totalAmountTemp = totalAmountContent.getText().trim();
 			
 			
 			if (fullNameTemp.isEmpty() || !fullNameTemp.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
@@ -605,12 +639,6 @@ public class OrderManagement extends JPanel {
 		    if (childTicketsTemp.isEmpty() || !childTicketsTemp.matches("\\d+")) {
 		        JOptionPane.showMessageDialog(parentFrame, "Số vé trẻ em phải là chữ số và không được nhỏ hơn 0", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        childTicketsContent.requestFocus();
-		        return false;
-		    }
-		    
-		    if (totalAmountTemp.isEmpty() || !totalAmountTemp.matches("\\d+")) {
-		        JOptionPane.showMessageDialog(parentFrame, "Tổng giá trị của đơn không hợp lệ", "Lỗi", JOptionPane.ERROR_MESSAGE);
-		        totalAmountContent.requestFocus();
 		        return false;
 		    }
 
