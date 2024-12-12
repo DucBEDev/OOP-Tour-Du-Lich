@@ -12,13 +12,10 @@ public final class Order {
     private String orderId;
     private String customerId;
     private String tourId;
-    //private String phone;
-    //private String fullName;
     private int adultTickets;
     private int childTickets;
     private LocalDateTime orderTime;
     private double totalAmount;
-    //private String paymentMethod;
     private String status;
     private String confirmedBy;         //Nhân viên phụ trách đơn hàng
     
@@ -31,13 +28,10 @@ public final class Order {
         this.orderId = orderId;
         this.customerId = customerId;
         this.tourId = tourId;
-        //setPhone(phone);
-        //setFullName(fullName);
         setAdultTickets(adultTickets);
         setChildTickets(childTickets);
         this.orderTime = orderTime;
         setTotalAmount(totalAmount);
-        //this.setPaymentMethod(paymentMethod);
         setStatus(status);
         this.confirmedBy = confirmedBy;
     }
@@ -72,28 +66,6 @@ public final class Order {
     public void setTourId(String tourId) {
         this.tourId = tourId;
     }
-
-    /*// Generate Getter & Setter for phone
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        if (phone.matches("\\d{11}")) {
-            this.phone = phone;
-        } else {
-            throw new IllegalArgumentException("Số điện thoại không hợp lệ, phải có 11 chữ số");
-        }
-    }
-
-    // Generate Getter & Setter for fullName
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }*/
 
     // Generate Getter & Setter for adultTickets
     public int getAdultTickets() {
@@ -149,11 +121,7 @@ public final class Order {
     }
 
     public void setStatus(String status) {
-        //if (status.equals(STATUS_PENDING) || status.equals(STATUS_PAID) || status.equals(STATUS_CANCELLED)|| status.equals(STATUS_COMPLETED) ) {
             this.status = status;
-       // } else {
-         //   throw new IllegalArgumentException("Trạng thái không hợp lệ");
-        //}
     }
 
     // Generate Getter & Setter for confirmedBy
@@ -178,14 +146,4 @@ public final class Order {
 		return "Order ID: " + orderId + "Customer ID: " + customerId + "Tour ID: " + tourId + "Adult Tickets: " + adultTickets
 				+ "Child Tickets: " + childTickets + "Order time: " + orderTime + "Total amount: " + totalAmount + "Status: " + status + "Confirmed by: " + confirmedBy;
 	}
-
-	/*public String getPaymentMethod() {
-		return paymentMethod;
-	}
-
-	public void setPaymentMethod(String paymentMethod) {
-		this.paymentMethod = paymentMethod;
-	}*/
-	/*String orderId, String customerId, String tourId, int adultTickets, int childTickets, 
-                 LocalDateTime orderTime, BigDecimal totalAmount, String status, String confirmedBy*/
 }
