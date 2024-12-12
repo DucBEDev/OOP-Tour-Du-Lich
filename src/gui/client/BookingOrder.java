@@ -40,6 +40,7 @@ import javax.swing.border.EmptyBorder;
 
 import dao.Customer_DAO;
 import dao.Order_DAO;
+import dao.Tour_DAO;
 import entity.Customer;
 import entity.Order;
 import entity.Tour;
@@ -60,6 +61,7 @@ public class BookingOrder extends JFrame {
 	
 	private Tour selectedTour;
 	private Customer cus;
+	private Tour_DAO tour_dao;
 	private Order_DAO order_dao;
 	private Customer_DAO customer_dao;
 	
@@ -114,6 +116,8 @@ public class BookingOrder extends JFrame {
 		pnlFormInput.add(new JLabel("Tour đã chọn: "), gbc);
 		gbc.gridx = 1;
 		txtChosenTour = new JTextField();
+		txtChosenTour.setEditable(false);
+		txtChosenTour.setBorder(null);
 		if (selectedTour != null) 
 			txtChosenTour.setText(selectedTour.getTourName());
 		txtChosenTour.setPreferredSize(new Dimension(200, 30));
@@ -419,12 +423,36 @@ public class BookingOrder extends JFrame {
 	}
 	
 	private void handleBooking() {
+		Customer testInputCus = new Customer();
 		String fullName = txtFullName.getText().trim();
-		String email = txtEmail.getText().trim();
-		String phone = txtPhone.getText().trim();
+		
+		String email;
+		try {
+			email = txtEmail.getText().trim();
+			testInputCus.setEmail(email);
+		} catch (Exception e)  {
+			JOptionPane.showMessageDialog(this, "Thông tin đăng nhập không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		String phone;
+		try {
+			phone = txtPhone.getText().trim();
+			testInputCus.setPhone(phone);
+		} catch (Exception e)  {
+			JOptionPane.showMessageDialog(this, "Thông tin đăng nhập không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
 		String address = txtAddress.getText().trim();
 		int adultTickets = (int)adultSpinner.getValue();
 		int childTickets = (int)childSpinner.getValue();
+		
+		int totalTickets = adultTickets + childTickets;
+		if (totalTickets > (selectedTour.getMaxParticipants() - selectedTour.getCurrentParticipants())) {
+			JOptionPane.showMessageDialog(this, "Không được đặt quá số vé giới hạn", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+		}
 		
 		if (selectedTour == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn tour trước khi đặt", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -453,6 +481,12 @@ public class BookingOrder extends JFrame {
         double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
         Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chưa hoàn thành", null);
         order_dao.add(order);
+        
+        // Update current participations
+        selectedTour.setCurrentParticipants(selectedTour.getCurrentParticipants() + totalTickets);
+        tour_dao = new Tour_DAO();
+        tour_dao.update(selectedTour, null);
+        
         JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             
         // Back to dashboard

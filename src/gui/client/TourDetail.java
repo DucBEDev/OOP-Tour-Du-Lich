@@ -38,11 +38,17 @@ import javax.swing.border.TitledBorder;
 
 import dao.Customer_DAO;
 import dao.Order_DAO;
+import dao.Tour_DAO;
 import entity.Customer;
 import entity.Order;
 import entity.Tour;
 
 public class TourDetail extends JFrame {
+	public static final String STATUS_PENDING = "Chờ thanh toán";
+    public static final String STATUS_PAID = "Đã thanh toán";
+    public static final String STATUS_CANCELLED = "Hủy";
+    public static final String STATUS_COMPLETED = "Hoàn thành";
+	
 	private JPanel pnlMain;
 	private JPanel pnlLeft;
 	private JPanel pnlRight;
@@ -57,6 +63,7 @@ public class TourDetail extends JFrame {
     private JLabel lblTotalPrice;
     
     private Order_DAO order_dao;
+    private Tour_DAO tour_dao;
 	private Customer_DAO customer_dao;
 	private Tour selectedTour;
 	private Customer cus;
@@ -115,6 +122,8 @@ public class TourDetail extends JFrame {
 		pnlFormInput.add(new JLabel("Tour đã chọn: "), gbc);
 		gbc.gridx = 1;
 		txtChosenTour = new JTextField();
+		txtChosenTour.setEditable(false);
+		txtChosenTour.setBorder(null);
 		if (selectedTour != null) 
 			txtChosenTour.setText(selectedTour.getTourName());
 		txtChosenTour.setPreferredSize(new Dimension(200, 30));
@@ -159,7 +168,7 @@ public class TourDetail extends JFrame {
 		gbc.gridx = 0; gbc.gridy = 5;
 		pnlFormInput.add(new JLabel("Số người lớn:"), gbc);
 		gbc.gridx = 1;
-		SpinnerNumberModel adultModel = new SpinnerNumberModel(0, 0, 10, 1);
+		SpinnerNumberModel adultModel = new SpinnerNumberModel(1, 1, 10, 1);
 		adultSpinner = new JSpinner(adultModel);
 		adultSpinner.setPreferredSize(new Dimension(200, 30));
 		adultSpinner.addChangeListener(e -> updateTotalPrice());
@@ -240,7 +249,7 @@ public class TourDetail extends JFrame {
         
         // Tour detail
         JPanel pnlDetail = new JPanel(new GridLayout(0, 1, 10, 5));
-        TitledBorder titleBorder1 = BorderFactory.createTitledBorder("Tiện nghi bao gồm");
+        TitledBorder titleBorder1 = BorderFactory.createTitledBorder("Mô tả tour");
         Font titleFont = new Font("Arial", Font.PLAIN, 16);
         titleBorder1.setTitleFont(titleFont);
         pnlDetail.setBorder(titleBorder1);
@@ -304,14 +313,38 @@ public class TourDetail extends JFrame {
     }
     
     private void handleBooking() {
-		String fullName = txtFullName.getText().trim();
-		String email = txtEmail.getText().trim();
-		String phone = txtPhone.getText().trim();
+    	// Validate form
+    	Customer testInputCus = new Customer();
+    	String fullName = txtFullName.getText().trim();
+		
+		String email;
+		try {
+			email = txtEmail.getText().trim();
+			testInputCus.setEmail(email);
+		} catch (Exception e)  {
+			JOptionPane.showMessageDialog(this, "Thông tin đăng nhập không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		String phone;
+		try {
+			phone = txtPhone.getText().trim();
+			testInputCus.setPhone(phone);
+		} catch (Exception e)  {
+			JOptionPane.showMessageDialog(this, "Thông tin đăng nhập không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
 		String address = txtAddress.getText().trim();
 		int adultTickets = (int)adultSpinner.getValue();
 		int childTickets = (int)childSpinner.getValue();
+		
+		int totalTickets = adultTickets + childTickets;
+		if (totalTickets > (selectedTour.getMaxParticipants() - selectedTour.getCurrentParticipants())) {
+			JOptionPane.showMessageDialog(this, "Không được đặt quá số vé giới hạn", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+		}
         
-        // Validate form
         if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
@@ -330,9 +363,16 @@ public class TourDetail extends JFrame {
         	Customer customer = customer_dao.getByPhone(phone);
         	customer_id = customer.getCustomerId();
         }
+        
         double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
-        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chưa hoàn thành", null);
+        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, STATUS_PENDING, null);
         order_dao.add(order);
+        
+        // Update current participations
+        selectedTour.setCurrentParticipants(selectedTour.getCurrentParticipants() + totalTickets);
+        tour_dao = new Tour_DAO();
+        tour_dao.update(selectedTour, null);
+        
         JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             
         // Back to dashboard

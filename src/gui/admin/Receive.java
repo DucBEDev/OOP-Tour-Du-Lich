@@ -22,6 +22,7 @@ public class Receive extends JPanel {
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
+        chatArea.setCaretPosition(chatArea.getDocument().getLength());
         chatArea.setCaretColor(Color.WHITE);
         chatArea.setBackground(Color.WHITE);
         chatArea.setForeground(Color.WHITE);

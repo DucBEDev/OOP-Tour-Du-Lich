@@ -393,7 +393,7 @@ public class Dashboard extends JFrame {
         // Get data form the database
         tourList = tour_dao.getLimitedTours(15);
 
-        JPanel cardsPanel = new JPanel(new GridLayout(tourList.size() / 3, 3, 20, 20));
+        JPanel cardsPanel = new JPanel(new GridLayout((int)(Math.ceil(tourList.size() * 1.0 / 3)), 3, 20, 20));
         cardsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
         for (Tour tour : tourList) {
@@ -541,6 +541,7 @@ public class Dashboard extends JFrame {
         chatArea.setCaretColor(Color.WHITE);
         chatArea.setForeground(Color.WHITE);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        chatArea.setCaretPosition(chatArea.getDocument().getLength());
         JScrollPane scrollPane = new JScrollPane(chatArea);
         
         messageField = new JTextField(30);

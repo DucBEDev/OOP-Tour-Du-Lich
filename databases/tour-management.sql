@@ -69,8 +69,7 @@ CREATE TABLE [Order] (
     OrderTime DATETIME DEFAULT GETDATE(),
     TotalAmount DECIMAL(12,2) CHECK (TotalAmount >= 0),
     PaymentMethod NVARCHAR(50),  -- Thêm phương thức thanh toán
-    Status NVARCHAR(20) DEFAULT N'Chờ thanh toán' 
-        CHECK (Status IN (N'Đã thanh toán', N'Chờ thanh toán', N'Hủy', N'Hoàn thành')),
+    Status NVARCHAR(20),
     ConfirmedBy CHAR(10),
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
     FOREIGN KEY (TourID) REFERENCES Tour(TourID) ON DELETE NO ACTION,  -- Thay đổi CASCADE thành NO ACTION
