@@ -140,16 +140,17 @@ public class TourDetail extends JPanel
         // Tour ID
         tourIdLabel = new JLabel("Mã tour:");
         tourIdContent = new JTextField();
-        tourIdContent.addActionListener(e1 -> {
-            String temp = tourIdContent.getText();
-            if (temp.matches("^[A-Za-z0-9]+$")) {
-                tourId = temp;
-                System.out.println("Tour ID: " + tourId);
-            } else {
-                System.out.println("Invalid input for Tour ID");
-                tourIdContent.setText("");
-            }
-        });
+        tourIdContent.setEnabled(false);
+//        tourIdContent.addActionListener(e1 -> {
+//            String temp = tourIdContent.getText();
+//            if (temp.matches("^[A-Za-z0-9]+$")) {
+//                tourId = temp;
+//                System.out.println("Tour ID: " + tourId);
+//            } else {
+//                System.out.println("Invalid input for Tour ID");
+//                tourIdContent.setText("");
+//            }
+//        });
 
 //        imageLabel = new JLabel("Hình ảnh:");
         imageContent = new JLabel(); // Image logic xử lý sau.
@@ -157,36 +158,36 @@ public class TourDetail extends JPanel
         // Tour name
         tourNameLabel = new JLabel("Tên Tour:");
         tourNameContent = new JTextField();
-        tourNameContent.addActionListener(evt -> {
-            String temp = tourNameContent.getText();
-            if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
-                tourName = temp;
-                System.out.println("Tour Name: " + tourName);
-            } else {
-                System.out.println("Invalid input for Tour Name");
-                tourNameContent.setText("");
-            }
-        });
+//        tourNameContent.addActionListener(evt -> {
+//            String temp = tourNameContent.getText();
+//            if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
+//                tourName = temp;
+//                System.out.println("Tour Name: " + tourName);
+//            } else {
+//                System.out.println("Invalid input for Tour Name");
+//                tourNameContent.setText("");
+//            }
+//        });
 
         // Duration
-        durationLabel = new JLabel("Thời gian:");
+        durationLabel = new JLabel("Số ngày:");
         durationContent = new JTextField();
-        durationContent.addActionListener(evt->
-        {
-            
-                String durationTemp = durationContent.getText();
-                if (durationTemp.matches("\\d+")) 
-                {
-                    duration = Integer.parseInt(durationTemp);
-                    System.out.println("Duration: " + duration);
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    durationContent.setText("");
-                }
-            
-        });
+//        durationContent.addActionListener(evt->
+//        {
+//            
+//                String durationTemp = durationContent.getText();
+//                if (durationTemp.matches("\\d+")) 
+//                {
+//                    duration = Integer.parseInt(durationTemp);
+//                    System.out.println("Duration: " + duration);
+//                } 
+//                else 
+//                {
+//                    System.out.println("Invalid input");
+//                    durationContent.setText("");
+//                }
+//            
+//        });
 
         // Departure Date
         departureDateLabel = new JLabel("Ngày khởi hành:");
@@ -202,140 +203,140 @@ public class TourDetail extends JPanel
         // Departure Time
         departureTimeLabel = new JLabel("Giờ khởi hành:");
         departureTimeContent = new JTextField();
-        departureTimeContent.addActionListener(evt->
-        {
-            
-                String departureTimeTemp = departureTimeContent.getText();
-                if (departureTimeTemp.matches("\\d{2}-\\d{2}"))
-                {
-                    String[] timeParts = departureTimeTemp.split("-");
-                    
-                    int hour = Integer.parseInt(timeParts[0]);
-                    int minute = Integer.parseInt(timeParts[1]);
-                    
-                    departureTime = LocalTime.of(hour, minute);
-                    
-                    System.out.println("Departure Time: " + departureTime);
-
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    departureTimeContent.setText("");
-                }
-            
-        });
+//        departureTimeContent.addActionListener(evt->
+//        {
+//            
+//                String departureTimeTemp = departureTimeContent.getText();
+//                if (departureTimeTemp.matches("\\d{2}-\\d{2}"))
+//                {
+//                    String[] timeParts = departureTimeTemp.split("-");
+//                    
+//                    int hour = Integer.parseInt(timeParts[0]);
+//                    int minute = Integer.parseInt(timeParts[1]);
+//                    
+//                    departureTime = LocalTime.of(hour, minute);
+//                    
+//                    System.out.println("Departure Time: " + departureTime);
+//
+//                } 
+//                else 
+//                {
+//                    System.out.println("Invalid input");
+//                    departureTimeContent.setText("");
+//                }
+//            
+//        });
 
         // Departure Location
         departureLocationLabel = new JLabel("Điểm Khởi Hành:");
         departureLocationContent = new JTextField();
-        departureLocationContent.addActionListener(evt -> {
-            String temp = departureLocationContent.getText();
-            if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
-                departureLocation = temp;
-                System.out.println("Departure Location: " + departureLocation);
-            } else {
-                System.out.println("Invalid input for Departure Location");
-                departureLocationContent.setText("");
-            }
-        });
+//        departureLocationContent.addActionListener(evt -> {
+//            String temp = departureLocationContent.getText();
+//            if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
+//                departureLocation = temp;
+//                System.out.println("Departure Location: " + departureLocation);
+//            } else {
+//                System.out.println("Invalid input for Departure Location");
+//                departureLocationContent.setText("");
+//            }
+//        });
 
         // Destination
         destinationLabel = new JLabel("Điểm Đến:");
         destinationContent = new JTextField();
-        destinationContent.addActionListener(evt -> 
-        {
-            String temp = destinationContent.getText();
-            if (temp.matches("^[A-Za-z ]+$")) 
-            {
-                destination = temp;
-                System.out.println("Destination: " + destination);
-            } 
-            else 
-            {
-                System.out.println("Invalid input for Destination");
-                destinationContent.setText("");
-            }
-        });
+//        destinationContent.addActionListener(evt -> 
+//        {
+//            String temp = destinationContent.getText();
+//            if (temp.matches("^[A-Za-z ]+$")) 
+//            {
+//                destination = temp;
+//                System.out.println("Destination: " + destination);
+//            } 
+//            else 
+//            {
+//                System.out.println("Invalid input for Destination");
+//                destinationContent.setText("");
+//            }
+//        });
 
         // Adult Price
         adultPriceLabel = new JLabel("Giá người lớn:");
         adultPriceContent = new JTextField();
-        adultPriceContent.addActionListener(evt->
-        {
-            
-                String adultPriceTemp = adultPriceContent.getText();
-                if (adultPriceTemp.matches("\\d+")) 
-                {
-                    adultPrice = Double.parseDouble(adultPriceTemp);
-                    System.out.println("Adult Price: " + adultPrice);
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    adultPriceContent.setText("");
-                }
-            
-        });
+//        adultPriceContent.addActionListener(evt->
+//        {
+//            
+//                String adultPriceTemp = adultPriceContent.getText();
+//                if (adultPriceTemp.matches("\\d+")) 
+//                {
+//                    adultPrice = Double.parseDouble(adultPriceTemp);
+//                    System.out.println("Adult Price: " + adultPrice);
+//                } 
+//                else 
+//                {
+//                    System.out.println("Invalid input");
+//                    adultPriceContent.setText("");
+//                }
+//            
+//        });
 
         // Child Price
         childPriceLabel = new JLabel("Giá trẻ em:");
         childPriceContent = new JTextField();
-        childPriceContent.addActionListener(evt->
-        {
-            
-                String childPriceTemp = childPriceContent.getText();
-                if (childPriceTemp.matches("\\d+")) 
-                {
-                    childPrice = Double.parseDouble(childPriceTemp);
-                    System.out.println("Child Price: " + childPrice);
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    childPriceContent.setText("");
-                }
-            
-        });
+//        childPriceContent.addActionListener(evt->
+//        {
+//            
+//                String childPriceTemp = childPriceContent.getText();
+//                if (childPriceTemp.matches("\\d+")) 
+//                {
+//                    childPrice = Double.parseDouble(childPriceTemp);
+//                    System.out.println("Child Price: " + childPrice);
+//                } 
+//                else 
+//                {
+//                    System.out.println("Invalid input");
+//                    childPriceContent.setText("");
+//                }
+//            
+//        });
 
         // Max Participants
         maxParticipantsLabel = new JLabel("Số lượng tối đa:");
         maxParticipantsContent = new JTextField();
-        maxParticipantsContent.addActionListener(evt->
-        {
-           
-                String maxParticipantsTemp = maxParticipantsContent.getText();
-                if (maxParticipantsTemp.matches("\\d+")) 
-                {
-                    maxParticipants = Integer.parseInt(maxParticipantsTemp);
-                    System.out.println("Max Participants: " + maxParticipants);
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    maxParticipantsContent.setText("");
-                }
-            
-        });
+//        maxParticipantsContent.addActionListener(evt->
+//        {
+//           
+//                String maxParticipantsTemp = maxParticipantsContent.getText();
+//                if (maxParticipantsTemp.matches("\\d+")) 
+//                {
+//                    maxParticipants = Integer.parseInt(maxParticipantsTemp);
+//                    System.out.println("Max Participants: " + maxParticipants);
+//                } 
+//                else 
+//                {
+//                    System.out.println("Invalid input");
+//                    maxParticipantsContent.setText("");
+//                }
+//            
+//        });
         
         currentParticipantsLabel = new JLabel("Số người hiện tại:");
         currentParticipantsContent = new JTextField();
-        currentParticipantsContent.addActionListener(evt->
-        {
-           
-                String currentParticipantsTemp = currentParticipantsContent.getText();
-                if (currentParticipantsTemp.matches("\\d+")) 
-                {
-                	currentParticipants = Integer.parseInt(currentParticipantsTemp);
-                    System.out.println("Current Participants: " + currentParticipants);
-                } 
-                else 
-                {
-                    System.out.println("Invalid input");
-                    currentParticipantsContent.setText("");
-                }
-            
-        });
+//        currentParticipantsContent.addActionListener(evt->
+//        {
+//           
+//                String currentParticipantsTemp = currentParticipantsContent.getText();
+//                if (currentParticipantsTemp.matches("\\d+")) 
+//                {
+//                	currentParticipants = Integer.parseInt(currentParticipantsTemp);
+//                    System.out.println("Current Participants: " + currentParticipants);
+//                } 
+//                else 
+//                {
+//                    System.out.println("Invalid input");
+//                    currentParticipantsContent.setText("");
+//                }
+//            
+//        });
 
         // Transport Info (ComboBox)
         transportInfoLabel = new JLabel("Phương tiện:");
@@ -343,41 +344,41 @@ public class TourDetail extends JPanel
         transportInfoContent.addItem("Xe");
         transportInfoContent.addItem("Máy bay");
         transportInfoContent.addItem("Tàu");
-        transportInfoContent.addActionListener(evt->
-        {
-            
-                transportInfo = (String) transportInfoContent.getSelectedItem();
-                System.out.println("Transport Info: " + transportInfo);
-            
-        });
+//        transportInfoContent.addActionListener(evt->
+//        {
+//            
+//                transportInfo = (String) transportInfoContent.getSelectedItem();
+//                System.out.println("Transport Info: " + transportInfo);
+//            
+//        });
 
         // Description
 //        descriptionLabel = new JLabel("Mô Tả:");
         descriptionContent = new JTextArea(5,30);
         descriptionContent.setBorder(BorderFactory.createTitledBorder("Mô tả Tour"));
-        descriptionContent.addKeyListener(new KeyAdapter() 
-        {
-        	  @Override
-              public void keyPressed(KeyEvent e) 
-        	  {
-                  if (e.getKeyCode() == KeyEvent.VK_ENTER) 
-                  {
-                      // Save text to a variable
-                	  String descriptionTemp = descriptionContent.getText();
-                      if (descriptionTemp.matches("^[a-zA-ZÀ-ỹ .,\\n]+$"))
-                      {
-                          description = descriptionTemp;
-                          System.out.println("Description: " + description);
-                      } 
-                      else 
-                      {
-                          System.out.println("Invalid input for Description");
-                          descriptionContent.setText("");
-                      }
-                  }
-              }
-        
-        });
+//        descriptionContent.addKeyListener(new KeyAdapter() 
+//        {
+//        	  @Override
+//              public void keyPressed(KeyEvent e) 
+//        	  {
+//                  if (e.getKeyCode() == KeyEvent.VK_ENTER) 
+//                  {
+//                      // Save text to a variable
+//                	  String descriptionTemp = descriptionContent.getText();
+//                      if (descriptionTemp.matches("^[a-zA-ZÀ-ỹ .,\\n]+$"))
+//                      {
+//                          description = descriptionTemp;
+//                          System.out.println("Description: " + description);
+//                      } 
+//                      else 
+//                      {
+//                          System.out.println("Invalid input for Description");
+//                          descriptionContent.setText("");
+//                      }
+//                  }
+//              }
+//        
+//        });
 
         
 
@@ -503,7 +504,32 @@ public class TourDetail extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-            	tour.setTourId(tourId);
+            	if(!validateInput()) return;
+            	else
+            	{
+            		tourName= tourNameContent.getText().trim();
+            		description= descriptionContent.getText().trim();
+            		departureDate= departureDateContent.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            		duration= Integer.parseInt(durationContent.getText().trim());
+            		departureLocation= departureLocationContent.getText().trim();
+            		
+            		String[] timeParts = departureTimeContent.getText().trim().split(":");
+                   
+            		int hour = Integer.parseInt(timeParts[0]);
+            		int minute = Integer.parseInt(timeParts[1]);
+                   
+                   	departureTime = LocalTime.of(hour, minute);
+                   	
+                   	destination= destinationContent.getText().trim();
+                   	transportInfo= transportInfoContent.getSelectedItem().toString().trim();
+                   	adultPrice= Integer.parseInt(adultPriceContent.getText().trim());
+                   	childPrice= Integer.parseInt(childPriceContent.getText().trim());
+                   	maxParticipants= Integer.parseInt(maxParticipantsContent.getText().trim());
+                   	currentParticipants= Integer.parseInt(currentParticipantsContent.getText().trim());
+                   	status= statusContent.getSelectedItem().toString().trim();
+
+            	}
+//            	tour.setTourId(tourId);
             	tour.setImage(image);
             	tour.setTourName(tourName);
             	tour.setDescription(description);
@@ -646,7 +672,7 @@ public class TourDetail extends JPanel
 
     private void enableEditing(boolean enable) 
     {
-        tourIdContent.setEnabled(enable);
+//        tourIdContent.setEnabled(enable);
         tourNameContent.setEnabled(enable);
         descriptionContent.setEnabled(enable);
         departureDateContent.setEnabled(enable);
@@ -665,9 +691,112 @@ public class TourDetail extends JPanel
         addImageButton.setEnabled(enable);
     }
 
+    
 
-    private void showInvalidInputMessage(JTextField field) {
-        JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        field.setText("");
+    private boolean validateInput() {
+//        String tourId = tourIdContent.getText().trim();
+        String tourName = tourNameContent.getText().trim();
+        String description = descriptionContent.getText().trim();
+//        Date departureDate = departureDateContent.getDate();
+        String duration = durationContent.getText().trim();
+        String departureLocation = departureLocationContent.getText().trim();
+        String departureTime = departureTimeContent.getText().trim();
+        String destination = destinationContent.getText().trim();
+//        String transportInfo = (String) transportInfoContent.getSelectedItem();
+        String adultPrice = adultPriceContent.getText().trim();
+        String childPrice = childPriceContent.getText().trim();
+        String maxParticipants = maxParticipantsContent.getText().trim();
+//        String currentParticipants = currentParticipantsContent.getText().trim();
+//        String status = (String) statusContent.getSelectedItem();
+
+      
+        if (tourName.isEmpty() || !tourName.matches("^[A-Za-zÀ-ỹĐđ0-9\\s-_.,]+$")) {
+            JOptionPane.showMessageDialog(null, 
+                "Tên tour không hợp lệ! Vui lòng nhập tên hợp lệ.", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            tourNameContent.requestFocus();
+            return false;
+        }
+
+        if (description.isEmpty()) {
+            JOptionPane.showMessageDialog(null, 
+                "Mô tả không được để trống!", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            descriptionContent.requestFocus();
+            return false;
+        }
+
+
+        if (duration.isEmpty() || !duration.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, 
+                "Thời gian tour không hợp lệ! Vui lòng nhập số ngày.", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            durationContent.requestFocus();
+            return false;
+        }
+
+        if (departureLocation.isEmpty() || !departureLocation.matches("^[A-Za-zÀ-ỹĐđ0-9\\s-_.,]+$")) {
+            JOptionPane.showMessageDialog(null, 
+                "Địa điểm khởi hành không hợp lệ!", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            departureLocationContent.requestFocus();
+            return false;
+        }
+
+        if (departureTime.isEmpty() || !departureTime.matches("^([01]?[0-9]|2[0-3]):[0-5][0-9]$")) {
+            JOptionPane.showMessageDialog(null, 
+                "Giờ khởi hành không hợp lệ! Định dạng: HH:mm", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            departureTimeContent.requestFocus();
+            return false;
+        }
+
+        if (destination.isEmpty() || !destination.matches("^[A-Za-zÀ-ỹĐđ0-9\\s-_.,]+$")) {
+            JOptionPane.showMessageDialog(null, 
+                "Điểm đến không hợp lệ!", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            destinationContent.requestFocus();
+            return false;
+        }
+
+
+        if (adultPrice.isEmpty() || !adultPrice.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, 
+                "Giá vé người lớn không hợp lệ! Vui lòng nhập số tiền hợp lệ.", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            adultPriceContent.requestFocus();
+            return false;
+        }
+
+        if (childPrice.isEmpty() || !childPrice.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, 
+                "Giá vé trẻ em không hợp lệ! Vui lòng nhập số tiền hợp lệ.", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            childPriceContent.requestFocus();
+            return false;
+        }
+
+        if (maxParticipants.isEmpty() || !maxParticipants.matches("\\d+")) {
+            JOptionPane.showMessageDialog(null, 
+                "Số người tối đa không hợp lệ! Vui lòng nhập số dương.", 
+                "Lỗi", 
+                JOptionPane.ERROR_MESSAGE);
+            maxParticipantsContent.requestFocus();
+            return false;
+        }
+
+        // Tất cả dữ liệu hợp lệ
+        return true;
     }
+    
+    
+
 }

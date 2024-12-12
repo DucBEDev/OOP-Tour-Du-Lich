@@ -91,11 +91,12 @@ public final class Tour {
 
         //departureDate must be after or at the present day.
     public void setDepartureDate(LocalDate departureDate) {
-        if (departureDate.isAfter(LocalDate.now()) || departureDate.isEqual(LocalDate.now())) {
-            this.departureDate = departureDate;
-        } else {
-            throw new IllegalArgumentException("Ngày khởi hành không hợp lệ");
-        }
+//        if (departureDate.isAfter(LocalDate.now()) || departureDate.isEqual(LocalDate.now())) {
+//            this.departureDate = departureDate;
+//        } else {
+//            throw new IllegalArgumentException("Ngày khởi hành không hợp lệ");
+//        }
+    	this.departureDate = departureDate;
     }
 
         //Generate Getter & Setter for duration
@@ -128,12 +129,13 @@ public final class Tour {
 
         //Check the departureTime must be after the present day
     public void setDepartureTime(LocalTime departureTime) {
-        if (departureTime.isAfter(LocalTime.now())) {
-            this.departureTime = departureTime;
-        }
-        else {
-            throw new IllegalArgumentException("Giờ khởi hành không hợp lệ");
-        }
+//        if (departureTime.isAfter(LocalTime.now())) {
+//            this.departureTime = departureTime;
+//        }
+//        else {
+//            throw new IllegalArgumentException("Giờ khởi hành không hợp lệ");
+//        }
+        this.departureTime = departureTime;
     }
 
         //Generate Getter & Setter for destination
@@ -196,11 +198,12 @@ public final class Tour {
 
     //Check if the status Valid / Invalid
     public void setStatus(String status) {
-        if (status.equals(STATUS_AVAILABLE) || status.equals(STATUS_SOLD_OUT)) {
-            this.status = status;
-        } else {
-            throw new IllegalArgumentException("Trạng thái không hợp lệ");
-        }
+//        if (status.equals(STATUS_AVAILABLE) || status.equals(STATUS_SOLD_OUT)) {
+//            this.status = status;
+//        } else {
+//            throw new IllegalArgumentException("Trạng thái không hợp lệ");
+//        }
+        this.status = status;
     }
 
 	public String getDescription() {

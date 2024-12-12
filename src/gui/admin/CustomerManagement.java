@@ -455,8 +455,8 @@ public class CustomerManagement extends JPanel {
 	        return false;
 	    }
 
-	    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) {
-	        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&_]+$")) {
+	        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & / _ )", "Lỗi", JOptionPane.ERROR_MESSAGE);
 	        passwordTextField.requestFocus();
 	        return false;
 	    }
@@ -464,6 +464,4 @@ public class CustomerManagement extends JPanel {
 	    // Tất cả dữ liệu hợp lệ
 	    return true;
 	}
-	
-
 }

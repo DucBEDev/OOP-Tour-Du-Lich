@@ -79,10 +79,10 @@ public class OrderManagement extends JPanel {
         addOrder.addActionListener(actionListenerAdd);
 
         JButton previousPage = new JButton("<");
-        previousPage.addActionListener(evt -> PreviousPagePanel(evt));
+        previousPage.addActionListener(evt -> previousPagePanel(evt));
 
         JButton nextPage = new JButton(">");
-        nextPage.addActionListener(evt -> NextPagePanel(evt));
+        nextPage.addActionListener(evt -> nextPagePanel(evt));
 
         searchTextField = new JTextField("Nhập mã đơn hàng để tìm");
         searchTextField.addMouseListener(new MouseAdapter() 
@@ -105,7 +105,7 @@ public class OrderManagement extends JPanel {
             }
             else if (tempOrderId.equals("")) 
             {
-                LoadOrderData(orderDAO.getAll(), false);
+                loadOrderData(orderDAO.getAll(), false);
             }
             else
             {
@@ -137,20 +137,20 @@ public class OrderManagement extends JPanel {
         add(scrollBar, BorderLayout.CENTER);
         add(pageControlButtonPanel, BorderLayout.SOUTH);
         
-        LoadOrderData(orderDAO.getAll(), false);
+        loadOrderData(orderDAO.getAll(), false);
     }
 
     // Hiện thông tin đơn hàng
-    private void LoadOrderData(ArrayList<Order> orders, boolean isConfirmed) 
+    private void loadOrderData(ArrayList<Order> orders, boolean isConfirmed) 
     {
         // Lấy danh sách đơn hàng
     	this.orders = orders;
         totalPages = (int) Math.ceil((double) orders.size() / rowPerPage);
-        UpdatePage(isConfirmed); // Chỉ tải dữ liệu của trang đầu tiên
+        updatePage(isConfirmed); // Chỉ tải dữ liệu của trang đầu tiên
     }
 
     // Cập nhật UI ở trang hiện tại
-    private void UpdatePage(boolean isConfirmed) 
+    private void updatePage(boolean isConfirmed) 
     {
         orderListPanel.removeAll();
 
@@ -226,22 +226,22 @@ public class OrderManagement extends JPanel {
     }
 
     // Tạo event chuyển trang trước
-    private void PreviousPagePanel(ActionEvent e) 
+    private void previousPagePanel(ActionEvent e) 
     {
         if (currentPage > 1)
         {
             currentPage--;
-            UpdatePage(false);
+            updatePage(false);
         }
     }
 
     // Tạo event chuyển trang sau
-    private void NextPagePanel(ActionEvent e) 
+    private void nextPagePanel(ActionEvent e) 
     {
         if (currentPage < totalPages) 
         {
             currentPage++;
-            UpdatePage(false);
+            updatePage(false);
         }
     }
 
@@ -292,11 +292,11 @@ public class OrderManagement extends JPanel {
     	{
     		if(e.getSource()==orderListLabel)
     		{
-    			LoadOrderData(orderDAO.getAll(), false);
+    			loadOrderData(orderDAO.getAll(), false);
     		}
     		else if(e.getSource()==orderListConfirmLabel)
     		{
-    			LoadOrderData(orderDAO.getAllUnconfirmed(), true);
+    			loadOrderData(orderDAO.getAllUnconfirmed(), true);
     		}
     	}
     }
@@ -362,157 +362,79 @@ public class OrderManagement extends JPanel {
 	                {
 	                	if(customerDAO.checkExistByPhone(phoneTemp))
 	                	{
+	                		//JOptionPane.showMessageDialog(addFrame, "Đã tìm được khách hàng tương ứng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 	                		customerTemp = customerDAO.getByPhone(phoneTemp);
-	                		
-	                		fullName = customerTemp.getFullName();
-	                	    phone = customerTemp.getPhone();
-	                	    email = customerTemp.getEmail();
-	                	    address = customerTemp.getAddress();
+	                		if (customerTemp.getStatus().equals(Customer.STATUS_ACTIVE)) {
+	                			fullName = customerTemp.getFullName();
+		                	    phone = customerTemp.getPhone();
+		                	    email = customerTemp.getEmail();
+		                	    address = customerTemp.getAddress();
 
-	                	    fullNameContent.setText(fullName);
-	                	    phoneContent.setText(phone);
-	                	    emailContent.setText(email);
-	                	    addressContent.setText(address);
-	                	    	                	    
+		                	    fullNameContent.setText(fullName);
+		                	    phoneContent.setText(phone);
+		                	    emailContent.setText(email);
+		                	    addressContent.setText(address);
+	                		}	    	                	    
 	                	}
+	                	
 	                	else
 	                	{
-	                		phone = phoneTemp;
-		                	System.out.println("Phone: " + phone);
+	                		//int choice = JOptionPane.showConfirmDialog(addFrame, "Không tìm thấy khách hàng tương ứng với số điện thoại. Bạn có muốn tạo số điện thoại mới không", "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+	                		//if (choice == JOptionPane.YES_OPTION) {
+	                			phone = phoneTemp;
+			                	System.out.println("Phone: " + phone);
+	                		//}
+	                		//else {
+	                			//phoneContent.setText("");
+	                			//phone = "";
+	                		//}
 	                	}
 	                	
 	                }
 	                else
 	                	{
 	                		System.out.println("Invalid input");
+	                		//JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        		        //phoneContent.requestFocus();
 	                		phoneContent.setText("");
 	                	}
 	            }
 	        });
 			
 			
+			// Full name
             fullNameLabel = new JLabel("Họ tên:");
 			fullNameContent = new JTextField();
-			fullNameContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String fullNameTemp = fullNameContent.getText();
-	                if(fullNameTemp.matches("^[A-Za-z ]+$")) 
-	                {
-	                	fullName = fullNameTemp;
-	                	System.out.println("Full Name: " + fullName);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		fullNameContent.setText("");
-	                	}
-	            }
-	        });
 			
 
 			emailLabel = new JLabel("Email:");
 			emailContent = new JTextField();
-			emailContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String emailTemp = emailContent.getText();
-	                if(emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) 
-	                {
-	                	email = emailTemp;
-	                	System.out.println("Email: " + email);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		emailContent.setText("");
-	                	}
-	            }
-	        });
 
-
+			
+			// Address
 			addressLabel = new JLabel("Địa chỉ:");
 			addressContent = new JTextField();
-			addressContent.addActionListener(new ActionListener() 
-			{
-	            @Override
-	            public void actionPerformed(ActionEvent e) 
-	            {
-	                String adressTemp = addressContent.getText();
-	                if(adressTemp.matches("^[A-Za-z0-9 ]+$")) 
-	                {
-	                	address = adressTemp;
-	                	System.out.println("Address: " + address);
-	                }
-	                else
-	                	{
-	                		System.out.println("Invalid input");
-	                		addressContent.setText("");
-	                	}
-	            }
-	        });
 
 
             // Tour ID
             tourIdLabel = new JLabel("Mã tour:");
             tourIdContent = new JTextField();
-            tourIdContent.addActionListener(e1 -> {
-                String temp = tourIdContent.getText();
-                if (temp.matches("^[A-Za-z0-9]+$")) {
-                    tourId = temp;
-                    System.out.println("Tour ID: " + tourId);
-                } else {
-                    System.out.println("Invalid input for Tour ID");
-                    tourIdContent.setText("");
-                }
-            });
+
 
             // Adult tickets
             adultTicketsLabel = new JLabel("Số vé người lớn:");
             adultTicketsContent = new JTextField();
-            adultTicketsContent.addActionListener(e1 -> {
-                String temp = adultTicketsContent.getText();
-                if (temp.matches("\\d+")) {
-                    adultTickets = Integer.parseInt(temp);
-                    System.out.println("Adult Tickets: " + adultTickets);
-                } else {
-                    System.out.println("Invalid input for Adult Tickets");
-                    adultTicketsContent.setText("");
-                }
-            });
+
 
             // Child tickets
             childTicketsLabel = new JLabel("Số vé trẻ em:");
             childTicketsContent = new JTextField();
-            childTicketsContent.addActionListener(e1 -> {
-                String temp = childTicketsContent.getText();
-                if (temp.matches("\\d+")) {
-                    childTickets = Integer.parseInt(temp);
-                    System.out.println("Child Tickets: " + childTickets);
-                } else {
-                    System.out.println("Invalid input for Child Tickets");
-                    childTicketsContent.setText("");
-                }
-            });
 
 
             // Total Amount
             totalAmountLabel = new JLabel("Tổng tiền:");
             totalAmountContent = new JTextField();
-            totalAmountContent.addActionListener(e1 -> {
-                String temp = totalAmountContent.getText();
-                if (temp.matches("\\d+")) {
-                    totalAmount = Double.parseDouble(temp);
-                    System.out.println("Total Amount: " + totalAmount);
-                } else {
-                    System.out.println("Invalid input for Total Amount");
-                    totalAmountContent.setText("");
-                }
-            });
+
 
             // Status
             statusLabel = new JLabel("Trạng thái:");
@@ -521,10 +443,7 @@ public class OrderManagement extends JPanel {
             statusContent.addItem("Đã thanh toán");
             statusContent.addItem("Hủy");
             statusContent.addItem("Hoàn thành");
-            statusContent.addActionListener(e1 -> {
-                status = (String) statusContent.getSelectedItem();
-                System.out.println("Status: " + status);
-            });
+
 
             // Confirmed by (Employee)
             confirmedByLabel = new JLabel("Nhân viên phụ trách:");
@@ -570,11 +489,23 @@ public class OrderManagement extends JPanel {
             // Save button action
             saveButton.addActionListener(e1 -> 
             {
-                
+                if (!validateInput(addFrame)) {
+                	return;
+                }
+                fullName = fullNameContent.getText().trim();
+                phone = phoneContent.getText().trim();
+                email = emailContent.getText().trim();
+                address = addressContent.getText().trim();
+                tourId = tourIdContent.getText().trim();
+                adultTickets = Integer.parseInt(adultTicketsContent.getText().trim());
+                childTickets = Integer.parseInt(childTicketsContent.getText().trim());
+                totalAmount = Double.parseDouble(totalAmountContent.getText().trim());
+                status = (String) statusContent.getSelectedItem();
+                confirmedBy = confirmedByContent.getText().trim();
                 // Save order to database or list
             	Customer customer = null;
             	        
-            	if(customerTemp==null)
+            	if(customerTemp == null)
             	{
             		customer = new Customer(customerDAO.generateNextCustomerId(),  fullName,  phone,  email,  address, Customer.STATUS_INACTIVE, phone, "1");
             		customerDAO.add(customer);
@@ -582,12 +513,21 @@ public class OrderManagement extends JPanel {
             	}
             	else customer = customerTemp;
             	
-            	Order order = new Order(orderDAO.generateNextOrderId(), customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
-            	System.out.println(order);
-            	orderDAO.add(order);
+            	try {
+            		Order order = new Order(orderDAO.generateNextOrderId(), customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
+            		System.out.println(order);
+            		if (orderDAO.add(order)) {
+            			JOptionPane.showMessageDialog(addFrame, "Thêm đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+	        			loadOrderData(orderDAO.getAll(), false);
+	        			addFrame.dispose();
+	        			
+	        		} else {
+	        			JOptionPane.showMessageDialog(addFrame, "Không thể thêm đơn!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            		}
+            	} catch (Exception ex){
+            		JOptionPane.showMessageDialog(addFrame, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            	}
             	
-                JOptionPane.showMessageDialog(addFrame, "Thêm đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                addFrame.dispose();
             });
 
             // Cancel button action
@@ -617,6 +557,71 @@ public class OrderManagement extends JPanel {
             addFrame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             addFrame.setVisible(true);
         }
+        
+    	// Kiểm tra định dạng các thông tin
+		private boolean validateInput(JFrame parentFrame) 
+		{
+			String fullNameTemp = fullNameContent.getText().trim();
+			//String phoneTemp = phoneContent.getText().trim();
+			String emailTemp = emailContent.getText().trim();
+			String addressTemp = addressContent.getText().trim();			
+			String tourIdTemp = tourIdContent.getText().trim();
+			String adultTicketsTemp = adultTicketsContent.getText().trim();
+			String childTicketsTemp = childTicketsContent.getText().trim();
+			String totalAmountTemp = totalAmountContent.getText().trim();
+			
+			
+			if (fullNameTemp.isEmpty() || !fullNameTemp.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        fullNameContent.requestFocus();
+		        return false;
+		    }
+
+//		    if (phoneTemp.isEmpty() || !phoneTemp.matches("\\d{10}")) {
+//		        JOptionPane.showMessageDialog(parentFrame, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//		        phoneContent.requestFocus();
+//		        return false;
+//		    }
+
+		    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        emailContent.requestFocus();
+		        return false;
+		    }
+
+		    if (addressTemp.isEmpty() || !addressTemp.matches("^[a-zA-ZÀ-ỹ0-9 .,-/]+$")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Địa chỉ không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        addressContent.requestFocus();
+		        return false;
+		    }
+
+		    if (tourIdTemp.isEmpty() || !tourIdTemp.matches("TOUR\\d{3}")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Mã tour phải đúng định dạng : TOURXXX", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        tourIdContent.requestFocus();
+		        return false;
+		    }
+
+		    if (adultTicketsTemp.isEmpty() || !adultTicketsTemp.matches("\\d+")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Số vé người lớn phải là chữ số và không được nhỏ hơn 0", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        adultTicketsContent.requestFocus();
+		        return false;
+		    }
+		    
+		    if (childTicketsTemp.isEmpty() || !childTicketsTemp.matches("\\d+")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Số vé trẻ em phải là chữ số và không được nhỏ hơn 0", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        childTicketsContent.requestFocus();
+		        return false;
+		    }
+		    
+		    if (totalAmountTemp.isEmpty() || !totalAmountTemp.matches("\\d+")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Tổng giá trị của đơn không hợp lệ", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        totalAmountContent.requestFocus();
+		        return false;
+		    }
+
+		    // Tất cả dữ liệu hợp lệ
+		    return true;
+		}
     }
 
 }

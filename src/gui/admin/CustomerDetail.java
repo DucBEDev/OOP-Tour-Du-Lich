@@ -103,6 +103,9 @@ public class CustomerDetail extends JPanel {
         passwordTextField = new JPasswordField(customer.getPassword());
         passwordTextField.setEditable(false);
         
+        createdAtTextField = new JTextField(customer.getCreatedAt().toString());
+        createdAtTextField.setEditable(false);
+        
         customerIdLabel = new JLabel("ID:");
         fullNameLabel = new JLabel("Họ tên:");
         phoneLabel = new JLabel("Số điện thoại:");
@@ -111,6 +114,7 @@ public class CustomerDetail extends JPanel {
         statusLabel = new JLabel("Trạng thái:");
         userNameLabel = new JLabel("Tên tài khoản:");
         passwordLabel = new JLabel("Mật khẩu:");
+        createdAtLabel = new JLabel("Ngày tạo tài khoản:");
         
         backButton = new JLabel("Thoát");
 		backButton.setPreferredSize(new Dimension(100,50));
@@ -154,6 +158,9 @@ public class CustomerDetail extends JPanel {
         
         formPanel.add(passwordLabel, BorderLayout.CENTER);
         formPanel.add(passwordTextField, BorderLayout.EAST);
+        
+        formPanel.add(createdAtLabel, BorderLayout.CENTER);
+        formPanel.add(createdAtTextField, BorderLayout.EAST);
 	    
         
         updateButton = new JButton("Sửa");

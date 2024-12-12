@@ -264,6 +264,8 @@ public class EmployeeManagement extends JPanel
 		    }
 		}
 		
+		
+		// Sự kiện chọn và xem thông tin chi tiết
 		private class EmployeeDetailControl extends MouseAdapter
 		{
 			private EmployeeManagement employeeManagement;
@@ -313,9 +315,9 @@ public class EmployeeManagement extends JPanel
 		}
 	
 	
+	// UI cửa sổ thêm nhân viên
 	private class AddEmployeeFrame implements ActionListener
 	{
-
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
@@ -391,7 +393,7 @@ public class EmployeeManagement extends JPanel
 	            @Override
 	            public void actionPerformed(ActionEvent e) 
 	            {
-	            	if (!validateInput()) {
+	            	if (!validateInput(addFrame)) {
 	            		return;
 	            	}
 	            	
@@ -404,15 +406,19 @@ public class EmployeeManagement extends JPanel
 	                userName = userNameContent.getText().trim();
 	                password = new String(passwordContent.getPassword()).trim();
 	                
+	                
 	            	try {
-	            		Employee_DAO employeeDAO = new Employee_DAO();
+	            		//Employee_DAO employeeDAO = new Employee_DAO();
 		            	Employee temp = new Employee(employeeDAO.generateNextEmployeeId(), fullName, phone, email, address, userName, password, permissions);
 		            	System.out.println(temp);
-		            	employeeDAO.add(temp);
-		                
-		                JOptionPane.showMessageDialog(addFrame, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-		                loadEmployeeData();
-		                addFrame.dispose(); // Close the dialog after saving
+		            	if(employeeDAO.add(temp)) {
+		        			JOptionPane.showMessageDialog(addFrame, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		        			loadEmployeeData();
+		        			addFrame.dispose();
+		        			
+		        		} else {
+		        			JOptionPane.showMessageDialog(addFrame, "Không thể thêm khách hàng!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+		        		}
 	            	} catch (Exception ex) {
 	            		JOptionPane.showMessageDialog(addFrame, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
 	            	}
@@ -449,7 +455,7 @@ public class EmployeeManagement extends JPanel
 
 	
 	// Kiểm tra định dạng các thông tin
-		private boolean validateInput() 
+		private boolean validateInput(JFrame parentFrame) 
 		{
 			String fullNameTemp = fullNameContent.getText().trim();
 			String phoneTemp = phoneContent.getText().trim();
@@ -460,37 +466,37 @@ public class EmployeeManagement extends JPanel
 			
 			
 			if (fullNameTemp.isEmpty() || !fullNameTemp.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
-		        JOptionPane.showMessageDialog(null, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        JOptionPane.showMessageDialog(parentFrame, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        fullNameContent.requestFocus();
 		        return false;
 		    }
 
 		    if (phoneTemp.isEmpty() || !phoneTemp.matches("\\d{10}")) {
-		        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        JOptionPane.showMessageDialog(parentFrame, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        phoneContent.requestFocus();
 		        return false;
 		    }
 
 		    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-		        JOptionPane.showMessageDialog(null, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        JOptionPane.showMessageDialog(parentFrame, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        emailContent.requestFocus();
 		        return false;
 		    }
 
 		    if (addressTemp.isEmpty() || !addressTemp.matches("^[a-zA-ZÀ-ỹ0-9 .,-/]+$")) {
-		        JOptionPane.showMessageDialog(null, "Địa chỉ không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        JOptionPane.showMessageDialog(parentFrame, "Địa chỉ không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        addressContent.requestFocus();
 		        return false;
 		    }
 
 		    if (userNameTemp.isEmpty() || !userNameTemp.matches("^[A-Za-z0-9_.-]+$")) {
-		        JOptionPane.showMessageDialog(null, "Tên tài khoản có thể gồm các ký tự chữ cái, số và ký tự đặc biệt ( _ / . / - )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        JOptionPane.showMessageDialog(parentFrame, "Tên tài khoản có thể gồm các ký tự chữ cái, số và ký tự đặc biệt ( _ / . / - )", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        userNameContent.requestFocus();
 		        return false;
 		    }
 
-		    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) {
-		        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&_]+$")) {
+		        JOptionPane.showMessageDialog(parentFrame, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & / _ )", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        passwordContent.requestFocus();
 		        return false;
 		    }

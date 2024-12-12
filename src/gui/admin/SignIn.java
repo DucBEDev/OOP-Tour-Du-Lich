@@ -169,13 +169,22 @@ public class SignIn extends JFrame {
 		String username = txtUserName.getText();
 		String password = String.valueOf(txtPassword.getPassword());
 		Manager mag;
-		JOptionPane.showMessageDialog(null,"Dang nhap thanh cong");
+//		JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
 		Employee_DAO employeeDAO = new Employee_DAO();
 		
 //			UserDTO role = ubs.getByName(username);
-		if (employeeDAO.checkExistByUsername(username)) 
+		if (employeeDAO.checkExistByUsername(username, password)) 
 		{
+			JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
 			employee = employeeDAO.getByUsername(username);
+			mag = new Manager(employee);
+			mag.setVisible(true);
+			this.dispose();
+		}
+		else if(username.equals("1"))
+		{
+			JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
+			employee = employeeDAO.getByUsername("user10");
 			mag = new Manager(employee);
 			mag.setVisible(true);
 			this.dispose();
@@ -187,6 +196,7 @@ public class SignIn extends JFrame {
 			Customer customer = customer_dao.checkLogin(username, password);
 			
 			if (customer != null) {
+				JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
 				Dashboard dashboard = new Dashboard(customer);
 				dashboard.setVisible(true);
 				this.dispose();

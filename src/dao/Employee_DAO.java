@@ -208,13 +208,14 @@ public class Employee_DAO {
         return result;
     }
     
-    public boolean checkExistByUsername(String username) {
-        String query = "SELECT * FROM Employee WHERE Username = ?";
+    public boolean checkExistByUsername(String username, String password) {
+        String query = "SELECT * FROM Employee WHERE Username = ? AND Password = ?";
         boolean result = false;
 
         try {
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
+            stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
             result = rs.next();
         } catch (SQLException e) {

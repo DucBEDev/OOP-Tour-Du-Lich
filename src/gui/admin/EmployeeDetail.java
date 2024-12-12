@@ -70,6 +70,8 @@ public class EmployeeDetail extends JPanel
 	private ArrayList<Employee> employees;
 	private Employee employee;
 	
+	
+	// Giao diện thông tin chi tiết nhân viên
 	public EmployeeDetail(Employee employee)
 	{
 		this.employee = employee;
@@ -130,10 +132,7 @@ public class EmployeeDetail extends JPanel
 		
 		functionButton.add(backButton, BorderLayout.WEST);
 		functionButton.add(editButton, BorderLayout.EAST);
-		
-		
-		
-		
+
 		employeeIdLabel = new JLabel("Mã nhân viên:");
 		employeeIdContent = new JTextField();
 		
@@ -224,31 +223,33 @@ public class EmployeeDetail extends JPanel
 		    }
 		});
 		
-		 if (employee != null) {
-		        employeeId = employee.getEmployeeId();
-		        fullName = employee.getFullName();
-		        phone = employee.getPhone();
-		        email = employee.getEmail();
-		        address = employee.getAddress();
-		        userName = employee.getUserName();
-		        password = employee.getPassWord();
-		        permissions = employee.getPermissions();
-		        hireDate = employee.getDateHired();
-		        status = employee.getStatus();
+		
+		if (employee != null) {
+			employeeId = employee.getEmployeeId();
+		    fullName = employee.getFullName();
+		    phone = employee.getPhone();
+		    email = employee.getEmail();
+		    address = employee.getAddress();
+		    userName = employee.getUserName();
+		    password = employee.getPassWord();
+		    permissions = employee.getPermissions();
+		    hireDate = employee.getDateHired();
+		    status = employee.getStatus();
 		        
 
-		        employeeIdContent.setText(employeeId);
-		        fullNameContent.setText(fullName);
-		        phoneContent.setText(phone);
-		        emailContent.setText(email);
-		        addressContent.setText(address);
-		        userNameContent.setText(userName);
-		        passwordContent.setText(password);
-		        permissionsContent.setSelectedItem(permissions.equals(Employee.PERMISSION_ADMIN) ? "Admin" : "Nhân viên");
-		        hireDateContent.setText(hireDate.toString());
-		        statusContent.setSelectedItem(status.equals(Employee.STATUS_WORKING) ? "Đang làm việc" : "Đã nghỉ");
-		    }
+		    employeeIdContent.setText(employeeId);
+		    fullNameContent.setText(fullName);
+		    phoneContent.setText(phone);
+		    emailContent.setText(email);
+		    addressContent.setText(address);
+		    userNameContent.setText(userName);
+		    passwordContent.setText(password);
+		    permissionsContent.setSelectedItem(permissions.equals(Employee.PERMISSION_ADMIN) ? "Admin" : "Nhân viên");
+		    hireDateContent.setText(hireDate.toString());
+		    statusContent.setSelectedItem(status.equals(Employee.STATUS_WORKING) ? "Đang làm việc" : "Đã nghỉ");
+		}
 
+		 
 		formPanel.add(employeeIdLabel);
 		formPanel.add(employeeIdContent);
 		employeeIdContent.setEnabled(false);
@@ -465,8 +466,8 @@ public class EmployeeDetail extends JPanel
 			        return false;
 			    }
 
-			    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&]+$")) {
-			        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			    if (passwordTemp.isEmpty() || !passwordTemp.matches("^[A-Za-z\\d@$!%*#?&_]+$")) {
+			        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & / _ )", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			        passwordContent.requestFocus();
 			        return false;
 			    }
