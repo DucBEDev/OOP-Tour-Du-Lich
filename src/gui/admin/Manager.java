@@ -48,9 +48,9 @@ public class Manager extends JFrame {
 		// Initialize the content pane before adding components
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
-        // Title panel
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
         
+        // Title panel        
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(33, 150, 243));
         titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 15));
@@ -146,8 +146,6 @@ public class Manager extends JFrame {
         // Add the title panel to the content pane
         add(titlePanel, BorderLayout.NORTH);
         add(functionPanel, BorderLayout.WEST);
-        //contentPane.add(functionDetailPanel, BorderLayout.CENTER);
-
         
         // Set the size of the frame
 	}

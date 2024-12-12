@@ -24,26 +24,38 @@ public final class Employee {
     private LocalDate hireDate;
     private String status;
 
-    public Employee() {
+    public Employee() 
+    {
 
     }
 
-    public Employee(String employeeId, String fullName, String phone, String email, String address, String userName, String password, String permissions) 
+    public Employee(String fullName, String phone, String email, String address, String userName, String password, String permissions, String status) 
     {
-    	if(employeeId==null) setEmployeeId(); else this.employeeId = employeeId;
-    	System.out.println(employeeId);
+    	
         this.fullName = fullName;
         setPhone(phone);
         setEmail(email);
         this.address = address;
-        this.employeeId = employeeId;
         this.userName = userName;
         setPassword(password);
         this.permissions = permissions;
         this.setHireDate(hireDate);
-        this.status = "Đang làm việc";
+        this.status = status;
     }
     
+    public Employee(String employeeId, String fullName, String phone, String email, String address, String userName, String password, String permissions, String status) 
+    {
+    	this.employeeId = employeeId;
+        this.fullName = fullName;
+        setPhone(phone);
+        setEmail(email);
+        this.address = address;
+        this.userName = userName;
+        setPassword(password);
+        this.permissions = permissions;
+        this.setHireDate(hireDate);
+        this.status = status;
+    }
     
     public Employee( String fullName, String phone, String email, String address, String userName, String password, String permissions) 
     {
@@ -77,12 +89,12 @@ public final class Employee {
 
         //Check the phone number is valid
     public void setPhone(String phone) {
-        if (phone.matches("\\d{10}")) {
+//        if (phone.matches("\\d{10}")) {
             this.phone = phone;
-        }
-        else {
-            throw new IllegalArgumentException("Số điện thoại không hợp lệ, phải có 10 chữ số");
-        }
+//        }
+//        else {
+//            throw new IllegalArgumentException("Số điện thoại không hợp lệ, phải có 10 chữ số");
+//        }
     }
 
         //Generate Getter for email
@@ -92,12 +104,12 @@ public final class Employee {
 
         //Check the email number is valid
     public void setEmail(String email) {
-        if (email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+//        if (email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             this.email = email;
-        }
-        else {
-            throw new IllegalArgumentException("Email không hợp lệ");
-        }
+//        }
+//        else {
+//            throw new IllegalArgumentException("Email không hợp lệ");
+//        }
     }
 
         //Generate Getter & Setter for address
@@ -145,13 +157,13 @@ public final class Employee {
 
         //Check if permissions is valid
     public void setPermissions(String permissions) {
-        if (permissions.equals(PERMISSION_STAFF) || permissions.equals(PERMISSION_ADMIN)) 
-        {
+//        if (permissions.equals(PERMISSION_STAFF) || permissions.equals(PERMISSION_ADMIN)) 
+//        {
             this.permissions = permissions;
-        } else 
-        {
-            throw new IllegalArgumentException("Vai trò không hợp lệ");
-        }
+//        } else 
+//        {
+//            throw new IllegalArgumentException("Vai trò không hợp lệ");
+//        }
     }
  
     	//Generate Getter & Setter for hireDate
@@ -170,11 +182,11 @@ public final class Employee {
 	}
 
 	public void setStatus(String status) {
-		if (status.equals(STATUS_WORKING) || status.equals(STATUS_RESIGN)) {
+//		if (status.equals(STATUS_WORKING) || status.equals(STATUS_RESIGN)) {
 			this.status = status;
-		} else {
-			throw new IllegalArgumentException("Trạng thái không hợp lệ");
-		}
+//		} else {
+//			throw new IllegalArgumentException("Trạng thái không hợp lệ");
+//		}
 	}
 	
 

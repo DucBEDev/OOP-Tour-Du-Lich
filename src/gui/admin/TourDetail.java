@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -47,9 +48,7 @@ public class TourDetail extends JPanel
     private JButton addImageButton;
 
     private JLabel tourIdLabel;
-//    private JLabel imageLabel;
     private JLabel tourNameLabel;
-//    private JLabel descriptionLabel;
     private JLabel departureDateLabel;
     private JLabel durationLabel;
     private JLabel departureLocationLabel;
@@ -141,53 +140,16 @@ public class TourDetail extends JPanel
         tourIdLabel = new JLabel("Mã tour:");
         tourIdContent = new JTextField();
         tourIdContent.setEnabled(false);
-//        tourIdContent.addActionListener(e1 -> {
-//            String temp = tourIdContent.getText();
-//            if (temp.matches("^[A-Za-z0-9]+$")) {
-//                tourId = temp;
-//                System.out.println("Tour ID: " + tourId);
-//            } else {
-//                System.out.println("Invalid input for Tour ID");
-//                tourIdContent.setText("");
-//            }
-//        });
 
-//        imageLabel = new JLabel("Hình ảnh:");
-        imageContent = new JLabel(); // Image logic xử lý sau.
+        imageContent = new JLabel();
 
         // Tour name
         tourNameLabel = new JLabel("Tên Tour:");
         tourNameContent = new JTextField();
-//        tourNameContent.addActionListener(evt -> {
-//            String temp = tourNameContent.getText();
-//            if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
-//                tourName = temp;
-//                System.out.println("Tour Name: " + tourName);
-//            } else {
-//                System.out.println("Invalid input for Tour Name");
-//                tourNameContent.setText("");
-//            }
-//        });
 
         // Duration
         durationLabel = new JLabel("Số ngày:");
         durationContent = new JTextField();
-//        durationContent.addActionListener(evt->
-//        {
-//            
-//                String durationTemp = durationContent.getText();
-//                if (durationTemp.matches("\\d+")) 
-//                {
-//                    duration = Integer.parseInt(durationTemp);
-//                    System.out.println("Duration: " + duration);
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    durationContent.setText("");
-//                }
-//            
-//        });
 
         // Departure Date
         departureDateLabel = new JLabel("Ngày khởi hành:");
@@ -203,140 +165,29 @@ public class TourDetail extends JPanel
         // Departure Time
         departureTimeLabel = new JLabel("Giờ khởi hành:");
         departureTimeContent = new JTextField();
-//        departureTimeContent.addActionListener(evt->
-//        {
-//            
-//                String departureTimeTemp = departureTimeContent.getText();
-//                if (departureTimeTemp.matches("\\d{2}-\\d{2}"))
-//                {
-//                    String[] timeParts = departureTimeTemp.split("-");
-//                    
-//                    int hour = Integer.parseInt(timeParts[0]);
-//                    int minute = Integer.parseInt(timeParts[1]);
-//                    
-//                    departureTime = LocalTime.of(hour, minute);
-//                    
-//                    System.out.println("Departure Time: " + departureTime);
-//
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    departureTimeContent.setText("");
-//                }
-//            
-//        });
 
         // Departure Location
         departureLocationLabel = new JLabel("Điểm Khởi Hành:");
         departureLocationContent = new JTextField();
-//        departureLocationContent.addActionListener(evt -> {
-//            String temp = departureLocationContent.getText();
-//            if (temp.matches("^[a-zA-ZÀ-ỹ ]+$")) {
-//                departureLocation = temp;
-//                System.out.println("Departure Location: " + departureLocation);
-//            } else {
-//                System.out.println("Invalid input for Departure Location");
-//                departureLocationContent.setText("");
-//            }
-//        });
 
         // Destination
         destinationLabel = new JLabel("Điểm Đến:");
         destinationContent = new JTextField();
-//        destinationContent.addActionListener(evt -> 
-//        {
-//            String temp = destinationContent.getText();
-//            if (temp.matches("^[A-Za-z ]+$")) 
-//            {
-//                destination = temp;
-//                System.out.println("Destination: " + destination);
-//            } 
-//            else 
-//            {
-//                System.out.println("Invalid input for Destination");
-//                destinationContent.setText("");
-//            }
-//        });
 
         // Adult Price
         adultPriceLabel = new JLabel("Giá người lớn:");
         adultPriceContent = new JTextField();
-//        adultPriceContent.addActionListener(evt->
-//        {
-//            
-//                String adultPriceTemp = adultPriceContent.getText();
-//                if (adultPriceTemp.matches("\\d+")) 
-//                {
-//                    adultPrice = Double.parseDouble(adultPriceTemp);
-//                    System.out.println("Adult Price: " + adultPrice);
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    adultPriceContent.setText("");
-//                }
-//            
-//        });
 
         // Child Price
         childPriceLabel = new JLabel("Giá trẻ em:");
         childPriceContent = new JTextField();
-//        childPriceContent.addActionListener(evt->
-//        {
-//            
-//                String childPriceTemp = childPriceContent.getText();
-//                if (childPriceTemp.matches("\\d+")) 
-//                {
-//                    childPrice = Double.parseDouble(childPriceTemp);
-//                    System.out.println("Child Price: " + childPrice);
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    childPriceContent.setText("");
-//                }
-//            
-//        });
 
         // Max Participants
         maxParticipantsLabel = new JLabel("Số lượng tối đa:");
         maxParticipantsContent = new JTextField();
-//        maxParticipantsContent.addActionListener(evt->
-//        {
-//           
-//                String maxParticipantsTemp = maxParticipantsContent.getText();
-//                if (maxParticipantsTemp.matches("\\d+")) 
-//                {
-//                    maxParticipants = Integer.parseInt(maxParticipantsTemp);
-//                    System.out.println("Max Participants: " + maxParticipants);
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    maxParticipantsContent.setText("");
-//                }
-//            
-//        });
         
         currentParticipantsLabel = new JLabel("Số người hiện tại:");
         currentParticipantsContent = new JTextField();
-//        currentParticipantsContent.addActionListener(evt->
-//        {
-//           
-//                String currentParticipantsTemp = currentParticipantsContent.getText();
-//                if (currentParticipantsTemp.matches("\\d+")) 
-//                {
-//                	currentParticipants = Integer.parseInt(currentParticipantsTemp);
-//                    System.out.println("Current Participants: " + currentParticipants);
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    currentParticipantsContent.setText("");
-//                }
-//            
-//        });
 
         // Transport Info (ComboBox)
         transportInfoLabel = new JLabel("Phương tiện:");
@@ -344,43 +195,10 @@ public class TourDetail extends JPanel
         transportInfoContent.addItem("Xe");
         transportInfoContent.addItem("Máy bay");
         transportInfoContent.addItem("Tàu");
-//        transportInfoContent.addActionListener(evt->
-//        {
-//            
-//                transportInfo = (String) transportInfoContent.getSelectedItem();
-//                System.out.println("Transport Info: " + transportInfo);
-//            
-//        });
 
         // Description
-//        descriptionLabel = new JLabel("Mô Tả:");
         descriptionContent = new JTextArea(5,30);
         descriptionContent.setBorder(BorderFactory.createTitledBorder("Mô tả Tour"));
-//        descriptionContent.addKeyListener(new KeyAdapter() 
-//        {
-//        	  @Override
-//              public void keyPressed(KeyEvent e) 
-//        	  {
-//                  if (e.getKeyCode() == KeyEvent.VK_ENTER) 
-//                  {
-//                      // Save text to a variable
-//                	  String descriptionTemp = descriptionContent.getText();
-//                      if (descriptionTemp.matches("^[a-zA-ZÀ-ỹ .,\\n]+$"))
-//                      {
-//                          description = descriptionTemp;
-//                          System.out.println("Description: " + description);
-//                      } 
-//                      else 
-//                      {
-//                          System.out.println("Invalid input for Description");
-//                          descriptionContent.setText("");
-//                      }
-//                  }
-//              }
-//        
-//        });
-
-        
 
         statusLabel = new JLabel("Trạng thái:");
         statusContent = new JComboBox<>();
@@ -425,8 +243,14 @@ public class TourDetail extends JPanel
             departureTimeContent.setText(departureTime.toString());
             destinationContent.setText(destination);
             transportInfoContent.setSelectedItem(transportInfo);
-            adultPriceContent.setText(String.format("%.2f", adultPrice));
-            childPriceContent.setText(String.format("%.2f", childPrice));
+            
+            DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+            String formattedAdultPrice = decimalFormat.format(adultPrice);
+            adultPriceContent.setText(formattedAdultPrice);    
+       
+            String formattedChildPrice = decimalFormat.format(childPrice);
+            childPriceContent.setText(formattedChildPrice); 
+            
             maxParticipantsContent.setText(String.valueOf(maxParticipants));
             currentParticipantsContent.setText(String.valueOf(currentParticipants));
             statusContent.setSelectedItem(status);
@@ -442,9 +266,6 @@ public class TourDetail extends JPanel
         // Add tất cả các fields vào formPanel.
         leftPanel.add(tourIdLabel);
         leftPanel.add(tourIdContent);
-        
-//        formPanel.add(imageLabel);
-//        formPanel.add(imageContent);
         
         leftPanel.add(tourNameLabel);
         leftPanel.add(tourNameContent);                
@@ -482,8 +303,6 @@ public class TourDetail extends JPanel
         rightPanel.add(statusLabel);
         rightPanel.add(statusContent);
         
-//        formPanel.add(descriptionLabel);
-//        descriptionPanel.add(new JScrollPane(descriptionContent));
         
         formPanel.add(leftPanel);
         formPanel.add(rightPanel);
@@ -529,7 +348,7 @@ public class TourDetail extends JPanel
                    	status= statusContent.getSelectedItem().toString().trim();
 
             	}
-//            	tour.setTourId(tourId);
+
             	tour.setImage(image);
             	tour.setTourName(tourName);
             	tour.setDescription(description);
@@ -544,7 +363,6 @@ public class TourDetail extends JPanel
             	tour.setMaxParticipants(maxParticipants);
             	tour.setCurrentParticipants(currentParticipants);
             	tour.setStatus(status);
-
             	
             	
             	if(tourDAO.update(tour, base64Image))
@@ -552,12 +370,11 @@ public class TourDetail extends JPanel
                     JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
             	}
-            	else JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-         	
+            	else JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);        	
             	
             	enableEditing(false);
             	formPanel.revalidate();
-     		    formPanel.repaint(); // Close the dialog after saving
+     		    formPanel.repaint();
             }
         });
 
@@ -602,7 +419,7 @@ public class TourDetail extends JPanel
                 enableEditing(false);
         		
         		formPanel.revalidate();
-     		    formPanel.repaint(); // Close the dialog after saving
+     		    formPanel.repaint(); 
             }
         });
         
@@ -625,8 +442,7 @@ public class TourDetail extends JPanel
 
                     // Display the selected image in the GUI
                     imageContent.setIcon(new ImageIcon(imageTemp));
-                    imageContent.setText(""); 
-                    
+                    imageContent.setText("");                  
                     image = imageIcon.getImage();
                     
                                             
@@ -667,12 +483,11 @@ public class TourDetail extends JPanel
         
         add(new JScrollPane(imageAndFormWrapperPanel), BorderLayout.CENTER);
         add(functionButton, BorderLayout.NORTH);
-//        add(wrapperPanel, BorderLayout.SOUTH);
     }
+    
 
     private void enableEditing(boolean enable) 
     {
-//        tourIdContent.setEnabled(enable);
         tourNameContent.setEnabled(enable);
         descriptionContent.setEnabled(enable);
         departureDateContent.setEnabled(enable);
@@ -692,23 +507,17 @@ public class TourDetail extends JPanel
     }
 
     
-
+    // Kiểm tra định dạng
     private boolean validateInput() {
-//        String tourId = tourIdContent.getText().trim();
         String tourName = tourNameContent.getText().trim();
         String description = descriptionContent.getText().trim();
-//        Date departureDate = departureDateContent.getDate();
         String duration = durationContent.getText().trim();
         String departureLocation = departureLocationContent.getText().trim();
         String departureTime = departureTimeContent.getText().trim();
         String destination = destinationContent.getText().trim();
-//        String transportInfo = (String) transportInfoContent.getSelectedItem();
         String adultPrice = adultPriceContent.getText().trim();
         String childPrice = childPriceContent.getText().trim();
         String maxParticipants = maxParticipantsContent.getText().trim();
-//        String currentParticipants = currentParticipantsContent.getText().trim();
-//        String status = (String) statusContent.getSelectedItem();
-
       
         if (tourName.isEmpty() || !tourName.matches("^[A-Za-zÀ-ỹĐđ0-9\\s-_.,]+$")) {
             JOptionPane.showMessageDialog(null, 
@@ -796,7 +605,4 @@ public class TourDetail extends JPanel
         // Tất cả dữ liệu hợp lệ
         return true;
     }
-    
-    
-
 }

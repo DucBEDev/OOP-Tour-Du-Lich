@@ -169,10 +169,8 @@ public class SignIn extends JFrame {
 		String username = txtUserName.getText();
 		String password = String.valueOf(txtPassword.getPassword());
 		Manager mag;
-//		JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
 		Employee_DAO employeeDAO = new Employee_DAO();
 		
-//			UserDTO role = ubs.getByName(username);
 		if (employeeDAO.checkExistByUsername(username, password)) 
 		{
 			JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
@@ -181,10 +179,13 @@ public class SignIn extends JFrame {
 			mag.setVisible(true);
 			this.dispose();
 		}
+		
+		// Đăng nhập nhanh (Không cần password)
 		else if(username.equals("1"))
 		{
 			JOptionPane.showMessageDialog(null,"Đăng nhập thành công");
 			employee = employeeDAO.getByUsername("user10");
+			System.out.println(employee);
 			mag = new Manager(employee);
 			mag.setVisible(true);
 			this.dispose();

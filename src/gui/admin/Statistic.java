@@ -94,20 +94,16 @@ public class Statistic extends JPanel
 				currentPanel = new InputTimePanel();
 				add(currentPanel, BorderLayout.CENTER);
 			}
-			
-
 		  
 		    revalidate();
 		    repaint();
-			
 		} 
-		
 	}
 	
 	
+	// Doanh thu tổng
 	private class AllTimePanel extends JPanel
 	{
-
 		private JPanel centerPanel;
 		private JPanel totalByMonthPanel;
 		private JPanel destinationsPanel;
@@ -170,10 +166,9 @@ public class Statistic extends JPanel
 	        
 	     }
 	}
-		
-		 // Hiện thông tin đơn hàng
-	  
 	
+		
+	// Doanh thu theo năm nhất định	
 	private class ByYearPanel extends JPanel
 	{
 		private JPanel centerPanel;
@@ -206,6 +201,8 @@ public class Statistic extends JPanel
 			accountingButton = new JButton("Thống kê");
 			accountingButton.addActionListener(e->
 			{
+				centerPanel.removeAll();
+
 				list = orderDAO.getMostTravelDestinationByYear(Integer.parseInt(yearInputTf.getText()));
 				
 		        DefaultTableModel tableModel = new DefaultTableModel(new String[]{"Điểm đến", "Số lần được đăng ký"}, 0);
@@ -217,8 +214,7 @@ public class Statistic extends JPanel
 					
 				destinationTable = new JTable(tableModel);
 				
-				
-				
+								
 				totalByMonthPanel = new JPanel();
 				totalByMonthPanel.setLayout(new GridLayout(12,2,10, 10));
 				
@@ -245,25 +241,21 @@ public class Statistic extends JPanel
 					
 			inputPanel.add(new JLabel("Tổng doanh thu trong năm:"));
 			inputPanel.add(yearInputTf);
-			inputPanel.add(accountingButton);
-			
-						
+			inputPanel.add(accountingButton);									
 			
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new GridLayout(1,2));
 			
-			totalAmountPanel= new JPanel();
-
-	        
+			totalAmountPanel= new JPanel();	        
 	       
 	        add(inputPanel, BorderLayout.NORTH);
 	        add(centerPanel, BorderLayout.CENTER);
 	        add(totalAmountPanel, BorderLayout.SOUTH);
-		}
-		
-		
+		}	
 	}
 	
+	
+	// Doanh thu theo thời gian nhất định
 	private class InputTimePanel extends JPanel
 	{
 		private JPanel centerPanel;
@@ -293,7 +285,7 @@ public class Statistic extends JPanel
 			inputPanel = new JPanel();
 			
 			beginDate = new JDateChooser();
-			beginDate.setPreferredSize(new Dimension(20, 35));
+			beginDate.setPreferredSize(new Dimension(100, 35));
 			beginDate.setDateFormatString("dd/MM/yyyy");
 			beginDate.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(
 	            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
@@ -301,7 +293,7 @@ public class Statistic extends JPanel
 	        ));
 			
 			endDate = new JDateChooser();
-			endDate.setPreferredSize(new Dimension(20, 35));
+			endDate.setPreferredSize(new Dimension(100, 35));
 			endDate.setDateFormatString("dd/MM/yyyy");
 			endDate.getDateEditor().getUiComponent().setBorder(BorderFactory.createCompoundBorder(
 	            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
@@ -311,6 +303,8 @@ public class Statistic extends JPanel
 			accountingButton = new JButton("Thống kê");
 			accountingButton.addActionListener(e->
 			{
+				centerPanel.removeAll();
+				
 				list = orderDAO.getMostTravelDestinationByInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 				tourList = orderDAO.getMostTravelTourByInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
@@ -326,25 +320,12 @@ public class Statistic extends JPanel
 		        }
 		        
 				destinationTable = new JTable(tableModel);
-				
-//<<<<<<< HEAD
-//			destinationTable = new JTable(tableModel);
-//			
-//			tourListPanel = new JPanel();
-//			tourListPanel.setLayout(new GridLayout(10,0));
-//			
-//			tourList = orderDAO.getMostTravelTourByInputTime(LocalDate.of(2024, 01, 01), LocalDate.of(2024, 12,31));
-//			
-//			for(int i =0; i<10; i++)
-//			{
-//				if(i >= 0 && i < tourList.size())
-//=======
+
 				tourListPanel = new JPanel();
 				tourListPanel.setLayout(new GridLayout(10,0));
 				
 				
 				for(int i =0; i<10; i++)
-//>>>>>>> origin/Long
 				{
 					if(i >= 0 && tourList!=null && i < tourList.size())
 					{
@@ -405,8 +386,7 @@ public class Statistic extends JPanel
 				        wrapperPanel.add(row);
 				        
 				        tourListPanel.add(row);
-					}				
-					
+					}									
 				}
 				
 				centerPanel.add(new JScrollPane(tourListPanel));
@@ -414,7 +394,6 @@ public class Statistic extends JPanel
 		        
 		        totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountAllTime());
 		        totalAmountPanel.add(totalAmountLabel);
-
 		        
 			    this.revalidate();
 			    this.repaint();
@@ -425,24 +404,14 @@ public class Statistic extends JPanel
 			inputPanel.add(new JLabel("Dến"));
 			inputPanel.add(endDate);
 			inputPanel.add(accountingButton);
-
-			
-			
-	        
-			
-			totalAmountPanel= new JPanel();
-	        
-	        
-	        
+				        			
+			totalAmountPanel= new JPanel();	        
 	        centerPanel = new JPanel();
-	        centerPanel.setLayout(new GridLayout(0,2));
-	        	        
+	        centerPanel.setLayout(new GridLayout(0,2));	        	        
 	        
 	        add(inputPanel, BorderLayout.NORTH);
 	        add(centerPanel, BorderLayout.CENTER);
 	        add(totalAmountPanel, BorderLayout.SOUTH);
-		}
-		
+		}		
 	}
-	
 }

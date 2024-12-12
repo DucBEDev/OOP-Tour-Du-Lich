@@ -2,6 +2,7 @@ package gui.admin;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.swing.*;
@@ -68,6 +69,7 @@ public class OrderDetail extends JPanel {
     private boolean isConfirmed;
     
     private Employee employee;
+    
 
     public OrderDetail(Order order, boolean isConfirmed, Employee employee) 
     {
@@ -96,6 +98,7 @@ public class OrderDetail extends JPanel {
             }
         });
         
+        
         if(!isConfirmed)
         {
         	editButton = new JLabel("Sửa");
@@ -109,174 +112,37 @@ public class OrderDetail extends JPanel {
                 }
             });
         }
-
       
 
         functionButton.add(backButton, BorderLayout.WEST);
         if(!isConfirmed) functionButton.add(editButton, BorderLayout.EAST);
        
 
-       
-    
-
-    
         orderIdLabel = new JLabel("Mã đơn hàng:");
         orderIdContent = new JTextField();
         orderIdContent.setEnabled(false);
-//        orderIdContent.addActionListener(new ActionListener() 
-//		{
-//            @Override
-//            public void actionPerformed(ActionEvent e) 
-//            {
-//                String orderIdTemp = orderIdContent.getText();
-//                if(orderDAO.checkExistById(orderIdTemp))
-//                {
-//                	orderId = orderIdTemp;
-//              
-//                	System.out.println("Order ID: " + orderId);
-//                }
-//                else
-//                	{
-//                		System.out.println("Order Not Found");
-//                		orderIdContent.setText("");
-//                	}
-//            }
-//        });
 
         customerIdLabel = new JLabel("Mã khách hàng:");
         customerIdContent = new JTextField();
-        customerIdContent.setEnabled(false);
-
-//        customerIdContent.addActionListener(new ActionListener() 
-//		{
-//            @Override
-//            public void actionPerformed(ActionEvent e) 
-//            {
-//                String customerIdTemp = customerIdContent.getText();
-//                if(customerDAO.checkExistById(customerIdTemp))
-//                {
-//                	customerId = customerIdTemp;
-//              
-//                	System.out.println("Customer ID: " + customerId);
-//                }
-//                else
-//                	{
-//                		System.out.println("Customer Not Found");
-//                		customerIdContent.setText("");
-//                	}
-//            }
-//        });
-        
+        customerIdContent.setEnabled(false);       
 
         tourIdLabel = new JLabel("Mã tour:");
         tourIdContent = new JTextField();
         tourIdContent.setEnabled(false);
 
-//        tourIdContent.addActionListener(new ActionListener() 
-//		{
-//            @Override
-//            public void actionPerformed(ActionEvent e) 
-//            {
-//                String tourIdTemp = tourIdContent.getText();
-//                if(tourDAO.checkExistById(tourIdTemp))
-//                {
-//                	tourId = tourIdTemp;             
-//                	System.out.println("Tour ID: " + tourId);
-//                }
-//                else
-//                	{
-//                		System.out.println("Tour Not Found");
-//                		tourIdContent.setText("");
-//                	}
-//            }
-//        });
-        
-
         adultTicketsLabel = new JLabel("Vé người lớn:");
-        adultTicketsContent = new JTextField();
-//        adultTicketsContent.addActionListener(e -> 
-//        {
-//            String adultTicketsTemp = adultTicketsContent.getText();
-//            if (adultTicketsTemp.matches("\\d+"))
-//            {
-//                adultTickets = Integer.parseInt(adultTicketsTemp);
-//            	System.out.println("Adult Tickets: " + adultTickets);
-//            } 
-//            else 
-//            {
-//                showInvalidInputMessage(adultTicketsContent);
-//            }
-//        });
-        
+        adultTicketsContent = new JTextField();      
 
         childTicketsLabel = new JLabel("Vé trẻ em:");
-        childTicketsContent = new JTextField();
-//        childTicketsContent.addActionListener(e -> 
-//        {
-//            String childTicketsTemp = childTicketsContent.getText();
-//            if (childTicketsTemp.matches("\\d+")) 
-//            {
-//                childTickets = Integer.parseInt(childTicketsTemp);
-//            	System.out.println("Child Tickets: " + childTickets);
-//            } 
-//            else 
-//            {
-//                showInvalidInputMessage(childTicketsContent);
-//            }
-//        });
-        
+        childTicketsContent = new JTextField();      
 
         orderTimeLabel = new JLabel("Thời gian đặt:");
         orderTimeContent = new JTextField();
-        orderTimeContent.setEnabled(false);
-//        orderTimeContent.addActionListener(evt->
-//        {
-//            
-//                String departureDateTemp = orderTimeContent.getText();
-//                if (departureDateTemp.matches("\\d{4}-\\d{2}-\\d{2-\\d{2}-\\d{2}"))
-//                {
-//                    String[] dateTimeParts = departureDateTemp.split("-");
-//                    
-//                    int year = Integer.parseInt(dateTimeParts[0]);
-//                    int month = Integer.parseInt(dateTimeParts[1]);
-//                    int day = Integer.parseInt(dateTimeParts[2]);
-//                    
-//                    int hour = Integer.parseInt(dateTimeParts[3]);
-//                    int minute = Integer.parseInt(dateTimeParts[4]);
-//                 
-//                    
-//                    
-//                    orderTime = LocalDateTime.of(year, month, day, hour, minute);
-//                    
-//                    System.out.println("Order Time: " + orderTime);
-//                } 
-//                else 
-//                {
-//                    System.out.println("Invalid input");
-//                    orderTimeContent.setText("");
-//                }
-//            
-//        });
-//        
+        orderTimeContent.setEnabled(false);        
 
         totalAmountLabel = new JLabel("Tổng tiền:");
         totalAmountContent = new JTextField();
-        totalAmountContent.setEnabled(false);
-
-//        totalAmountContent.addActionListener(e -> 
-//        {
-//            String input = totalAmountContent.getText();
-//            if (input.matches("\\d+(\\.\\d+)?")) 
-//            {
-//                totalAmount = Double.parseDouble(input);
-//            	System.out.println("Total Amount: " + totalAmount);
-//            } 
-//            else
-//            {
-//                showInvalidInputMessage(totalAmountContent);
-//            }
-//        });
-        
+        totalAmountContent.setEnabled(false);       
 
         statusLabel = new JLabel("Trạng thái:");
         statusContent = new JComboBox<>(new String[]{"Đã thanh toán", "Chờ thanh toán", "Hủy", "Hoàn thành"});
@@ -287,8 +153,6 @@ public class OrderDetail extends JPanel {
         confirmedByContent = new JTextField();
         confirmedByContent.setEnabled(false);
 
-        
-        
         
         if (order != null) {
              orderId = order.getOrderId();
@@ -307,7 +171,9 @@ public class OrderDetail extends JPanel {
             adultTicketsContent.setText(String.valueOf(adultTickets));
             childTicketsContent.setText(String.valueOf(childTickets));
             orderTimeContent.setText(orderTime.toString());
-            totalAmountContent.setText(String.format("%.2f", totalAmount));
+            DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+            String formatted = decimalFormat.format(totalAmount);
+            totalAmountContent.setText(formatted);
             statusContent.setSelectedItem(status);
             confirmedByContent.setText(confirmedBy);
         }
@@ -342,6 +208,7 @@ public class OrderDetail extends JPanel {
         
         formButtonPanel = new JPanel();
         
+        
         if(isConfirmed)
         {
         	confirmButton = new JButton("Xác nhận");
@@ -359,7 +226,7 @@ public class OrderDetail extends JPanel {
             	
             	enableEditing(false);
             	formPanel.revalidate();
-     		    formPanel.repaint(); // Close the dialog after saving            	
+     		    formPanel.repaint();           	
         	});
         	
             cancelButton = new JButton("Hủy");        
@@ -384,9 +251,9 @@ public class OrderDetail extends JPanel {
             formButtonPanel.add(confirmButton);
             formButtonPanel.add(cancelButton);
         }
+        
         else
-        {
-          
+        {         
             saveButton = new JButton("Lưu");
             saveButton.addActionListener(new ActionListener()
             {
@@ -407,14 +274,10 @@ public class OrderDetail extends JPanel {
                         totalAmountTemp = Double.parseDouble(totalAmountContent.getText().trim());
                 	}
     	            
-//                	order.setCustomerId(customerId);
-//                	order.setTourId(tourId);
                 	order.setAdultTickets(adultTicketsTemp);
                 	order.setChildTickets(childTicketsTemp);
-//                	order.setOrderTime(orderTime);
                 	order.setTotalAmount(totalAmountTemp);
                 	order.setStatus(statusTemp);
-//                	order.setConfirmedBy(confirmedBy);
 
                 	System.out.println(order);
                 	if(orderDAO.update(order))
@@ -423,11 +286,10 @@ public class OrderDetail extends JPanel {
 
                 	}
                 	else JOptionPane.showMessageDialog(null, "Cập nhật đơn hàng không thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-             	
-                	
+             	             	
                 	enableEditing(false);
                 	formPanel.revalidate();
-         		    formPanel.repaint(); // Close the dialog after saving
+         		    formPanel.repaint(); 
                 }
             });
             
@@ -439,16 +301,15 @@ public class OrderDetail extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) 
                 {
-                	 orderId = order.getOrderId();
-                     customerId = order.getCustomerId();
-                     tourId = order.getTourId();
-                     adultTickets = order.getAdultTickets();
-                     childTickets = order.getChildTickets();
-                     orderTime = order.getOrderTime();
-                     totalAmount = order.getTotalAmount();
-                     status = order.getStatus();
-                     confirmedBy = order.getConfirmedBy();
-
+                	orderId = order.getOrderId();
+                    customerId = order.getCustomerId();
+                    tourId = order.getTourId();
+                    adultTickets = order.getAdultTickets();
+                    childTickets = order.getChildTickets();
+                    orderTime = order.getOrderTime();
+                    totalAmount = order.getTotalAmount();
+                    status = order.getStatus();
+                    confirmedBy = order.getConfirmedBy();
             		
                 	orderIdContent.setText(orderId);
                     customerIdContent.setText(customerId);
@@ -456,15 +317,18 @@ public class OrderDetail extends JPanel {
                     adultTicketsContent.setText(String.valueOf(adultTickets));
                     childTicketsContent.setText(String.valueOf(childTickets));
                     orderTimeContent.setText(orderTime.toString());
-                    totalAmountContent.setText(String.format("%.2f", totalAmount));
-                    statusContent.setSelectedItem(status);
-                    confirmedByContent.setText(confirmedBy);
                     
+                    DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+                    String formatted = decimalFormat.format(totalAmount);
+                    totalAmountContent.setText(formatted);
+                    
+                    statusContent.setSelectedItem(status);
+                    confirmedByContent.setText(confirmedBy);                   
     		        
                     enableEditing(false);
             		
             		formPanel.revalidate();
-         		    formPanel.repaint(); // Close the dialog after saving
+         		    formPanel.repaint(); 
                 }
             });
                
@@ -473,6 +337,7 @@ public class OrderDetail extends JPanel {
         }
         
 
+        // Chức năng tính tổng số tiền
         totalAmountButton = new JButton("Tính tổng tiền");
         totalAmountButton.addActionListener(e->{
         	String adultTicketsTemp = adultTicketsContent.getText().trim();
@@ -483,10 +348,14 @@ public class OrderDetail extends JPanel {
         		int adultTicketsIntTemp = Integer.parseInt(adultTicketsTemp);
         		int childTicketsIntTemp = Integer.parseInt(childTicketsTemp);
         		
-        		Tour tourTemp = tourDAO.getByTourId(this.tourId);
+        		Tour tourTemp = tourDAO.getByTourId(this.tourId);          
         		
+                DecimalFormat decimalFormat = new DecimalFormat("#,###");
+                
         		this.totalAmount = adultTicketsIntTemp*tourTemp.getAdultPrice() + childTicketsIntTemp*tourTemp.getChildPrice();
-        		totalAmountContent.setText(String.valueOf(this.totalAmount));
+                String formatted = decimalFormat.format(this.totalAmount);
+
+        		totalAmountContent.setText(String.valueOf(formatted));
         		totalAmountContent.repaint();
         		totalAmountContent.revalidate();
         	}
@@ -504,11 +373,7 @@ public class OrderDetail extends JPanel {
     private boolean validateInput() {
         String adultTicketsTemp = adultTicketsContent.getText().trim();
         String childTicketsTemp = childTicketsContent.getText().trim();
-//        String totalAmountTemp = totalAmountContent.getText().trim();
-//        String status = (String) statusContent.getSelectedItem();
-//        String confirmedBy = confirmedByContent.getText().trim();
 
-        // Validate adult tickets (must be a positive number)
         if (adultTicketsTemp.isEmpty() || !adultTicketsTemp.matches("\\d+")) {
             JOptionPane.showMessageDialog(null, 
                 "Số vé người lớn không hợp lệ! Vui lòng nhập số dương.", 
@@ -518,7 +383,6 @@ public class OrderDetail extends JPanel {
             return false;
         }
 
-        // Validate child tickets (must be a non-negative number)
         if (childTicketsTemp.isEmpty() || !childTicketsTemp.matches("\\d+")) {
             JOptionPane.showMessageDialog(null, 
                 "Số vé trẻ em không hợp lệ! Vui lòng nhập số không âm.", 
@@ -528,28 +392,19 @@ public class OrderDetail extends JPanel {
             return false;
         }
 
-        // All data is valid
         return true;
     }
-
+    
+    
+    // Vô hiệu các textfield sau khi xong sự kiện
     private void enableEditing(boolean isEnabled) 
     {
-//        orderIdContent.setEnabled(isEnabled);
-//        customerIdContent.setEnabled(isEnabled);
-//        tourIdContent.setEnabled(isEnabled);
         adultTicketsContent.setEnabled(isEnabled);
         childTicketsContent.setEnabled(isEnabled);
-//        orderTimeContent.setEnabled(isEnabled);
-//        totalAmountContent.setEnabled(isEnabled);
         statusContent.setEnabled(isEnabled);
-//        confirmedByContent.setEnabled(isEnabled);
+
         if(!isConfirmed) saveButton.setEnabled(isEnabled);
         if(!isConfirmed) cancelButton.setEnabled(isEnabled);
         
-    }
-
-    private void showInvalidInputMessage(JTextField field) {
-        JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        field.setText("");
     }
 }

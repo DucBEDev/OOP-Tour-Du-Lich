@@ -42,7 +42,7 @@ public class Employee_DAO {
                 LocalDate hireDate = rs.getDate(9).toLocalDate();
                 String status = rs.getNString(10);
 
-                Employee temp = new Employee(employeeId, fullName, phone, email, address, userName, password, permissions);
+                Employee temp = new Employee(employeeId, fullName, phone, email, address, userName, password, permissions, status);
                 temp.setHireDate(hireDate);
                 temp.setStatus(status);
 
@@ -109,7 +109,7 @@ public class Employee_DAO {
                 String status = rs.getNString(10);
 
 
-                temp = new Employee(id, fullName, phone, email, address, userName, password, permissions);
+                temp = new Employee(id, fullName, phone, email, address, userName, password, permissions, status);
                 temp.setHireDate(hireDate);
                 temp.setStatus(status);
 

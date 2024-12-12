@@ -111,7 +111,7 @@ public class EmployeeDetail extends JPanel
         	@Override
     		public void mouseClicked(MouseEvent e) 
     		{
-        		employeeIdContent.setEnabled(false);
+        		//employeeIdContent.setEnabled(false);
         		fullNameContent.setEnabled(true);
         		phoneContent.setEnabled(true);
         		emailContent.setEnabled(true);
@@ -128,13 +128,12 @@ public class EmployeeDetail extends JPanel
         	
         });
 
-
-		
 		functionButton.add(backButton, BorderLayout.WEST);
 		functionButton.add(editButton, BorderLayout.EAST);
 
 		employeeIdLabel = new JLabel("Mã nhân viên:");
 		employeeIdContent = new JTextField();
+		employeeIdContent.setEnabled(false);
 		
 		fullNameLabel = new JLabel("Họ tên:");
 		fullNameContent = new JTextField();		
@@ -158,8 +157,6 @@ public class EmployeeDetail extends JPanel
 		permissionsContent =  new JComboBox<>();
 		permissionsContent.addItem("staff");
 		permissionsContent.addItem("admin");
-		
-		
 		permissionsContent.addActionListener(new ActionListener() 
 		{
 		    @Override
@@ -178,8 +175,6 @@ public class EmployeeDetail extends JPanel
 		
 		hireDateLabel = new JLabel("Ngày bắt đầu làm việc:");
 		hireDateContent = new JTextField();
-		
-		
 		hireDateContent.addActionListener(new ActionListener() 
 		{
 		    @Override
@@ -207,7 +202,6 @@ public class EmployeeDetail extends JPanel
 		statusContent =  new JComboBox<>();
 		statusContent.addItem("Đang làm việc");
 		statusContent.addItem("Đã nghỉ");	
-		
 		statusContent.addActionListener(new ActionListener() 
 		{
 		    @Override
@@ -290,8 +284,7 @@ public class EmployeeDetail extends JPanel
 		formPanel.add(statusContent);
 		statusContent.setEnabled(false);
 		
-		
-		
+				
 		saveButton = new JButton("Lưu");
         cancelButton = new JButton("Hủy");
 
@@ -300,6 +293,10 @@ public class EmployeeDetail extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) 
             {
+            	if (!validateInput()) {
+	            	return;
+	            }
+            	
             	employeeId = employeeIdContent.getText().trim();
             	fullName = fullNameContent.getText().trim();
             	phone = phoneContent.getText().trim();
@@ -308,6 +305,7 @@ public class EmployeeDetail extends JPanel
             	userName = userNameContent.getText().trim();
             	password = new String(passwordContent.getPassword()).trim();
             	permissions = permissionsContent.getSelectedItem().toString().trim();
+            	status = statusContent.getSelectedItem().toString().trim();
             	try {
             	    hireDate = LocalDate.parse(hireDateContent.getText().trim());
             	} catch (DateTimeParseException ex) {
@@ -316,14 +314,12 @@ public class EmployeeDetail extends JPanel
             	    return;
             	}
 
-            	status = statusContent.getSelectedItem().toString().trim();
-
             	
             	try {
-            		Employee updatedEmployee  = new Employee(employeeId, fullName, phone, email, address, userName, password, permissions);
+            		Employee updatedEmployee  = new Employee(employeeId, fullName, phone, email, address, userName, password, permissions, status);
             		if (employeeDAO.update(updatedEmployee)) {
             			// Cập nhật dữ liệu trên giao diện
-        	            JOptionPane.showMessageDialog(formPanel, "Cập nhật thông tin khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        	            JOptionPane.showMessageDialog(formPanel, "Cập nhật thông tin nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
         	            // Thay đổi thông tin trong danh sách khách hàng
         	            for (int i = 0; i < employees.size(); i++) {
@@ -332,12 +328,7 @@ public class EmployeeDetail extends JPanel
         	                    break;
         	                }
         	            }
-        	            
-        	            if (!validateInput()) {
-        	            	return;
-        	            }
-        	        
-        	            
+
         	            employeeIdContent.setEnabled(false);
                  		fullNameContent.setEnabled(false);
                  		phoneContent.setEnabled(false);
@@ -350,12 +341,9 @@ public class EmployeeDetail extends JPanel
                  		statusContent.setEnabled(false);
                  		saveButton.setEnabled(false);
                  		cancelButton.setEnabled(false);    
-        	            
-        	            
         	    	    editButton.setEnabled(true);
         	    	    saveButton.setEnabled(false);
         	    	    
-        	            
         	        } else {
         	            JOptionPane.showMessageDialog(formPanel, "Không thể cập nhật thông tin khách hàng!", "Thông báo", JOptionPane.ERROR_MESSAGE);
             		}

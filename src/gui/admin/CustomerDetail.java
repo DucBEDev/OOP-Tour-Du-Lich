@@ -230,8 +230,7 @@ public class CustomerDetail extends JPanel {
 	            if (!validateInput()) {
 	            	return;
 	            }
-	        
-	            
+
 	            customerIdTextField.setEditable(false);	            
 	            fullNameTextField.setEditable(false);
 	            phoneTextField.setEditable(false);           
@@ -258,6 +257,7 @@ public class CustomerDetail extends JPanel {
 	    saveButton.setEnabled(false);
 	}
 	
+	// Kiểm tra định dạng
 	private boolean validateInput() {
 		String fullNameTemp = fullNameTextField.getText().trim();
 		String phoneTemp = phoneTextField.getText().trim();
@@ -307,7 +307,7 @@ public class CustomerDetail extends JPanel {
 	    return true;
 	}
 	
-	
+	// Sự kiện khi bấm "Hủy"
 	private void cancel(ActionEvent e) {
 		fullNameTextField.setEditable(false);
 	    phoneTextField.setEditable(false);

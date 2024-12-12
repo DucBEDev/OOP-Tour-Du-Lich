@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -36,6 +37,7 @@ public class OrderManagement extends JPanel {
     private ArrayList<Order> orders = new ArrayList<>();
     
     private Employee employee;
+    
 
     public OrderManagement(Employee employee) 
     {
@@ -44,8 +46,6 @@ public class OrderManagement extends JPanel {
         setLayout(new BorderLayout());
         
         listChangingPanel = new JPanel();
-        listChangingPanel.setBackground(new Color(66, 165, 243));
-
         
         MouseListener listChanger = new OrderListChanger();
 
@@ -66,11 +66,9 @@ public class OrderManagement extends JPanel {
         orderListPanel.setLayout(new GridLayout(10, 1));
 
         pageControlButtonPanel = new JPanel();
-        pageControlButtonPanel.setBackground(Color.PINK);
         pageControlButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
 
         functionButtonPanel = new JPanel();
-        functionButtonPanel.setBackground(new Color(66, 165, 243));
 
         pageNumber = new JLabel("Page: " + currentPage);
 
@@ -84,6 +82,8 @@ public class OrderManagement extends JPanel {
         JButton nextPage = new JButton(">");
         nextPage.addActionListener(evt -> nextPagePanel(evt));
 
+        
+        // Tìm mã order
         searchTextField = new JTextField("Nhập mã đơn hàng để tìm");
         searchTextField.addMouseListener(new MouseAdapter() 
         {
@@ -120,12 +120,9 @@ public class OrderManagement extends JPanel {
         
         functionPanel= new JPanel();
         functionPanel.setLayout(new BorderLayout());
-        functionPanel.setBackground(new Color(66, 165, 243));
-
-        
+       
         functionPanel.add(functionButtonPanel, BorderLayout.WEST);
-        functionPanel.add(listChangingPanel, BorderLayout.EAST);
-        
+        functionPanel.add(listChangingPanel, BorderLayout.EAST);       
 
         pageControlButtonPanel.add(previousPage);
         pageControlButtonPanel.add(pageNumber);
@@ -139,6 +136,7 @@ public class OrderManagement extends JPanel {
         
         loadOrderData(orderDAO.getAll(), false);
     }
+    
 
     // Hiện thông tin đơn hàng
     private void loadOrderData(ArrayList<Order> orders, boolean isConfirmed) 
@@ -148,6 +146,7 @@ public class OrderManagement extends JPanel {
         totalPages = (int) Math.ceil((double) orders.size() / rowPerPage);
         updatePage(isConfirmed); // Chỉ tải dữ liệu của trang đầu tiên
     }
+    
 
     // Cập nhật UI ở trang hiện tại
     private void updatePage(boolean isConfirmed) 
@@ -176,6 +175,7 @@ public class OrderManagement extends JPanel {
         orderListPanel.revalidate();
         orderListPanel.repaint();
     }
+    
 
     // Tạo dòng hiển thị thông tin trên Page
     private JPanel CreateOrderRow(Order order, int indexInPage, boolean isConfirmed) 
@@ -187,7 +187,11 @@ public class OrderManagement extends JPanel {
         JLabel orderIdLabel = new JLabel("Mã đơn hàng: "+order.getOrderId());
         JLabel customerIdLabel = new JLabel("Mã khách hàng: "+order.getCustomerId());
         JLabel tourIdLabel = new JLabel("Mã Tour: "+ order.getTourId());
-        JLabel totalAmountLabel = new JLabel("Tổng số tiền: "+String.valueOf(order.getTotalAmount()));
+        
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formatted = decimalFormat.format(order.getTotalAmount());
+
+        JLabel totalAmountLabel = new JLabel("Tổng số tiền: "+ formatted);
         JLabel orderTimeLabel = new JLabel("Thời gian đặt hàng: "+order.getOrderTime().toString());
         JLabel statusLabel = new JLabel("Trạng thái: " + order.getStatus());
         
@@ -224,6 +228,7 @@ public class OrderManagement extends JPanel {
 
         return row;
     }
+    
 
     // Tạo event chuyển trang trước
     private void previousPagePanel(ActionEvent e) 
@@ -234,6 +239,7 @@ public class OrderManagement extends JPanel {
             updatePage(false);
         }
     }
+    
 
     // Tạo event chuyển trang sau
     private void nextPagePanel(ActionEvent e) 
@@ -244,7 +250,9 @@ public class OrderManagement extends JPanel {
             updatePage(false);
         }
     }
-
+    
+    
+    // Sự kiện chuyển panel khi bấm vào order
     private class OrderDetailControl extends MouseAdapter 
     {
         private OrderManagement orderManagement;
@@ -285,6 +293,8 @@ public class OrderManagement extends JPanel {
         
     }
     
+    
+    
     private class OrderListChanger extends MouseAdapter
     {
     	@Override
@@ -301,9 +311,10 @@ public class OrderManagement extends JPanel {
     	}
     }
     
+    
+    // Thêm order
     private class AddOrderFrame implements ActionListener 
     {
-
     	private JLabel fullNameLabel;
 		private JLabel phoneLabel;
 		private JLabel emailLabel;
@@ -347,11 +358,12 @@ public class OrderManagement extends JPanel {
         public void actionPerformed(ActionEvent e) {
             JFrame addFrame = new JFrame("Thêm đơn mới");
             addFrame.setAlwaysOnTop(true);
-            addFrame.setLayout(new GridLayout(11, 2, 10, 10));
-            
+            addFrame.setLayout(new GridLayout(11, 2, 10, 10));         
 
             phoneLabel = new JLabel("Số điện thoại:");
 			phoneContent = new JTextField();
+			
+			// Autofill thông tin cá nhân khi enter nếu sđt tồn tại trong DB
 			phoneContent.addActionListener(new ActionListener() 
 			{
 	            @Override
@@ -362,7 +374,6 @@ public class OrderManagement extends JPanel {
 	                {
 	                	if(customerDAO.checkExistByPhone(phoneTemp))
 	                	{
-	                		//JOptionPane.showMessageDialog(addFrame, "Đã tìm được khách hàng tương ứng.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 	                		customerTemp = customerDAO.getByPhone(phoneTemp);
 	                		if (customerTemp.getStatus().equals(Customer.STATUS_ACTIVE)) {
 	                			fullName = customerTemp.getFullName();
@@ -377,25 +388,19 @@ public class OrderManagement extends JPanel {
 	                		}	    	                	    
 	                	}
 	                	
+	                	// Nếu không tồn tại sđt (vẫn đúng định dạng), lấy sđt mới
 	                	else
 	                	{
-	                		//int choice = JOptionPane.showConfirmDialog(addFrame, "Không tìm thấy khách hàng tương ứng với số điện thoại. Bạn có muốn tạo số điện thoại mới không", "Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-	                		//if (choice == JOptionPane.YES_OPTION) {
 	                			phone = phoneTemp;
 			                	System.out.println("Phone: " + phone);
-	                		//}
-	                		//else {
-	                			//phoneContent.setText("");
-	                			//phone = "";
-	                		//}
 	                	}
 	                	
 	                }
+	                
+	                // Nếu sđt không đúng định dạng, tự động xóa textfield
 	                else
 	                	{
 	                		System.out.println("Invalid input");
-	                		//JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-	        		        //phoneContent.requestFocus();
 	                		phoneContent.setText("");
 	                	}
 	            }
@@ -404,37 +409,31 @@ public class OrderManagement extends JPanel {
 			
 			// Full name
             fullNameLabel = new JLabel("Họ tên:");
-			fullNameContent = new JTextField();
-			
+			fullNameContent = new JTextField();			
 
+			// Email
 			emailLabel = new JLabel("Email:");
 			emailContent = new JTextField();
-
 			
 			// Address
 			addressLabel = new JLabel("Địa chỉ:");
 			addressContent = new JTextField();
 
-
             // Tour ID
             tourIdLabel = new JLabel("Mã tour:");
             tourIdContent = new JTextField();
-
 
             // Adult tickets
             adultTicketsLabel = new JLabel("Số vé người lớn:");
             adultTicketsContent = new JTextField();
 
-
             // Child tickets
             childTicketsLabel = new JLabel("Số vé trẻ em:");
             childTicketsContent = new JTextField();
 
-
             // Total Amount
             totalAmountLabel = new JLabel("Tổng tiền:");
             totalAmountContent = new JTextField();
-
 
             // Status
             statusLabel = new JLabel("Trạng thái:");
@@ -443,7 +442,6 @@ public class OrderManagement extends JPanel {
             statusContent.addItem("Đã thanh toán");
             statusContent.addItem("Hủy");
             statusContent.addItem("Hoàn thành");
-
 
             // Confirmed by (Employee)
             confirmedByLabel = new JLabel("Nhân viên phụ trách:");
@@ -492,6 +490,7 @@ public class OrderManagement extends JPanel {
                 if (!validateInput(addFrame)) {
                 	return;
                 }
+                
                 fullName = fullNameContent.getText().trim();
                 phone = phoneContent.getText().trim();
                 email = emailContent.getText().trim();
@@ -512,6 +511,7 @@ public class OrderManagement extends JPanel {
             		System.out.println(customer);
             	}
             	else customer = customerTemp;
+            	
             	
             	try {
             		Order order = new Order(orderDAO.generateNextOrderId(), customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
@@ -558,6 +558,7 @@ public class OrderManagement extends JPanel {
             addFrame.setVisible(true);
         }
         
+        
     	// Kiểm tra định dạng các thông tin
 		private boolean validateInput(JFrame parentFrame) 
 		{
@@ -576,12 +577,6 @@ public class OrderManagement extends JPanel {
 		        fullNameContent.requestFocus();
 		        return false;
 		    }
-
-//		    if (phoneTemp.isEmpty() || !phoneTemp.matches("\\d{10}")) {
-//		        JOptionPane.showMessageDialog(parentFrame, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//		        phoneContent.requestFocus();
-//		        return false;
-//		    }
 
 		    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
 		        JOptionPane.showMessageDialog(parentFrame, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);

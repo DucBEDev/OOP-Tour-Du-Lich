@@ -84,7 +84,6 @@ public class CustomerManagement extends JPanel {
 	private JButton previousPage;
 	private JButton nextPage;
 	
-	
 	// Khởi tạo các biến thành phần 
 	private String customerId;
 	private String fullName;
@@ -161,7 +160,6 @@ public class CustomerManagement extends JPanel {
         
         // Gán sự kiện các button
         addButton.addActionListener(this::addCustomerFrame);
-        
         previousPage.addActionListener(this::previousPagePanel);
         nextPage.addActionListener(this::nextPagePanel);
 	}
@@ -179,7 +177,6 @@ public class CustomerManagement extends JPanel {
 	// Cập nhật UI ở trang hiện tại
 	private void updatePage() {
         customerPanel.removeAll();
-
         int start = (currentPage - 1) * rowPerPage;					// Vị trí khách hàng đầu tiên trong trang	
         int end = Math.min(start + rowPerPage, customers.size());	// Vị trí khách hàng cuối cùng trong trang	
 
@@ -202,8 +199,7 @@ public class CustomerManagement extends JPanel {
 	
 	
 	// Tạo dòng hiển thị thông tin trên Page
-	private JPanel createCustomerRow(Customer customer, int indexInPage	) {
-		
+	private JPanel createCustomerRow(Customer customer, int indexInPage	) {		
 		JPanel wrapperPanel = new JPanel(new GridLayout(1, 1));
 	    wrapperPanel.setBackground(Color.white);
 
@@ -212,7 +208,7 @@ public class CustomerManagement extends JPanel {
 		row.setBorder(BorderFactory.createLineBorder(Color.black));
 
 		JLabel imageLabel = new JLabel();
-	    imageLabel.setIcon(new ImageIcon("C:\\Users\\longh\\eclipse-workspace\\OOP-Test\\src\\images\\person(1).jpg"));
+	    imageLabel.setIcon(new ImageIcon("C:\\Users\\ADMIN\\OOP-Tour-Du-Lich\\src\\images\\person(1).jpg"));
 		JLabel idLabel = new JLabel("ID khách hàng: "+customer.getCustomerId());
 		JLabel nameLabel = new JLabel("Họ và tên: "+customer.getFullName());
 		JLabel phoneLabel = new JLabel("Số điện thoại: " +customer.getPhone());
@@ -236,22 +232,17 @@ public class CustomerManagement extends JPanel {
 	    column3.setBackground( Color.white );
 	    column3.add(phoneLabel);
 	    column3.add(emailLabel);
-	    
-//	    JPanel column4 = new JPanel(new GridLayout(2, 1));
+
 
 	    row.add(imageLabel);
 	    row.add(column2);
-	    row.add(column3);
-//	    row.add(permissionLabel);
-//	    row.add(nameLabel); 
+	    row.add(column3); 
 	    row.add(statusLabel);
 	    
 	    wrapperPanel.add(row);
 	    
 	    CustomerDetailControl mouseListener = new CustomerDetailControl(this);
 	    wrapperPanel.addMouseListener(mouseListener);
-
-
 	    wrapperPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 	    wrapperPanel.putClientProperty("customer", customer);
 
@@ -327,13 +318,13 @@ public class CustomerManagement extends JPanel {
 	}
 
 
-	// Event add customer
+	// Thêm khách hàng
 	private void addCustomerFrame(ActionEvent e) {
 		JFrame addFrame = new JFrame("Thêm thông tin khách hàng");
 		addFrame.setLayout(new GridLayout(8, 2, 10, 10));
 		addFrame.setSize(600, 600);
         
-        //customerIdTextField = new JTextField();
+		
         fullNameTextField = new JTextField();
         phoneTextField = new JTextField();
         emailTextField = new JTextField();
@@ -342,8 +333,7 @@ public class CustomerManagement extends JPanel {
         userNameTextField = new JTextField();
         passwordTextField = new JPasswordField();
         
-        
-        //customerIdLabel = new JLabel("ID:");
+
         fullNameLabel = new JLabel("Họ tên:");
         phoneLabel = new JLabel("Số điện thoại:");
         emailLabel = new JLabel("Email:");

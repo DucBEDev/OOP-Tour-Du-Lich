@@ -71,31 +71,26 @@ public class EmployeeManagement extends JPanel
 		
 		employeeListPanel = new JPanel();
 		employeeListPanel.setLayout(new GridLayout(10,1));
-		
-		
+				
 		pageControlButtonPanel= new JPanel();
-		pageControlButtonPanel.setBackground(Color.WHITE);
 		pageControlButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER,15, 15));
 		
 		functionButtonPanel = new JPanel();
-		functionButtonPanel.setBackground(Color.WHITE);
 		functionButtonPanel.setLayout(new BorderLayout());
-		
-		
+				
 		pageNumber = new JLabel("Page: " + currentPage);
 		
 		JButton addEmployee = new JButton("Thêm");
 		AddEmployeeFrame actionListenerAdd = new AddEmployeeFrame();
 		addEmployee.addActionListener(actionListenerAdd);
-		
-		
+				
 		JButton previousPage = new JButton("<");
 		previousPage.addActionListener(evt->previousPagePanel(evt));
 		
 		JButton nextPage = new JButton(">");
 		nextPage.addActionListener(evt->NextPagePanel(evt));
-		
-		
+				
+		// Tìm mã nhân viên
 		searchTextField = new JTextField("Nhập mã nhân viên để tìm");
 		searchTextField.addMouseListener(new MouseAdapter() 
         {
@@ -128,8 +123,6 @@ public class EmployeeManagement extends JPanel
 		
 		functionButtonPanel.add(addEmployee, BorderLayout.EAST);
 		functionButtonPanel.add(searchTextField, BorderLayout.WEST);
-
-//		pageControlButtonPanel.add(addEmployee);
 		
 		pageControlButtonPanel.add(previousPage);
 		pageControlButtonPanel.add(pageNumber);
@@ -140,10 +133,10 @@ public class EmployeeManagement extends JPanel
         add(functionButtonPanel, BorderLayout.NORTH);
         add(scrollBar, BorderLayout.CENTER);
         add(pageControlButtonPanel, BorderLayout.SOUTH);
-        
-        
+             
         loadEmployeeData();
 	}
+	
 	
 	// Hiện thông tin khách hàng
 		private void loadEmployeeData() 
@@ -197,12 +190,12 @@ public class EmployeeManagement extends JPanel
 			    row.setBorder(BorderFactory.createLineBorder(Color.black));
 			    
 			    JLabel imageLabel = new JLabel();
-			    imageLabel.setIcon(new ImageIcon("C:\\Users\\longh\\eclipse-workspace\\OOP-Test\\src\\images\\person(1).jpg"));
-			    JLabel idLabel = new JLabel("ID nhân viên: "+employee.getEmployeeId());
-			    JLabel nameLabel = new JLabel("Họ và tên: "+employee.getFullName());
-			    JLabel phoneLabel = new JLabel("Số điện thoại: "+employee.getPhone());
-			    JLabel emailLabel = new JLabel("Email: "+employee.getEmail());
-			    JLabel permissionLabel = new JLabel("Quyền hạn: "+employee.getPermissions());
+			    imageLabel.setIcon(new ImageIcon("C:\\Users\\ADMIN\\OOP-Tour-Du-Lich\\src\\images\\person(1).jpg"));
+			    JLabel idLabel = new JLabel("ID nhân viên: " + employee.getEmployeeId());
+			    JLabel nameLabel = new JLabel("Họ và tên: " + employee.getFullName());
+			    JLabel phoneLabel = new JLabel("Số điện thoại: " + employee.getPhone());
+			    JLabel emailLabel = new JLabel("Email: " + employee.getEmail());
+			    JLabel permissionLabel = new JLabel("Quyền hạn: " + employee.getPermissions());
 
 			    // Căn chỉnh văn bản
 			    idLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -220,14 +213,10 @@ public class EmployeeManagement extends JPanel
 			    column3.setBackground( Color.white );
 			    column3.add(phoneLabel);
 			    column3.add(emailLabel);
-			    
-//			    JPanel column4 = new JPanel(new GridLayout(2, 1));
 
 			    row.add(imageLabel);
 			    row.add(column2);
-			    row.add(column3);
-//			    row.add(permissionLabel);
-//			    row.add(nameLabel); 
+			    row.add(column3); 
 			    row.add(permissionLabel);
 			    
 			    wrapperPanel.add(row);
@@ -408,7 +397,6 @@ public class EmployeeManagement extends JPanel
 	                
 	                
 	            	try {
-	            		//Employee_DAO employeeDAO = new Employee_DAO();
 		            	Employee temp = new Employee(employeeDAO.generateNextEmployeeId(), fullName, phone, email, address, userName, password, permissions);
 		            	System.out.println(temp);
 		            	if(employeeDAO.add(temp)) {
@@ -445,11 +433,10 @@ public class EmployeeManagement extends JPanel
 	        addFrame.add(saveButton);
 	        addFrame.add(cancelButton);
 
-	        // Set dialog properties
-	        addFrame.setSize(600, 600); // Set a reasonable size for the dialog
-	        addFrame.setLocationRelativeTo(null); // Center the dialog on the screen
+	        addFrame.setSize(600, 600); 
+	        addFrame.setLocationRelativeTo(null); 
 	        addFrame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-	        addFrame.setVisible(true); // Show the dialog	
+	        addFrame.setVisible(true); 	
 		}
 	}		
 
