@@ -57,6 +57,7 @@ public class OrderDetail extends JPanel {
     private double totalAmount;
     private String status;
     private String confirmedBy;
+    private int currentParticipants;
     
     private Order_DAO orderDAO = new Order_DAO();
     
@@ -271,8 +272,21 @@ public class OrderDetail extends JPanel {
                 		adultTicketsTemp = Integer.parseInt(adultTicketsContent.getText().trim());
                         childTicketsTemp = Integer.parseInt(childTicketsContent.getText().trim());
                         statusTemp = (String) statusContent.getSelectedItem();
-                        totalAmountTemp = Double.parseDouble(totalAmountContent.getText().trim());
+                        totalAmountTemp = Double.parseDouble(totalAmountContent.getText().trim().replace(",", ""));
                 	}
+                	
+                	
+                	if (currentParticipants == orderDAO.getMaxParticipants(tourId)) 
+                    {
+                    	tourDAO.updateStatus(tourId, true);
+                    }
+                	else if(currentParticipants < orderDAO.getMaxParticipants(tourId))
+                	{
+                    	tourDAO.updateStatus(tourId, false);
+                		tourDAO.updateCurrentParticipants(tourId, currentParticipants);
+                	}
+                	
+                	
     	            
                 	order.setAdultTickets(adultTicketsTemp);
                 	order.setChildTickets(childTicketsTemp);
@@ -390,6 +404,14 @@ public class OrderDetail extends JPanel {
                 JOptionPane.ERROR_MESSAGE);
             childTicketsContent.requestFocus();
             return false;
+        }
+        
+        if ((orderDAO.getCurrentParticipants(tourId) + Integer.parseInt(adultTicketsTemp) + Integer.parseInt(childTicketsTemp) - (adultTickets + childTickets)) > orderDAO.getMaxParticipants(tourId)) {
+	    	JOptionPane.showMessageDialog(null, "Số vé hiện tại đã vượt quá tổng số vé của tour này.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+	    	return false;
+	    }   
+        else {
+        	currentParticipants = orderDAO.getCurrentParticipants(tourId) + Integer.parseInt(adultTicketsTemp) + Integer.parseInt(childTicketsTemp) - (adultTickets + childTickets);
         }
 
         return true;

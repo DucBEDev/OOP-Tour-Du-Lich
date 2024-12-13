@@ -202,6 +202,7 @@ public class SignIn extends JFrame {
 				dashboard.setVisible(true);
 				this.dispose();
 			}
+
 			else {
 				JOptionPane.showMessageDialog(null,"Đăng nhập không thành công");
 				txtUserName.setText("");

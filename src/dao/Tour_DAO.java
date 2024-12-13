@@ -42,7 +42,7 @@ public class Tour_DAO {
 
     public ArrayList<Tour> getAll() 
     {
-        String query = "SELECT * FROM Tour";
+        String query = "SELECT * FROM Tour WHERE STATUS = N'Còn vé' OR STATUS = N'Hết vé'";
         ArrayList<Tour> list = new ArrayList<>();
 
         try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) 
@@ -350,6 +350,65 @@ public class Tour_DAO {
 
         return result;
     }
+    
+    
+    public boolean updateStatus(String tourId, boolean isSoldOut) 
+    {
+        boolean result = false;
+        	String querySoldOut = "UPDATE Tour SET Status = N'Hết vé' WHERE TourID = ?";
+        	String queryAvailable="UPDATE Tour SET Status = N'Còn vé' WHERE TourID = ?";
+        	
+        	System.out.println(tourId);
+            try {
+            	PreparedStatement stmt = null;
+            	if(isSoldOut)  stmt = con.prepareStatement(querySoldOut);
+            	else stmt = con.prepareStatement(queryAvailable);
+
+                stmt.setString(1, tourId);
+                
+                System.out.println(stmt);
+
+                if (stmt.executeUpdate() >= 1) 
+                {
+                    result = true;
+                }
+            } 
+            
+            catch (SQLException e) 
+            {
+                e.printStackTrace();
+            }
+            
+        return result;
+    }
+    
+    public boolean updateCurrentParticipants(String tourId, int ticketsAmount) {
+        boolean result = false;
+        	String query = "UPDATE Tour SET CurrentParticipants = CurrentParticipants+ ? WHERE TourID = ?";
+        	
+        	System.out.println(tourId);
+        	System.out.println(ticketsAmount);
+            try {
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(2, tourId);
+                stmt.setInt(1, ticketsAmount);
+                
+                System.out.println(stmt);
+
+                if (stmt.executeUpdate() >= 1) 
+                {
+                    result = true;
+                }
+            } 
+            
+            catch (SQLException e) 
+            {
+                e.printStackTrace();
+            }
+            
+        return result;
+    }
+    
 
     public boolean delete(String tourId) {
         boolean result = false;

@@ -379,6 +379,7 @@ public class OrderManagement extends JPanel {
 	                	if(customerDAO.checkExistByPhone(phoneTemp))
 	                	{
 	                		customerTemp = customerDAO.getByPhone(phoneTemp);
+	                		System.out.println(customerTemp);
 	                		if (customerTemp.getStatus().equals(Customer.STATUS_ACTIVE)) {
 	                			fullName = customerTemp.getFullName();
 		                	    phone = customerTemp.getPhone();
@@ -549,7 +550,9 @@ public class OrderManagement extends JPanel {
             		Order order = new Order(orderDAO.generateNextOrderId(), customer.getCustomerId(),  tourId,  adultTickets,  childTickets, totalAmount,  status,  confirmedBy);
             		System.out.println(order);
             		
-            		if (orderDAO.add(order) && (orderDAO.getCurrentParticipants(tourId) <= orderDAO.getMaxParticipants(tourId))) {
+            		if (orderDAO.add(order)) 
+            		{
+            			tourDAO.updateCurrentParticipants(tourId, adultTickets+childTickets);
             			JOptionPane.showMessageDialog(addFrame, "Thêm đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 	        			loadOrderData(orderDAO.getAll(), false);
 	        			addFrame.dispose();
@@ -640,6 +643,11 @@ public class OrderManagement extends JPanel {
 		        JOptionPane.showMessageDialog(parentFrame, "Số vé trẻ em phải là chữ số và không được nhỏ hơn 0", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		        childTicketsContent.requestFocus();
 		        return false;
+		    }
+		    
+		    if ((orderDAO.getCurrentParticipants(tourId) + Integer.parseInt(adultTicketsTemp) + Integer.parseInt(childTicketsTemp)) > orderDAO.getMaxParticipants(tourId)) {
+		    	JOptionPane.showMessageDialog(parentFrame, "Số vé hiện tại đã vượt quá tổng số vé của tour này.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		    	return false;
 		    }
 
 		    // Tất cả dữ liệu hợp lệ

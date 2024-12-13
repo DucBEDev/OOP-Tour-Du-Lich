@@ -10,8 +10,10 @@ import java.time.LocalTime;
 import dao.Order_DAO;
 
 public final class Tour {
-    public static final String STATUS_AVAILABLE = "CÒN VÉ";
-    public static final String STATUS_SOLD_OUT = "HẾT VÉ";
+    public static final String STATUS_AVAILABLE = "Còn vé";
+    public static final String STATUS_SOLD_OUT = "Hết vé";
+    public static final String STATUS_CANCELED = "Đã hủy";
+    
 
     private String tourId;
     private Image image;

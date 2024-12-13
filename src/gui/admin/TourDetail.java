@@ -29,6 +29,7 @@ import javax.swing.border.TitledBorder;
 
 import com.toedter.calendar.JDateChooser;
 
+import dao.Order_DAO;
 import dao.Tour_DAO;
 import entity.Tour;
 
@@ -96,6 +97,8 @@ public class TourDetail extends JPanel
     private String base64Image;
     
     private Tour_DAO tourDAO = new Tour_DAO();
+    
+    private Order_DAO orderDAO = new Order_DAO();
 
     public TourDetail(Tour tour) {
         setLayout(new BorderLayout(10, 10));
@@ -205,13 +208,21 @@ public class TourDetail extends JPanel
         statusContent = new JComboBox<>();
         statusContent.addItem("Hết vé");
         statusContent.addItem("Còn vé");
-        statusContent.addActionListener(evt->
-        {
-            
-                status = (String) statusContent.getSelectedItem();
-                System.out.println("Status Info: " + status);
-            
-        });
+        statusContent.addItem("Đã hủy");
+//        statusContent.addActionListener(evt->
+//        {
+//            
+//                status = (String) statusContent.getSelectedItem();
+//                System.out.println("Status Info: " + status);
+//            
+//        });
+        
+        
+//        if (orderDAO.getCurrentParticipants(tourId) == orderDAO.getMaxParticipants(tourId)) 
+//        {
+//        	tourDAO.updateStatus(tourId);
+//        }
+//        System.out.println("Khach hang: " + orderDAO.getCurrentParticipants(tourId));
         
         
         if (tour != null) 

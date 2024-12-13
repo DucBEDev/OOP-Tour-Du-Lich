@@ -544,7 +544,10 @@ public class Order_DAO {
 	                   "GROUP BY " +
 	                   "    t.TourID;";
 	    int result = 0;
-
+	    
+	    
+	    System.out.println(tourId);
+	    
 	    try {
 	        PreparedStatement stmt = con.prepareStatement(query);
 	        stmt.setString(1, tourId); // Bind the tourId parameter
@@ -556,6 +559,9 @@ public class Order_DAO {
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
+	    
+	    System.out.println(result);
+
 
 	    return result;
 	}

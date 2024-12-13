@@ -26,7 +26,7 @@ public class Employee_DAO {
     }
 
     public ArrayList<Employee> getAll() {
-        String query = "SELECT * FROM Employee";
+        String query = "SELECT * FROM Employee WHERE STATUS = N'Đang làm việc'";
         ArrayList<Employee> list = new ArrayList<>();
 
         try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
