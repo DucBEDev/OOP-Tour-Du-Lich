@@ -1,59 +1,63 @@
 package gui.admin;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Recive extends JFrame {
+public class Receive extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JTextArea chatArea;
-    private JTextField messageField;
-    private DataOutputStream dataOutputStream;
+    private static JTextArea chatArea;
+    private static JTextField messageField;
+    private static DataOutputStream dataOutputStream;
 
-    public Recive() {
-        setTitle("Customer Service - Server Chat");
-        setSize(400, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public Receive() {
+        super(new BorderLayout());
 
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
-        chatArea.setCaretColor(Color.WHITE); // Đặt màu trỏ chuột là trắng
-        chatArea.setBackground(new Color(30, 30, 30));
+        chatArea.setCaretPosition(chatArea.getDocument().getLength());
+        chatArea.setCaretColor(Color.WHITE);
+        chatArea.setBackground(Color.WHITE);
         chatArea.setForeground(Color.WHITE);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 16));
         JScrollPane scrollPane = new JScrollPane(chatArea);
 
         messageField = new JTextField(100);
-        messageField.setEditable(true);
-        messageField.setCaretColor(Color.WHITE); // Đặt màu trỏ chuột là trắng
         messageField.setFont(new Font("Arial", Font.PLAIN, 16));
-        messageField.setBackground(new Color(50, 50, 50));
-        messageField.setForeground(Color.WHITE);
+        messageField.setPreferredSize(new Dimension(300, 40));
+        messageField.setBackground(new Color(240, 240, 240));
+        messageField.setForeground(Color.BLACK);
+        messageField.setBorder(new EmptyBorder(0, 10, 0, 0)); 
 
         JButton sendButton = new JButton("Send");
-        sendButton.setBackground(new Color(70, 130, 180));
+        sendButton.setPreferredSize(new Dimension(80, 40));
+        sendButton.setBackground(new Color(0, 0, 139));
         sendButton.setForeground(Color.WHITE);
+        sendButton.setMaximumSize(new Dimension(100, 30));
+        sendButton.setFocusPainted(false);
+        sendButton.setBorderPainted(false);
+        sendButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        sendButton.setFont(new Font("Arial", Font.BOLD, 16));
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(messageField, BorderLayout.CENTER);
         panel.add(sendButton, BorderLayout.EAST);
 
-        setLayout(new BorderLayout());
         add(scrollPane, BorderLayout.CENTER);
         add(panel, BorderLayout.SOUTH);
 
-        // Server socket logic
         new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(1234)) {
-                chatArea.append("Server is listening on port 1234...\n");
+            	chatArea.setForeground(Color.BLACK);
                 Socket socket = serverSocket.accept();
-                chatArea.append("Client connected.\n");
+                chatArea.append("Đã kết nối.\n");
 
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
@@ -63,9 +67,9 @@ public class Recive extends JFrame {
 
                 while (true) {
                     String message = dataInputStream.readUTF();
-                    chatArea.append("Client: " + message + "\n");
+                    chatArea.append("KH: " + message + "\n");
                     if ("exit".equalsIgnoreCase(message)) {
-                        chatArea.append("Client has disconnected.\n");
+                        chatArea.append("Khách hàng đã ngắt kết nối.\n");
                         break;
                     }
                 }

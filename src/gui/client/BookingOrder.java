@@ -40,6 +40,7 @@ import javax.swing.border.EmptyBorder;
 
 import dao.Customer_DAO;
 import dao.Order_DAO;
+import dao.Tour_DAO;
 import entity.Customer;
 import entity.Order;
 import entity.Tour;
@@ -49,6 +50,7 @@ public class BookingOrder extends JFrame {
 	private JSplitPane splitPane;
 	private JPanel pnlTourList;
 	private JPanel pnlForm;
+	private JTextField txtChosenTour;
 	private JTextField txtFullName;
 	private JTextField txtPhone;
 	private JTextField txtEmail;
@@ -59,6 +61,7 @@ public class BookingOrder extends JFrame {
 	
 	private Tour selectedTour;
 	private Customer cus;
+	private Tour_DAO tour_dao;
 	private Order_DAO order_dao;
 	private Customer_DAO customer_dao;
 	
@@ -109,8 +112,18 @@ public class BookingOrder extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(5, 5, 5, 5);
 		
-		
 		gbc.gridx = 0; gbc.gridy = 0;
+		pnlFormInput.add(new JLabel("Tour đã chọn: "), gbc);
+		gbc.gridx = 1;
+		txtChosenTour = new JTextField();
+		txtChosenTour.setEditable(false);
+		txtChosenTour.setBorder(null);
+		if (selectedTour != null) 
+			txtChosenTour.setText(selectedTour.getTourName());
+		txtChosenTour.setPreferredSize(new Dimension(200, 30));
+		pnlFormInput.add(txtChosenTour, gbc);
+		
+		gbc.gridx = 0; gbc.gridy = 1;
 		pnlFormInput.add(new JLabel("Họ và Tên: "), gbc);
 		gbc.gridx = 1;
 		txtFullName = new JTextField();
@@ -119,7 +132,7 @@ public class BookingOrder extends JFrame {
 		txtFullName.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtFullName, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 1;
+		gbc.gridx = 0; gbc.gridy = 2;
 		pnlFormInput.add(new JLabel("Số điện thoại: "), gbc);
 		gbc.gridx = 1;
 		txtPhone = new JTextField(20);
@@ -128,7 +141,7 @@ public class BookingOrder extends JFrame {
 		txtPhone.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtPhone, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 2;
+		gbc.gridx = 0; gbc.gridy = 3;
 		pnlFormInput.add(new JLabel("Email: "), gbc);
 		gbc.gridx = 1;
 		txtEmail = new JTextField(20);
@@ -137,7 +150,7 @@ public class BookingOrder extends JFrame {
 		txtEmail.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtEmail, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 3;
+		gbc.gridx = 0; gbc.gridy = 4;
 		pnlFormInput.add(new JLabel("Địa chỉ: "), gbc);
 		gbc.gridx = 1;
 		txtAddress = new JTextField(20);
@@ -146,7 +159,7 @@ public class BookingOrder extends JFrame {
 		txtAddress.setPreferredSize(new Dimension(200, 30));
 		pnlFormInput.add(txtAddress, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 4;
+		gbc.gridx = 0; gbc.gridy = 5;
 		pnlFormInput.add(new JLabel("Số người lớn:"), gbc);
 		gbc.gridx = 1;
 		SpinnerNumberModel adultModel = new SpinnerNumberModel(1, 1, 10, 1);
@@ -155,16 +168,16 @@ public class BookingOrder extends JFrame {
 		adultSpinner.addChangeListener(e -> updateTotalPrice());
 		pnlFormInput.add(adultSpinner, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 5;
+		gbc.gridx = 0; gbc.gridy = 6;
 		pnlFormInput.add(new JLabel("Số trẻ em:"), gbc);
 		gbc.gridx = 1;
-		SpinnerNumberModel childModel = new SpinnerNumberModel(1, 1, 10, 1);
+		SpinnerNumberModel childModel = new SpinnerNumberModel(0, 0, 10, 1);
 		childSpinner = new JSpinner(childModel);
 		childSpinner.setPreferredSize(new Dimension(200, 30));
 		childSpinner.addChangeListener(e -> updateTotalPrice());
 		pnlFormInput.add(childSpinner, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 6;
+		gbc.gridx = 0; gbc.gridy = 7;
 		pnlFormInput.add(new JLabel("Tổng tiền: "), gbc);
 		gbc.gridx = 1;
 		lblTotalPrice = new JLabel("0 VNĐ");
@@ -172,8 +185,8 @@ public class BookingOrder extends JFrame {
 		lblTotalPrice.setForeground(new Color(255, 153, 0));
 		pnlFormInput.add(lblTotalPrice, gbc);
 		
-		gbc.gridx = 0; gbc.gridy = 7;
-		gbc.gridwidth = 2;
+		gbc.gridx = 0; gbc.gridy = 8;
+		gbc.gridwidth = 9;
 		JButton btnSubmit = new JButton("Xác nhận đặt Tour");
 		btnSubmit.setFont(new Font("Arial", Font.BOLD, 16));
 		btnSubmit.setForeground(Color.WHITE);
@@ -305,7 +318,7 @@ public class BookingOrder extends JFrame {
 		pnlLeft.setBackground(Color.WHITE);
 		
 		// Images panel
-		ImageIcon originalIcon = new ImageIcon(getClass().getResource("/images/background.jpg"));
+		ImageIcon originalIcon = new ImageIcon(tour.getImage());
 		Image scaledImage = originalIcon.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
 		JLabel lblImage = new JLabel(new ImageIcon(scaledImage));
 		lblImage.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -374,6 +387,7 @@ public class BookingOrder extends JFrame {
         btnBook.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnBook.addActionListener(e -> {
 			selectedTour = tour;
+			txtChosenTour.setText(selectedTour.getTourName());
 			updateForm();
 		});
 		btnBook.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -409,12 +423,36 @@ public class BookingOrder extends JFrame {
 	}
 	
 	private void handleBooking() {
+		Customer testInputCus = new Customer();
 		String fullName = txtFullName.getText().trim();
-		String email = txtEmail.getText().trim();
-		String phone = txtPhone.getText().trim();
+		
+		String email;
+		try {
+			email = txtEmail.getText().trim();
+			testInputCus.setEmail(email);
+		} catch (Exception e)  {
+			JOptionPane.showMessageDialog(this, "Thông tin đăng nhập không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		String phone;
+		try {
+			phone = txtPhone.getText().trim();
+			testInputCus.setPhone(phone);
+		} catch (Exception e)  {
+			JOptionPane.showMessageDialog(this, "Thông tin đăng nhập không hợp lệ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
 		String address = txtAddress.getText().trim();
 		int adultTickets = (int)adultSpinner.getValue();
 		int childTickets = (int)childSpinner.getValue();
+		
+		int totalTickets = adultTickets + childTickets;
+		if (totalTickets > (selectedTour.getMaxParticipants() - selectedTour.getCurrentParticipants())) {
+			JOptionPane.showMessageDialog(this, "Không được đặt quá số vé giới hạn", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+		}
 		
 		if (selectedTour == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn tour trước khi đặt", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -433,7 +471,7 @@ public class BookingOrder extends JFrame {
         String customer_id;
         if (!customer_dao.checkExistByPhone(phone)) {
         	customer_id = customer_dao.generateNextCustomerId();
-	        Customer customer = new Customer(customer_id, fullName, phone, email, address, "Khách", "user_name", "1");
+	        Customer customer = new Customer(customer_id, fullName, phone, email, address, "Khách", "user_name" + phone, "1");
 	        customer_dao.add(customer);	
         }
         else {
@@ -441,13 +479,20 @@ public class BookingOrder extends JFrame {
         	customer_id = customer.getCustomerId();
         }
         double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
-        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chờ thanh toán", null);
+        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chưa hoàn thành", null);
         order_dao.add(order);
+        
+        // Update current participations
+        selectedTour.setCurrentParticipants(selectedTour.getCurrentParticipants() + totalTickets);
+        tour_dao = new Tour_DAO();
+        tour_dao.update(selectedTour, null);
+        
         JOptionPane.showMessageDialog(this, "Đặt tour thành công!\nChúng tôi sẽ liên hệ với bạn sớm nhất.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             
-        // Reset form
-        selectedTour = null;
-        updateForm();
+        // Back to dashboard
+        Dashboard dashboard = new Dashboard(cus);
+    	dashboard.setVisible(true);
+    	this.dispose();
 	}
 
 	private void updateTotalPrice() {
@@ -464,14 +509,16 @@ public class BookingOrder extends JFrame {
 	private void updateForm() {
 		if (selectedTour != null) {
             updateTotalPrice();
-            // Reset form fields
+        }
+		else {
+			// Reset form fields
             txtFullName.setText("");
             txtEmail.setText("");
             txtPhone.setText("");
             txtAddress.setText("");
             adultSpinner.setValue(1);
             childSpinner.setValue(0);
-        }
+		}
 	}
 }
 

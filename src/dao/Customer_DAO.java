@@ -112,7 +112,7 @@ public class Customer_DAO {
                 String password = rs.getString(8);
                 LocalDate createdAt = rs.getDate(9).toLocalDate();
                 
-                temp  = new Customer(customerIdTemp, fullName, phone, email, address, status, userName, password);
+                temp = new Customer(customerIdTemp, fullName, phone, email, address, status, userName, password);
                 temp.setCreatedAt(createdAt);
             }
         } catch (SQLException e) {
