@@ -629,6 +629,7 @@ public class TourManagement extends JPanel {
 						     byte[] imageBytes = baos.toByteArray();
 						     
 						     base64Image = Base64.getEncoder().encodeToString(imageBytes);
+						     System.out.println(base64Image);
 						} 
                         catch (IOException e1) 
                         {
