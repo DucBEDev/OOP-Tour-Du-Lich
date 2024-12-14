@@ -39,6 +39,7 @@ public class OrderManagement extends JPanel {
     private ArrayList<Order> orders = new ArrayList<>();
     
     private Employee employee;
+    private boolean isConfirmed;
     
 
     public OrderManagement(Employee employee) 
@@ -100,14 +101,14 @@ public class OrderManagement extends JPanel {
             if (orderDAO.checkExistById(tempOrderId)) 
             {
                 orderListPanel.removeAll();
-                JPanel row = CreateOrderRow(orderDAO.getById(tempOrderId), 0 ,false);
+                JPanel row = CreateOrderRow(orderDAO.getById(tempOrderId), 0 );
                 orderListPanel.add(row);
                 orderListPanel.revalidate();
                 orderListPanel.repaint();
             }
             else if (tempOrderId.equals("")) 
             {
-                loadOrderData(orderDAO.getAll(), false);
+                loadOrderData(orderDAO.getAll());
             }
             else
             {
@@ -136,22 +137,22 @@ public class OrderManagement extends JPanel {
         add(scrollBar, BorderLayout.CENTER);
         add(pageControlButtonPanel, BorderLayout.SOUTH);
         
-        loadOrderData(orderDAO.getAll(), false);
+        loadOrderData(orderDAO.getAll());
     }
     
 
     // Hiện thông tin đơn hàng
-    private void loadOrderData(ArrayList<Order> orders, boolean isConfirmed) 
+    private void loadOrderData(ArrayList<Order> orders) 
     {
         // Lấy danh sách đơn hàng
     	this.orders = orders;
         totalPages = (int) Math.ceil((double) orders.size() / rowPerPage);
-        updatePage(isConfirmed); // Chỉ tải dữ liệu của trang đầu tiên
+        updatePage(); // Chỉ tải dữ liệu của trang đầu tiên
     }
     
 
     // Cập nhật UI ở trang hiện tại
-    private void updatePage(boolean isConfirmed) 
+    private void updatePage() 
     {
         orderListPanel.removeAll();
 
@@ -160,7 +161,7 @@ public class OrderManagement extends JPanel {
 
         for (int i = start; i < end; i++) 
         {
-            JPanel row = CreateOrderRow(orders.get(i), i - start, isConfirmed);
+            JPanel row = CreateOrderRow(orders.get(i), i - start);
 
             orderListPanel.add(row);
         }
@@ -180,7 +181,7 @@ public class OrderManagement extends JPanel {
     
 
     // Tạo dòng hiển thị thông tin trên Page
-    private JPanel CreateOrderRow(Order order, int indexInPage, boolean isConfirmed) 
+    private JPanel CreateOrderRow(Order order, int indexInPage) 
     {
         JPanel row = new JPanel(new GridLayout(2, 3)); // 4 cột: orderId, customerId, totalAmount, orderTime
         row.setBackground(Color.WHITE);
@@ -217,11 +218,11 @@ public class OrderManagement extends JPanel {
 
         if(isConfirmed) 
         	{
-        		mouseListener = new OrderDetailControl(this, true);
+        		mouseListener = new OrderDetailControl(this, isConfirmed);
         	}
         else
         {
-    		 mouseListener = new OrderDetailControl(this, false);
+    		 mouseListener = new OrderDetailControl(this, isConfirmed);
         }
 
         row.addMouseListener(mouseListener);
@@ -238,7 +239,7 @@ public class OrderManagement extends JPanel {
         if (currentPage > 1)
         {
             currentPage--;
-            updatePage(false);
+            updatePage();
         }
     }
     
@@ -249,7 +250,7 @@ public class OrderManagement extends JPanel {
         if (currentPage < totalPages) 
         {
             currentPage++;
-            updatePage(false);
+            updatePage();
         }
     }
     
@@ -304,11 +305,13 @@ public class OrderManagement extends JPanel {
     	{
     		if(e.getSource()==orderListLabel)
     		{
-    			loadOrderData(orderDAO.getAll(), false);
+    			isConfirmed=false;
+    			loadOrderData(orderDAO.getAll());
     		}
     		else if(e.getSource()==orderListConfirmLabel)
     		{
-    			loadOrderData(orderDAO.getAllUnconfirmed(), true);
+    			isConfirmed=true;
+    			loadOrderData(orderDAO.getAllUnconfirmed());
     		}
     	}
     }
@@ -554,7 +557,7 @@ public class OrderManagement extends JPanel {
             		{
             			tourDAO.updateCurrentParticipants(tourId, adultTickets+childTickets);
             			JOptionPane.showMessageDialog(addFrame, "Thêm đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-	        			loadOrderData(orderDAO.getAll(), false);
+	        			loadOrderData(orderDAO.getAll());
 	        			addFrame.dispose();
 	        			
 	        		} else {

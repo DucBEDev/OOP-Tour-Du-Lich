@@ -479,7 +479,7 @@ public class BookingOrder extends JFrame {
         	customer_id = customer.getCustomerId();
         }
         double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
-        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chưa hoàn thành", null);
+        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chờ thanh toán", null);
         order_dao.add(order);
         
         // Update current participations

@@ -14,7 +14,7 @@ public class VNComboBox {
         "Hải Dương", "Hải Phòng", "Hậu Giang", "Hòa Bình", "Hưng Yên",
         "Khánh Hòa", "Kiên Giang", "Kon Tum", "Lai Châu", "Lâm Đồng",
         "Lạng Sơn", "Lào Cai", "Long An", "Nam Định", "Nghệ An",
-        "Ninh Bình", "Ninh Thuận", "Phú Thọ", "Phú Yên", "Quảng Bình",
+        "Ninh Bình", "Ninh Thuận", "Phú Quốc", "Phú Thọ", "Phú Yên", "Quảng Bình",
         "Quảng Nam", "Quảng Ngãi", "Quảng Ninh", "Quảng Trị", "Sóc Trăng",
         "Sơn La", "Tây Ninh", "Thái Bình", "Thái Nguyên", "Thanh Hóa",
         "Thừa Thiên Huế", "Tiền Giang", "TP.HCM", "Trà Vinh", "Tuyên Quang",

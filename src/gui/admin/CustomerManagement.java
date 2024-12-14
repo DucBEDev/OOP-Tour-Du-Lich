@@ -119,7 +119,7 @@ public class CustomerManagement extends JPanel {
         nextPage = new JButton(">");
         addButton = new JButton("Thêm");
         
-        JTextField searching = new JTextField("Nhập Mã Khách Hàng");
+        JTextField searching = new JTextField("Nhập Số Điện Thoại");
         
         buttonPanel.add(searching);
         searching.addMouseListener(new MouseAdapter() 
@@ -131,22 +131,22 @@ public class CustomerManagement extends JPanel {
         });
         searching.addActionListener(evt -> 
         {
-            String customerIdTemp = searching.getText();
-            if (customerDAO.checkExistById(customerIdTemp)) 
+            String customerPhoneTemp = searching.getText();
+            if (customerDAO.checkExistByPhone(customerPhoneTemp)) 
             {
                 customerPanel.removeAll();
-                JPanel row = createCustomerRow(customerDAO.getById(customerIdTemp), 0);
+                JPanel row = createCustomerRow(customerDAO.getByPhone(customerPhoneTemp), 0);
                 customerPanel.add(row);
                 customerPanel.revalidate();
                 customerPanel.repaint();
             }
-            else if (customerIdTemp.equals("")) 
+            else if (customerPhoneTemp.equals("")) 
             {
                 loadCustomerData();
             }
             else
             {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng " + customerIdTemp,
+                JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng " + customerPhoneTemp,
                         "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });

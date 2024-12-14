@@ -168,7 +168,7 @@ public class TourDetail extends JFrame {
 		gbc.gridx = 0; gbc.gridy = 5;
 		pnlFormInput.add(new JLabel("Số người lớn:"), gbc);
 		gbc.gridx = 1;
-		SpinnerNumberModel adultModel = new SpinnerNumberModel(1, 1, 10, 1);
+		SpinnerNumberModel adultModel = new SpinnerNumberModel(0, 0, 10, 1);
 		adultSpinner = new JSpinner(adultModel);
 		adultSpinner.setPreferredSize(new Dimension(200, 30));
 		adultSpinner.addChangeListener(e -> updateTotalPrice());
