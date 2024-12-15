@@ -328,7 +328,7 @@ public class Order_DAO {
 	
          try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query))
          {             
-             if (rs.next()) 
+             while (rs.next()) 
              {            	
             	 int month = rs.getInt(1);      
             	 double totalAmount = rs.getDouble(2);
@@ -365,7 +365,7 @@ public class Order_DAO {
              stmt.setInt(1, year);
              ResultSet rs = stmt.executeQuery();
              
-             if (rs.next()) 
+             while (rs.next()) 
              {            	
             	 int month = rs.getInt(1);      
             	 double totalAmount = rs.getDouble(2);

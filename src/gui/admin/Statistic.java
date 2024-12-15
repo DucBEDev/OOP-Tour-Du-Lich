@@ -141,6 +141,12 @@ public class Statistic extends JPanel
 			totalByMonthPanel.setLayout(new GridLayout(12,2,10, 10));
 			
 			totalAmountAllTimeList = orderDAO.getTotalAmountAllTime();
+			for (Entry<Integer, Double> entry : totalAmountAllTimeList.entrySet())
+			{
+				System.out.println(entry.getKey());
+				System.out.println(entry.getValue());
+			}
+			
 			double totalAmountAllTime = 0;
 			
 			for(int i =0; i<12; i++)

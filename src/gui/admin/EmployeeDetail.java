@@ -436,7 +436,7 @@ public class EmployeeDetail extends JPanel
 			        return false;
 			    }
 
-			    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+			    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)com$")) {
 			        JOptionPane.showMessageDialog(null, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			        emailContent.requestFocus();
 			        return false;

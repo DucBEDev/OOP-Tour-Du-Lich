@@ -200,6 +200,9 @@ public class CustomerDetail extends JPanel {
 	
 	// Lưu và cập nhật thông tin mới của khách hàng, hiện trên Page và cập nhật trong DB
 	private void saveCustomerInfo(ActionEvent e) {
+		if (!validateInput()) {
+        	return;
+        }
 	    // Lấy dữ liệu từ các trường văn bản
 	    customerId = customerIdTextField.getText().trim();
 	    fullName = fullNameTextField.getText().trim();
@@ -225,10 +228,6 @@ public class CustomerDetail extends JPanel {
 	                    customers.set(i, updatedCustomer);
 	                    break;
 	                }
-	            }
-	            
-	            if (!validateInput()) {
-	            	return;
 	            }
 
 	            customerIdTextField.setEditable(false);	            
@@ -279,7 +278,7 @@ public class CustomerDetail extends JPanel {
 	        return false;
 	    }
 
-	    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+	    if (emailTemp.isEmpty() || !emailTemp.matches("^[A-Za-z0-9+_.-]+@(.+)com$")) {
 	        JOptionPane.showMessageDialog(null, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 	        emailTextField.requestFocus();
 	        return false;

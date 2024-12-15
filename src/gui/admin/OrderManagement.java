@@ -353,6 +353,7 @@ public class OrderManagement extends JPanel {
         private String status;
         private String confirmedBy;
         
+        
         private Customer customerTemp;
         
         private Customer_DAO customerDAO= new Customer_DAO();
@@ -556,6 +557,7 @@ public class OrderManagement extends JPanel {
             		if (orderDAO.add(order)) 
             		{
             			tourDAO.updateCurrentParticipants(tourId, adultTickets+childTickets);
+            			if(tourDAO.getByTourId(tourId).getCurrentParticipants() == tourDAO.getByTourId(tourId).getMaxParticipants())        tourDAO.updateStatus(tourId, true);           				
             			JOptionPane.showMessageDialog(addFrame, "Thêm đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 	        			loadOrderData(orderDAO.getAll());
 	        			addFrame.dispose();
@@ -648,7 +650,7 @@ public class OrderManagement extends JPanel {
 		        return false;
 		    }
 		    
-		    if ((orderDAO.getCurrentParticipants(tourId) + Integer.parseInt(adultTicketsTemp) + Integer.parseInt(childTicketsTemp)) > orderDAO.getMaxParticipants(tourId)) {
+		    if ((tourDAO.getByTourId(tourIdTemp).getCurrentParticipants() + Integer.parseInt(adultTicketsTemp) + Integer.parseInt(childTicketsTemp)) > tourDAO.getByTourId(tourIdTemp).getMaxParticipants()) {
 		    	JOptionPane.showMessageDialog(parentFrame, "Số vé hiện tại đã vượt quá tổng số vé của tour này.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		    	return false;
 		    }
