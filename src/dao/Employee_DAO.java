@@ -76,7 +76,7 @@ public class Employee_DAO {
                 String status = rs.getNString(10);
 
 
-                temp = new Employee(id, fullName, phone, email, address, userName, password, permissions);
+                temp = new Employee(id, fullName, phone, email, address, userName, password, permissions, status);
                 temp.setHireDate(hireDate);
                 temp.setStatus(status);
 

@@ -387,7 +387,7 @@ public class Order_DAO {
     
     public double getTotalAmountInputTime(LocalDate begin, LocalDate end)
     {
-    	String query = "SELECT SUM(O.TotalAmount)  AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE ORDER_TIME BETWEEN ? AND ?";
+    	String query = "SELECT SUM(O.TotalAmount)  AS FREQUENCY FROM Tour AS T JOIN [Order] AS O ON T.TourID = O.TourID WHERE ORDERTIME BETWEEN ? AND ?";
     	HashMap<String, Integer> list = new HashMap<String, Integer>();
     	
     	LocalDateTime dateTimeBegin = begin.atTime(LocalTime.MIDNIGHT);

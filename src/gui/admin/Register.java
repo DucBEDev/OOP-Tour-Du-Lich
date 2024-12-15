@@ -233,6 +233,10 @@ public class Register extends JFrame {
 	}
 	
 	private void btnRegisterPerformed(){
+		if(!validateInput()) {
+			return;
+		}
+		
 		String userName = txtUserName.getText();
 		String name = txtName.getText();
 		String phone = txtPhone.getText();
@@ -259,4 +263,59 @@ public class Register extends JFrame {
 			txtCheckPassword.setText("");
 		}
 	}
+	
+	
+	// Kiểm tra định dạng các thông tin
+		private boolean validateInput() {
+			String userName = txtUserName.getText();
+			String name = txtName.getText();
+			String phone = txtPhone.getText();
+			String address = txtAddress.getText();
+			String email = txtEmail.getText();
+			String password = String.valueOf(txtPassword.getPassword());
+			
+			
+			if (userName.isEmpty() || !userName.matches("^[A-Za-z0-9_.-]+$")) {
+		        JOptionPane.showMessageDialog(null, "Tên tài khoản có thể gồm các ký tự chữ cái, số và ký tự đặc biệt ( _ / . / - )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        txtUserName.requestFocus();
+		        return false;
+		    }
+			
+			if (name.isEmpty() || !name.matches("^\\p{L}+(\\s+\\p{L}+)*$")) {
+		        JOptionPane.showMessageDialog(null, "Họ tên không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        txtName.requestFocus();
+		        return false;
+		    }
+
+		    if (phone.isEmpty() || !phone.matches("\\d{10}")) {
+		        JOptionPane.showMessageDialog(null, "Số điện thoại không hợp lệ! Định dạng đúng: 10 chữ số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        txtPhone.requestFocus();
+		        return false;
+		    }
+		    
+		    if (address.isEmpty() || !address.matches("^[a-zA-ZÀ-ỹ0-9 .,-/]+$")) {
+		        JOptionPane.showMessageDialog(null, "Địa chỉ không hợp lệ! Vui lòng nhập chữ cái và không để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        txtAddress.requestFocus();
+		        return false;
+		    }
+
+		    if (email.isEmpty() || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+		        JOptionPane.showMessageDialog(null, "Email không hợp lệ! Vui lòng nhập đúng định dạng email.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        txtEmail.requestFocus();
+		        return false;
+		    }
+	    
+
+		    if (password.isEmpty() || !password.matches("^[A-Za-z\\d@$!%*#?&_]+$")) {
+		        JOptionPane.showMessageDialog(null, "Mật khẩu không hợp lệ! Không để trống và chỉ có thể chứa các ký tự chữ cái, số và ký tự đặc biệt ( @ / $ / ! / % / * / # / ? / & / _ )", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		        txtPassword.requestFocus();
+		        return false;
+		    }
+		    
+
+		    // Tất cả dữ liệu hợp lệ
+		    return true;
+		}
 }
+
+
