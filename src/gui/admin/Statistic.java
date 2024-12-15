@@ -10,6 +10,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -140,14 +141,27 @@ public class Statistic extends JPanel
 			totalByMonthPanel.setLayout(new GridLayout(12,2,10, 10));
 			
 			totalAmountAllTimeList = orderDAO.getTotalAmountAllTime();
+			double totalAmountAllTime = 0;
 			
 			for(int i =0; i<12; i++)
 			{
 				totalByMonthPanel.add(new JLabel("Tháng " + (i+1)));
-				if(totalAmountAllTimeList.containsKey(i+1)) totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": " + totalAmountAllTimeList.get(i+1)));
+				if(totalAmountAllTimeList.containsKey(i+1)) 
+					{
+						DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+						String formattedTotalAmountByMonth = decimalFormat.format(totalAmountAllTimeList.get(i+1));
+						totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": " + formattedTotalAmountByMonth));
+						totalAmountAllTime +=totalAmountAllTimeList.get(i+1);
+					}
 				else totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": 0" ));
+				
+				
 			}
 			
+			DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+            String formattedTotalAmountAllTime = decimalFormat.format(totalAmountAllTime);
+		        
+		     totalAmountLabel = new JLabel("Tổng doanh thu: " + formattedTotalAmountAllTime);
 			
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new GridLayout(1,2));
@@ -157,7 +171,6 @@ public class Statistic extends JPanel
 	        
 	        totalAmountPanel= new JPanel();
 	        
-	        totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountAllTime());
 	        
 	        totalAmountPanel.add(totalAmountLabel, FlowLayout.LEFT);
 	        
@@ -202,6 +215,7 @@ public class Statistic extends JPanel
 			accountingButton.addActionListener(e->
 			{
 				centerPanel.removeAll();
+				totalAmountPanel.removeAll();
 
 				list = orderDAO.getMostTravelDestinationByYear(Integer.parseInt(yearInputTf.getText()));
 				
@@ -218,20 +232,31 @@ public class Statistic extends JPanel
 				totalByMonthPanel = new JPanel();
 				totalByMonthPanel.setLayout(new GridLayout(12,2,10, 10));
 				
-				totalAmountByMonthList = orderDAO.getTotalAmountByYear(2024);
+				totalAmountByMonthList = orderDAO.getTotalAmountByYear(Integer.parseInt(yearInputTf.getText()));
+				double totalAmountByYear = 0;
 				
 				for(int i =0; i<12; i++)
 				{
 					totalByMonthPanel.add(new JLabel("Tháng " + (i+1)));
-					if(totalAmountByMonthList.containsKey(i+1)) totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": " + totalAmountByMonthList.get(i+1)));
+					if(totalAmountByMonthList.containsKey(i+1)) 
+						{
+							DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+							String formattedTotalAmountByMonth = decimalFormat.format(totalAmountByMonthList.get(i+1));
+							totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": " + formattedTotalAmountByMonth));
+							totalAmountByYear += totalAmountByMonthList.get(i+1);
+						}
+					
 					else totalByMonthPanel.add(new JLabel("Doanh thu tháng " +(i+1) +": 0" ));
+					
 				}
 				
 				centerPanel.add(totalByMonthPanel);
 				centerPanel.add(new JScrollPane(destinationTable));
 				
+				DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+	            String formattedTotalAmountByYear = decimalFormat.format(totalAmountByYear);
 			        
-			     totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountByYear(Integer.parseInt(yearInputTf.getText())));
+			     totalAmountLabel = new JLabel("Tổng doanh thu: " + formattedTotalAmountByYear);
 			        
 			     totalAmountPanel.add(totalAmountLabel, FlowLayout.LEFT);
 				
@@ -304,6 +329,7 @@ public class Statistic extends JPanel
 			accountingButton.addActionListener(e->
 			{
 				centerPanel.removeAll();
+				totalAmountPanel.removeAll();
 				
 				list = orderDAO.getMostTravelDestinationByInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 				tourList = orderDAO.getMostTravelTourByInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
@@ -392,7 +418,11 @@ public class Statistic extends JPanel
 				centerPanel.add(new JScrollPane(tourListPanel));
 		        centerPanel.add(new JScrollPane(destinationTable));
 		        
-		        totalAmountLabel = new JLabel("Tổng doanh thu: " + orderDAO.getTotalAmountAllTime());
+		        DecimalFormat decimalFormat = new DecimalFormat("#,###");                 
+	            String formattedTotalAmountInputTime = decimalFormat.format(orderDAO.getTotalAmountInputTime(beginDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), 
+		        		endDate.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+		        
+		        totalAmountLabel = new JLabel("Tổng doanh thu: " + formattedTotalAmountInputTime);
 		        totalAmountPanel.add(totalAmountLabel);
 		        
 			    this.revalidate();
