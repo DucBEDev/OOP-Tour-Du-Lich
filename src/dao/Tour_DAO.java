@@ -44,6 +44,7 @@ public class Tour_DAO {
     {
         String query = "SELECT * FROM Tour WHERE STATUS = N'Còn vé' OR STATUS = N'Hết vé'";
         ArrayList<Tour> list = new ArrayList<>();
+        Order_DAO orderDAO = new Order_DAO();
 
         try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(query)) 
         {
@@ -61,8 +62,11 @@ public class Tour_DAO {
                 String transportInfo = rs.getNString(10);
                 double adultPrice = rs.getDouble(11);
                 double childPrice = rs.getDouble(12);
-                int maxParticipants = rs.getInt(13);
-                int currentParticipants = rs.getInt(14);
+                        
+                int maxParticipants = orderDAO.getMaxParticipants(tourId); 
+                                             		
+                int currentParticipants = orderDAO.getCurrentParticipants(tourId);
+                
                 String status = rs.getNString(15);
                 
                 Image image = decodeBase64ToImage(base64Image);
