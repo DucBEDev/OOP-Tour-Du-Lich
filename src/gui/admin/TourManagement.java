@@ -544,6 +544,7 @@ public class TourManagement extends JPanel {
           String tourNameTemp = tourNameContent.getText();    	
           String descriptionTemp = descriptionContent.getText();
           String durationTemp = durationContent.getText();
+//          LocalDate departureDateTemp = departureDateContent.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
           String departureLocationTemp = departureLocationContent.getText();    
           String departureTimeTemp = departureTimeContent.getText();
           String destinationTemp = destinationContent.getText();
@@ -568,6 +569,17 @@ public class TourManagement extends JPanel {
               durationContent.requestFocus();
               return false;
           }
+          
+          if (departureDateContent.getDate() == null) {
+        	    JOptionPane.showMessageDialog(
+        	    		addFrame, 
+        	        "Ngày khởi hành không được trống! Vui lòng nhập ngày khởi hành.", 
+        	        "Lỗi", 
+        	        JOptionPane.ERROR_MESSAGE
+        	    );
+        	    departureDateContent.requestFocus(); // Focus on the JDateChooser for user correction
+        	    return false;
+        	}
 
           if (departureLocationTemp.isEmpty() || !departureLocationTemp.matches("^[A-Za-zÀ-ỹĐđ0-9\\s-_.,]+$")) {
               JOptionPane.showMessageDialog(addFrame, 

@@ -211,8 +211,7 @@ public final class Tour {
 	}
 
 	public int getCurrentParticipants() {
-		Order_DAO orderDAO = new Order_DAO();
-		return orderDAO.getCurrentParticipants(this.tourId);
+		return currentParticipants;
 	}
 
 	public void setCurrentParticipants(int currentParticipants) {
