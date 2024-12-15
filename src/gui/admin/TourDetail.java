@@ -606,7 +606,6 @@ public class TourDetail extends JPanel
             return false;
         }
 
-
         if (adultPrice.isEmpty() || !adultPrice.matches("^[0-9.,]+$")) {
             JOptionPane.showMessageDialog(null, 
                 "Giá vé người lớn không hợp lệ! Vui lòng nhập số tiền hợp lệ.", 

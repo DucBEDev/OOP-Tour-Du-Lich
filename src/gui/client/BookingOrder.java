@@ -46,6 +46,11 @@ import entity.Order;
 import entity.Tour;
 
 public class BookingOrder extends JFrame {
+	public static final String STATUS_PENDING = "Chờ thanh toán";
+    public static final String STATUS_PAID = "Đã thanh toán";
+    public static final String STATUS_CANCELLED = "Hủy";
+    public static final String STATUS_COMPLETED = "Hoàn thành";
+	
 	private JPanel pnlMain;
 	private JSplitPane splitPane;
 	private JPanel pnlTourList;
@@ -479,7 +484,7 @@ public class BookingOrder extends JFrame {
         	customer_id = customer.getCustomerId();
         }
         double totalPrice = selectedTour.getAdultPrice() * adultTickets + selectedTour.getChildPrice() * childTickets;
-        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, "Chờ thanh toán", null);
+        Order order = new Order(order_dao.generateNextOrderId(), customer_id, selectedTour.getTourId(), adultTickets, childTickets, LocalDateTime.now(), totalPrice, STATUS_PENDING, null);
         order_dao.add(order);
         
         // Update current participations
